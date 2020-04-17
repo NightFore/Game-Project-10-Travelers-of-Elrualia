@@ -12,9 +12,6 @@ from Class import *
 
 vec = pygame.math.Vector2
 
-# Characters Settings
-PLAYER_IMG = "character_pipoya_male_01_2.png"
-
 
 """
     Game
@@ -74,7 +71,7 @@ class Game:
         # Map
 
         # Characters
-        self.player_img = load_tile_table(path.join(graphics_folder, PLAYER_IMG), 32, 32)
+        self.player_img = pygame.image.load(path.join(graphics_folder, PLAYER_IMG)).convert_alpha()
 
         # Image Items
         self.item_images = {}
@@ -128,13 +125,13 @@ class Game:
                     self.paused = not self.paused
 
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    self.cursor.move(dx=-1)
+                    self.player.move(dx=-1)
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    self.cursor.move(dx=+1)
+                    self.player.move(dx=+1)
                 if event.key == pygame.K_UP or event.key == pygame.K_w:
-                    self.cursor.move(dy=-1)
+                    self.player.move(dy=-1)
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                    self.cursor.move(dy=+1)
+                    self.player.move(dy=+1)
 
     def update(self):
         self.all_sprites.update()

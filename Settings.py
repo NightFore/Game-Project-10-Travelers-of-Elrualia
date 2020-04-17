@@ -16,6 +16,12 @@ LAYER_PLAYER = 1
 LAYER_CURSOR = 3
 
 """
+    Load
+"""
+# Characters Settings
+PLAYER_IMG = "Sprite_iris.png"
+
+"""
     Colors
 """
 BLACK = 0, 0, 0
