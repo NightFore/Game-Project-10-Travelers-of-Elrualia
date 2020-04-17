@@ -97,6 +97,7 @@ class Game:
         self.characters = pygame.sprite.Group()
 
         self.player = Player(self, WIDTH/2, HEIGHT/2, self.player_img, "Player")
+        self.cursor = Cursor(self, WIDTH/2, HEIGHT/2-8)
 
     def run(self):
         self.playing = True
@@ -126,6 +127,15 @@ class Game:
                 if event.key == pygame.K_p:
                     self.paused = not self.paused
 
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    self.cursor.move(dx=-1)
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    self.cursor.move(dx=+1)
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
+                    self.cursor.move(dy=-1)
+                if event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                    self.cursor.move(dy=+1)
+
     def update(self):
         self.all_sprites.update()
 
@@ -142,8 +152,6 @@ class Game:
             self.draw_text("Paused", self.font, 105, RED, WIDTH / 2, HEIGHT / 2, align="center")
 
         self.gameDisplay.update(self.event)
-
-
 
 g = Game()
 while True:

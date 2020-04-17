@@ -13,6 +13,7 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 
 # Layer Settings
 LAYER_PLAYER = 1
+LAYER_CURSOR = 3
 
 """
     Colors
