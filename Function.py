@@ -1,4 +1,5 @@
 import pygame
+from os import path
 
 def update_time_dependent(sprite):
     sprite.current_time += sprite.dt

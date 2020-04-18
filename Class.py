@@ -1,7 +1,9 @@
 import pygame
+import pytweening as tween
 
 from Settings import *
 from Function import *
+
 
 PLACEHOLDER = 32
 
@@ -61,11 +63,11 @@ class Player(pygame.sprite.Sprite):
         self.pos_dt = [x_dt, y_dt]
 
         # Surface
-        self.base_index = 1
+        self.base_index = 0
         self.index = self.base_index
-        self.instance = isinstance(image, list)
+        self.instance_list = isinstance(image, list)
 
-        if self.instance:
+        if self.instance_list:
             self.images = self.game.player_img
             self.images_bottom = self.images[0]
             self.images_left = self.images[1]
@@ -98,7 +100,70 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = self.pos[1]
 
     def update(self):
-        if self.instance:
+        if self.instance_list:
+            update_time_dependent(self)
+            self.current_time += self.dt
+
+        self.rect.x = self.pos[0]
+        self.rect.y = self.pos[1]
+
+        if self.center:
+            self.rect.center = self.pos
+
+
+
+
+class Item(pygame.sprite.Sprite):
+    def __init__(self, game, x, y, type, center=True, bobbing=False):
+        # Setup
+        self.game = game
+        self.groups = self.game.all_sprites, self.game.items
+        self._layer = LAYER_ITEMS
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        # Settings
+        self.type = type
+
+        # Position
+        self.pos = [x, y]
+
+        # Surface
+        self.base_index = 0
+        self.index = self.base_index
+        self.images = self.game.item_images[self.type]
+        self.instance_list = isinstance(self.images, list)
+
+        if self.instance_list:
+            self.image = self.game.item_images[self.type][self.index]
+        else:
+            self.image = self.game.item_images[self.type]
+
+        # Rect
+        self.rect = self.image.get_rect()
+        self.rect.x = self.pos[0]
+        self.rect.y = self.pos[1]
+
+        # Center
+        self.center = center
+        if self.center:
+            self.rect.center = self.pos
+
+        # Time
+        self.dt = game.dt
+        self.current_time = 0
+        self.animation_time = 0.50
+
+        # Bobbing
+        self.bobbing = bobbing
+        self.tween = tween.linear
+        self.step = 0
+        self.dir = 1
+
+    def update(self):
+        if self.bobbing:
+            update_bobbing(self)
+
+        if self.instance_list:
             update_time_dependent(self)
             self.current_time += self.dt
 

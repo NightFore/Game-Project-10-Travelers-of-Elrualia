@@ -75,6 +75,8 @@ class Game:
 
         # Image Items
         self.item_images = {}
+        for item in ITEM_IMAGES:
+            self.item_images[item] = load_image(graphics_folder, ITEM_IMAGES[item])
 
         # Image Effects
         self.effect_images = {}
@@ -92,13 +94,19 @@ class Game:
         self.paused = False
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
+        self.items = pygame.sprite.Group()
 
         self.player = Player(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT, self.player_img, "Player")
         self.cursor = Cursor(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT)
 
+        Item(self, 60, 40, "health")
+        Item(self, 60, 80, "armor")
+        Item(self, 640, 60, "clock")
+        Item(self, 520, 670, "mana")
+
     def run(self):
         self.playing = True
-        if self.music != None:
+        if self.music is not None:
             pygame.mixer.music.load(path.join(music_folder, self.music))
             pygame.mixer.music.play(-1)
         while self.playing:
@@ -144,7 +152,7 @@ class Game:
         self.gameDisplay.fill(BACKGROUND_COLOR)
 
         # Background
-        self.gameDisplay.blit(self.background_battle_img, (0,0))
+        self.gameDisplay.blit(self.background_battle_img, (0, 0))
 
         # Sprite
         for sprite in self.all_sprites:
