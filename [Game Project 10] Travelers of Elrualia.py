@@ -68,10 +68,9 @@ class Game:
         self.dim_screen = pygame.Surface(self.gameDisplay.get_size()).convert_alpha()
         self.dim_screen.fill((100, 100, 100, 120))
 
-        # Map
-
-        # Characters
+        # Graphics
         self.player_img = pygame.image.load(path.join(graphics_folder, PLAYER_IMG)).convert_alpha()
+        self.background_battle_img = pygame.image.load(path.join(graphics_folder, BACKGROUND_BATTLE_IMG)).convert_alpha()
 
         # Image Items
         self.item_images = {}
@@ -93,7 +92,7 @@ class Game:
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
 
-        self.player = Player(self, WIDTH/2, HEIGHT/2, self.player_img, "Player")
+        self.player = Player(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT, self.player_img, "Player")
         self.cursor = Cursor(self, WIDTH/2, HEIGHT/2-8)
 
     def run(self):
@@ -138,6 +137,9 @@ class Game:
 
     def draw(self):
         self.gameDisplay.fill(LIGHTGREY)
+
+        # Background
+        self.gameDisplay.blit(self.background_battle_img, (0,0))
 
         # Sprite
         for sprite in self.all_sprites:

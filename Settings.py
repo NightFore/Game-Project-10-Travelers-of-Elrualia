@@ -20,6 +20,14 @@ LAYER_CURSOR = 3
 """
 # Characters Settings
 PLAYER_IMG = "Sprite_iris.png"
+PLAYER_X = 255
+PLAYER_Y = 260
+PLAYER_X_DT = 95
+PLAYER_Y_DT = 95
+
+
+# Background
+BACKGROUND_BATTLE_IMG = "Background_battle.png"
 
 """
     Colors
