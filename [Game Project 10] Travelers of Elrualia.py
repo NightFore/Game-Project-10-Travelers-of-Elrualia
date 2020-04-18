@@ -154,6 +154,9 @@ class Game:
         # Background
         self.gameDisplay.blit(self.background_battle_img, (0, 0))
 
+        # Interface
+        self.player.draw_status()
+
         # Sprite
         for sprite in self.all_sprites:
             self.gameDisplay.blit(sprite.image, sprite)

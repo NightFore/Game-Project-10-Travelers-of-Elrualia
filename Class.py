@@ -48,6 +48,15 @@ class Cursor(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
+    max_health = 100
+    health = max_health
+
+    max_armor = 50
+    armor = max_armor/2
+
+    max_mana = 3
+    mana = 2.5
+
     def __init__(self, game, x, y, x_dt, y_dt, image, name, center=True):
         # Setup
         self.game = game
@@ -98,6 +107,13 @@ class Player(pygame.sprite.Sprite):
         self.pos[1] += dy * self.pos_dt[1]
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
+
+    def draw_status(self):
+        pygame.draw.rect(self.game.gameDisplay, HEALTH_COLOR, (PLAYER_HEALTH_X, PLAYER_HEALTH_Y, self.health/self.max_health * PLAYER_HEALTH_WIDTH, PLAYER_HEALTH_HEIGHT))
+        pygame.draw.rect(self.game.gameDisplay, ARMOR_COLOR, (PLAYER_ARMOR_X, PLAYER_ARMOR_Y, self.armor/self.max_armor * PLAYER_ARMOR_WIDTH, PLAYER_ARMOR_HEIGHT))
+
+        for i in range(self.max_mana):
+            pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (PLAYER_MANA_X + i*MANA_X_DT, PLAYER_MANA_Y, min(1, self.mana-i) * MANA_WIDTH, MANA_HEIGHT))
 
     def update(self):
         if self.instance_list:
