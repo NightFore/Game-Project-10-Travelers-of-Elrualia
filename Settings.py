@@ -35,8 +35,14 @@ LIGHTBLUE = 90, 135, 180
 """
     Game Settings
 """
+# Cursor settings
+CURSOR_WIDTH = 40
+CURSOR_HEIGHT = 40
+CURSOR_COLOR = BLUE
+
 # Characters settings
 PLAYER_IMG = "Sprite_iris.png"
+PLAYER_IMG_2 = "character_pipoya_male_01_2.png"
 PLAYER_X = 255
 PLAYER_Y = 260
 PLAYER_X_DT = 95

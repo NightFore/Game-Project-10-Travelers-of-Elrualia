@@ -69,7 +69,8 @@ class Game:
         self.dim_screen.fill((100, 100, 100, 120))
 
         # Graphics
-        self.player_img = pygame.image.load(path.join(graphics_folder, PLAYER_IMG)).convert_alpha()
+        # self.player_img = pygame.image.load(path.join(graphics_folder, PLAYER_IMG)).convert_alpha()
+        self.player_img = load_tile_table(path.join(graphics_folder, PLAYER_IMG_2), 32, 32)
         self.background_battle_img = pygame.image.load(path.join(graphics_folder, BACKGROUND_BATTLE_IMG)).convert_alpha()
 
         # Image Items
@@ -93,7 +94,7 @@ class Game:
         self.characters = pygame.sprite.Group()
 
         self.player = Player(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT, self.player_img, "Player")
-        self.cursor = Cursor(self, WIDTH/2, HEIGHT/2-8)
+        self.cursor = Cursor(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT)
 
     def run(self):
         self.playing = True
@@ -125,12 +126,16 @@ class Game:
 
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     self.player.move(dx=-1)
+                    self.cursor.move(dx=-1)
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     self.player.move(dx=+1)
+                    self.cursor.move(dx=+1)
                 if event.key == pygame.K_UP or event.key == pygame.K_w:
                     self.player.move(dy=-1)
+                    self.cursor.move(dy=-1)
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     self.player.move(dy=+1)
+                    self.cursor.move(dy=+1)
 
     def update(self):
         self.all_sprites.update()
