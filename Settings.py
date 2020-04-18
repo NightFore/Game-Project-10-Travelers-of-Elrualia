@@ -44,6 +44,7 @@ CURSOR_COLOR = BLUE
 # Characters settings
 PLAYER_IMG = "Sprite_iris.png"
 PLAYER_IMG_2 = "character_pipoya_male_01_2.png"
+
 PLAYER_X = 255
 PLAYER_Y = 260
 PLAYER_X_DT = 95
@@ -51,11 +52,12 @@ PLAYER_Y_DT = 95
 
 # Background settings
 BACKGROUND_COLOR = LIGHTBLUE
-BACKGROUND_BATTLE_IMG = "Background_battle.png"
+BACKGROUND_BATTLE_IMG = "background_battle.png"
 
 # Items
-ITEM_IMAGES = {"health": ["item_beyonderboy_heart.png"],
-               "mana": ["item_raventale_gem_2_blue.png"],
-               "armor": ["item_alex_s_assets_shield_2.png"],
-               "clock": ["item_nyknck_sandclock_1.png", "item_nyknck_sandclock_2.png", "item_nyknck_sandclock_3.png",
-                         "item_nyknck_sandclock_4.png", "item_nyknck_sandclock_5.png"]}
+ITEM_IMAGES = {"health": ["item_beyonderboy_heart_edited.png"],
+               "mana": ["item_raventale_gem_2_blue_42x42.png"],
+               "armor": ["item_alex_s_assets_shield_2_32x32.png"],
+               "clock": ["item_nyknck_sandclock_1_58x58.png", "item_nyknck_sandclock_2_58x58.png",
+                         "item_nyknck_sandclock_3_58x58.png", "item_nyknck_sandclock_4_58x58.png",
+                         "item_nyknck_sandclock_5_58x58.png"]}
