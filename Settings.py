@@ -16,20 +16,6 @@ LAYER_PLAYER = 1
 LAYER_CURSOR = 3
 
 """
-    Load
-"""
-# Characters Settings
-PLAYER_IMG = "Sprite_iris.png"
-PLAYER_X = 255
-PLAYER_Y = 260
-PLAYER_X_DT = 95
-PLAYER_Y_DT = 95
-
-
-# Background
-BACKGROUND_BATTLE_IMG = "Background_battle.png"
-
-"""
     Colors
 """
 BLACK = 0, 0, 0
@@ -44,3 +30,19 @@ MAGENTA = 255, 0, 255
 CYAN = 0, 255, 255
 
 LIGHTGREY = 100, 100, 100
+LIGHTBLUE = 90, 135, 180
+
+"""
+    Game Settings
+"""
+# Characters settings
+PLAYER_IMG = "Sprite_iris.png"
+PLAYER_X = 255
+PLAYER_Y = 260
+PLAYER_X_DT = 95
+PLAYER_Y_DT = 95
+
+
+# Background settings
+BACKGROUND_COLOR = LIGHTBLUE
+BACKGROUND_BATTLE_IMG = "Background_battle.png"

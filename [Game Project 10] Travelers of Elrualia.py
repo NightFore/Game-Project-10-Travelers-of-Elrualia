@@ -136,7 +136,7 @@ class Game:
         self.all_sprites.update()
 
     def draw(self):
-        self.gameDisplay.fill(LIGHTGREY)
+        self.gameDisplay.fill(BACKGROUND_COLOR)
 
         # Background
         self.gameDisplay.blit(self.background_battle_img, (0,0))
