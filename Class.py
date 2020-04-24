@@ -47,15 +47,33 @@ class Cursor(pygame.sprite.Sprite):
             self.rect.center = self.pos
 
 
+
+
 class Player(pygame.sprite.Sprite):
     max_health = 100
-    health = max_health
-
     max_armor = 50
-    armor = max_armor/2
-
     max_mana = 3
+    health = max_health
+    armor = max_armor/2
     mana = 2.5
+
+    waiting_spell = [1] * 9
+    current_spell = [None, 1, 1]
+    current_passive = [None]
+
+    test_list = [1, 2, 3, 4, 5, 0, 0, 6, 7, 0, 0, 8, 0, 9, 0]
+    pack_list(test_list, 0, True)
+
+
+    def update_spell(self):
+        for i in range(3):
+            if self.current_spell[i] is None:
+                pack_list(self.current_spell, None)
+                self.current_spell[2] = self.waiting_spell[0]
+                print(self.waiting_spell)
+                self.waiting_spell[0] = None
+                pack_list(self.waiting_spell, None)
+                print(self.waiting_spell)
 
     def __init__(self, game, x, y, x_dt, y_dt, image, name, center=True):
         # Setup
@@ -116,6 +134,8 @@ class Player(pygame.sprite.Sprite):
             pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (PLAYER_MANA_X + i*MANA_X_DT, PLAYER_MANA_Y, min(1, self.mana-i) * MANA_WIDTH, MANA_HEIGHT))
 
     def update(self):
+        self.update_spell()
+
         if self.instance_list:
             update_time_dependent(self)
             self.current_time += self.dt

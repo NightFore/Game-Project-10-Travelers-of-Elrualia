@@ -6,7 +6,6 @@ from os import path
 from Settings import *
 from ScaledGame import *
 from Camera import *
-from Map import *
 from Function import *
 from Class import *
 
@@ -100,9 +99,15 @@ class Game:
         self.cursor = Cursor(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT)
 
         Item(self, 60, 40, "health")
-        Item(self, 60, 80, "armor")
+        Item(self, 60, 80, "shield")
         Item(self, 640, 60, "clock")
         Item(self, 520, 670, "mana")
+
+        for i in range(3):
+            if self.player.current_spell[i] == 1:
+                Item(self, 230, 670, "sword_1")
+                Item(self, 290, 670, "sword_1")
+                Item(self, 350, 670, "sword_1")
 
     def run(self):
         self.playing = True

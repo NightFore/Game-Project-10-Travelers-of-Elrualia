@@ -1,6 +1,7 @@
 import pygame
 from os import path
 
+
 def update_time_dependent(sprite):
     sprite.current_time += sprite.dt
     if sprite.current_time >= sprite.animation_time:
@@ -19,6 +20,7 @@ def update_bobbing(sprite):
     if sprite.step > BOB_RANGE:
         sprite.step = 0
         sprite.dir *= -1
+
 
 def load_file(path, image=False):
     file = []
@@ -51,14 +53,12 @@ def load_tile_table(filename, width, height, colorkey=(0, 0, 0)):
     return tile_table
 
 
-
 def transparent_surface(width, height, color, border, colorkey=(0, 0, 0)):
     surface = pygame.Surface((width, height)).convert()
     surface.set_colorkey(colorkey)
     surface.fill(color)
     surface.fill(colorkey, surface.get_rect().inflate(-border, -border))
     return surface
-
 
 
 def collision(sprite_1, sprite_2, dx=0, dy=0):
@@ -76,13 +76,32 @@ def collision(sprite_1, sprite_2, dx=0, dy=0):
 
 
 def reachable(list, i_loop, j_loop, rg):
-    for i in range(2*i_loop+1):
-        for j in range(2*j_loop+1):
+    for i in range(2 * i_loop + 1):
+        for j in range(2 * j_loop + 1):
             if list[i][j]:
                 reach = False
-                for x in range(-rg, rg+1):
-                    for y in range(-rg, rg+1):
-                        if abs(x) + abs(y) == rg and 0 < i+x < 2*i_loop+1 and 0 < j+y < 2*j_loop+1:
-                            if list[i+x][j+y]:
+                for x in range(-rg, rg + 1):
+                    for y in range(-rg, rg + 1):
+                        if abs(x) + abs(y) == rg and 0 < i + x < 2 * i_loop + 1 and 0 < j + y < 2 * j_loop + 1:
+                            if list[i + x][j + y]:
                                 reach = True
                 list[i][j] = reach
+
+
+def pack_list(list, var, reverse=False):
+    if reverse:
+        list.reverse()
+
+    for i in range(len(list)):
+        # Display list
+        #print(list)
+
+        if list[i] == var:
+            cpt = 0
+            while list[i + cpt] == var and i + cpt < len(list)-1:
+                cpt += 1
+            list[i] = list[i+cpt]
+            list[i+cpt] = var
+
+    if reverse:
+        list.reverse()
