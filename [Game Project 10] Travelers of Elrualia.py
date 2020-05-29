@@ -83,6 +83,11 @@ class Game:
         for item in SPELL_IMAGES:
             self.spell_images[item] = load_image(graphics_folder, SPELL_IMAGES[item]["image"])
 
+        # Passive Images
+        self.passive_images = {}
+        for item in PASSIVE_IMAGES:
+            self.passive_images[item] = load_image(graphics_folder, PASSIVE_IMAGES[item]["image"])
+
         # Image Effects
         self.effect_images = {}
 
@@ -120,6 +125,8 @@ class Game:
                     Item(self, 130, 670, self.spell_images, self.player.waiting_spell[i])
                 else:
                     Item(self, 70, 730-60*i, self.spell_images, self.player.waiting_spell[i])
+
+        Item(self, 410, 670, self.passive_images, self.player.current_passive[0])
 
 
     def run(self):

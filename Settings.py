@@ -103,3 +103,7 @@ SPELL_IMAGES = {"sword_1": {"image": ["item_alex_s_assets_sword_1_48x48.png"]},
                 "armor_1": {"image": ["item_alex_s_assets_armor_1_48x48.png"]},
                 "armor_2": {"image": ["item_alex_s_assets_armor_3_48x48.png"]},
                 "armor_3": {"image": ["item_alex_s_assets_armor_4_48x48.png"]}}
+
+PASSIVE_IMAGES = {"atk_crystal": {"image": ["item_raventale_variables_1_necklace_withruby_45x45.png"]},
+                  "def_crystal": {"image": ["item_raventale_variables_1_necklace_withamethyst_45x45.png"]},
+                  "mana_crystal": {"image": ["item_raventale_variables_1_necklace_withtopaz_45x45.png"]}}
