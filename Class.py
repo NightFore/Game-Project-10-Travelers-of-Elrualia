@@ -52,10 +52,10 @@ class Cursor(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     max_health = 100
     max_armor = 50
-    max_mana = 3
+    max_mana = 5
     health = max_health
     armor = max_armor/2
-    mana = 2.5
+    mana = 3.75
 
     waiting_spell = [None] * 9
     current_spell = [None] * 3
@@ -74,6 +74,9 @@ class Player(pygame.sprite.Sprite):
             for index in range(len(self.waiting_spell)):
                 if self.waiting_spell[index] is None:
                     self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
+
+        if None in self.current_passive:
+            self.current_passive[0] = random.choice(list(self.game.passive_images.keys()))
 
     def __init__(self, game, x, y, x_dt, y_dt, image, name, center=True):
         # Setup
@@ -132,7 +135,8 @@ class Player(pygame.sprite.Sprite):
         pygame.draw.rect(self.game.gameDisplay, ARMOR_COLOR, (PLAYER_ARMOR_X, PLAYER_ARMOR_Y, self.armor/self.max_armor * PLAYER_ARMOR_WIDTH, PLAYER_ARMOR_HEIGHT))
 
         for i in range(self.max_mana):
-            pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (PLAYER_MANA_X + i*MANA_X_DT, PLAYER_MANA_Y, min(1, self.mana-i) * MANA_WIDTH, MANA_HEIGHT))
+            if self.mana-i >= 0:
+                pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (PLAYER_MANA_X + i*MANA_X_DT, PLAYER_MANA_Y, min(1, self.mana-i) * MANA_WIDTH, MANA_HEIGHT))
 
     def update(self):
         self.update_spell()
@@ -141,6 +145,60 @@ class Player(pygame.sprite.Sprite):
             update_time_dependent(self)
             self.current_time += self.dt
 
+        self.rect.x = self.pos[0]
+        self.rect.y = self.pos[1]
+
+        if self.center:
+            self.rect.center = self.pos
+
+
+
+
+class Enemy(pygame.sprite.Sprite):
+    max_health = 100
+    max_armor = 50
+    max_mana = 3
+    health = max_health
+    armor = max_armor/2
+    mana = 1.50
+
+    def __init__(self, game,  x, y, image, name, center=True):
+        # Setup
+        self.game = game
+        self.groups = self.game.all_sprites, self.game.characters
+        self._layer = LAYER_PLAYER
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        # Settings
+        self.name = name
+
+        # Position
+        self.pos = [x, y]
+
+        # Surface
+        self.image = image
+
+        # Rect
+        self.rect = self.image.get_rect()
+        self.rect.x = self.pos[0]
+        self.rect.y = self.pos[1]
+
+        # Center
+        self.center = center
+        if self.center:
+            self.rect.center = self.pos
+
+    def draw_status(self):
+        pygame.draw.rect(self.game.gameDisplay, HEALTH_COLOR, (ENEMY_HEALTH_X, ENEMY_HEALTH_Y, self.health/self.max_health * ENEMY_HEALTH_WIDTH, ENEMY_HEALTH_HEIGHT))
+
+        for i in range(self.max_mana):
+            if self.mana-i >= 1:
+                pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (ENEMY_MANA_X, ENEMY_MANA_Y + i*MANA_Y_DT, MANA_WIDTH, MANA_HEIGHT))
+
+            elif self.mana-i > 0:
+                pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (ENEMY_MANA_X, ENEMY_MANA_Y + i*MANA_Y_DT + int(0.5+(1-(self.mana-i))*MANA_HEIGHT), MANA_WIDTH, int(0.5+(self.mana-i)*MANA_HEIGHT)))
+
+    def update(self):
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
 

@@ -70,6 +70,7 @@ class Game:
         # Graphics
         # self.player_img = pygame.image.load(path.join(graphics_folder, PLAYER_IMG)).convert_alpha()
         self.player_img = load_tile_table(path.join(graphics_folder, PLAYER_IMG_2), 32, 32)
+        self.enemy_img = pygame.image.load(path.join(graphics_folder, ENEMY_IMG)).convert_alpha()
         self.background_battle_img = pygame.image.load(path.join(graphics_folder, BACKGROUND_BATTLE_IMG)).convert_alpha()
 
         # Item Images
@@ -80,7 +81,7 @@ class Game:
         # Spell Images
         self.spell_images = {}
         for item in SPELL_IMAGES:
-            self.spell_images[item] = load_image(graphics_folder, SPELL_IMAGES[item])
+            self.spell_images[item] = load_image(graphics_folder, SPELL_IMAGES[item]["image"])
 
         # Image Effects
         self.effect_images = {}
@@ -101,6 +102,7 @@ class Game:
         self.items = pygame.sprite.Group()
 
         self.player = Player(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT, self.player_img, "Player")
+        self.enemy = Enemy(self, ENEMY_X, ENEMY_Y, self.enemy_img, "Wolf")
         self.cursor = Cursor(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT)
 
         Item(self, 60, 40, self.item_images, "health")
@@ -172,6 +174,7 @@ class Game:
 
         # Interface
         self.player.draw_status()
+        self.enemy.draw_status()
 
         # Sprite
         for sprite in self.all_sprites:

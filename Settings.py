@@ -32,6 +32,7 @@ CYAN = 0, 255, 255
 
 LIGHTGREY = 100, 100, 100
 LIGHTBLUE = 90, 135, 180
+LIGHTSKYBLUE = 135, 206, 250
 
 ORANGE = 255, 120, 30
 
@@ -46,6 +47,7 @@ CURSOR_COLOR = BLUE
 # Characters settings
 PLAYER_IMG = "Sprite_iris.png"
 PLAYER_IMG_2 = "character_pipoya_male_01_2.png"
+ENEMY_IMG = "Icon_Wolf.png"
 
 PLAYER_X = 255
 PLAYER_Y = 260
@@ -54,7 +56,7 @@ PLAYER_Y_DT = 95
 
 HEALTH_COLOR = GREEN
 ARMOR_COLOR = ORANGE
-MANA_COLOR = LIGHTBLUE
+MANA_COLOR = LIGHTSKYBLUE
 
 PLAYER_HEALTH_X = 83
 PLAYER_HEALTH_Y = 23
@@ -68,7 +70,18 @@ PLAYER_ARMOR_HEIGHT = 34
 
 PLAYER_MANA_X = 553
 PLAYER_MANA_Y = 653
+
+ENEMY_X = 1200
+ENEMY_Y = 660
+ENEMY_HEALTH_X = 1203
+ENEMY_HEALTH_Y = 223
+ENEMY_HEALTH_WIDTH = 34
+ENEMY_HEALTH_HEIGHT = 394
+ENEMY_MANA_X = 1163
+ENEMY_MANA_Y = 583
+
 MANA_X_DT = 40
+MANA_Y_DT = -40
 MANA_WIDTH = 34
 MANA_HEIGHT = 34
 
@@ -84,9 +97,9 @@ ITEM_IMAGES = {"health": ["item_beyonderboy_heart_edited.png"],
                          "item_nyknck_sandclock_3_58x58.png", "item_nyknck_sandclock_4_58x58.png",
                          "item_nyknck_sandclock_5_58x58.png"]}
 
-SPELL_IMAGES = {"sword_1": ["item_alex_s_assets_sword_1_48x48.png"],
-               "sword_2": ["item_alex_s_assets_sword_2_48x48.png"],
-               "sword_3": ["item_alex_s_assets_sword_3_48x48.png"],
-               "armor_1": ["item_alex_s_assets_armor_1_48x48.png"],
-               "armor_2": ["item_alex_s_assets_armor_3_48x48.png"],
-               "armor_3": ["item_alex_s_assets_armor_4_48x48.png"]}
+SPELL_IMAGES = {"sword_1": {"image": ["item_alex_s_assets_sword_1_48x48.png"]},
+                "sword_2": {"image": ["item_alex_s_assets_sword_2_48x48.png"]},
+                "sword_3": {"image": ["item_alex_s_assets_sword_3_48x48.png"]},
+                "armor_1": {"image": ["item_alex_s_assets_armor_1_48x48.png"]},
+                "armor_2": {"image": ["item_alex_s_assets_armor_3_48x48.png"]},
+                "armor_3": {"image": ["item_alex_s_assets_armor_4_48x48.png"]}}
