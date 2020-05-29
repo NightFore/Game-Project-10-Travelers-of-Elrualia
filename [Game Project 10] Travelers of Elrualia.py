@@ -72,10 +72,15 @@ class Game:
         self.player_img = load_tile_table(path.join(graphics_folder, PLAYER_IMG_2), 32, 32)
         self.background_battle_img = pygame.image.load(path.join(graphics_folder, BACKGROUND_BATTLE_IMG)).convert_alpha()
 
-        # Image Items
+        # Item Images
         self.item_images = {}
         for item in ITEM_IMAGES:
             self.item_images[item] = load_image(graphics_folder, ITEM_IMAGES[item])
+
+        # Spell Images
+        self.spell_images = {}
+        for item in SPELL_IMAGES:
+            self.spell_images[item] = load_image(graphics_folder, SPELL_IMAGES[item])
 
         # Image Effects
         self.effect_images = {}
@@ -98,16 +103,20 @@ class Game:
         self.player = Player(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT, self.player_img, "Player")
         self.cursor = Cursor(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT)
 
-        Item(self, 60, 40, "health")
-        Item(self, 60, 80, "shield")
-        Item(self, 640, 60, "clock")
-        Item(self, 520, 670, "mana")
+        Item(self, 60, 40, self.item_images, "health")
+        Item(self, 60, 80, self.item_images, "shield")
+        Item(self, 640, 60, self.item_images, "clock")
+        Item(self, 520, 670, self.item_images, "mana")
 
         for i in range(3):
             if self.player.current_spell[i] == 1:
-                Item(self, 230, 670, "sword_1")
-                Item(self, 290, 670, "sword_1")
-                Item(self, 350, 670, "sword_1")
+                Item(self, 230, 670, self.spell_images, "sword_1")
+                Item(self, 290, 670, self.spell_images, "sword_1")
+                Item(self, 350, 670, self.spell_images, "sword_1")
+
+        for i in range(len(self.player.waiting_spell)):
+            if self.player.waiting_spell[i] is not None:
+                Item(self, 100, 100+80*i, self.spell_images, self.player.waiting_spell[i])
 
     def run(self):
         self.playing = True

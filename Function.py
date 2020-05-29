@@ -1,4 +1,5 @@
 import pygame
+import random
 from os import path
 
 
@@ -105,3 +106,8 @@ def pack_list(list, var, reverse=False):
 
     if reverse:
         list.reverse()
+
+
+def randomListDict(List, dictionary):
+    for i in range(len(List)):
+        List[i] = random.choice(list(dictionary.keys()))

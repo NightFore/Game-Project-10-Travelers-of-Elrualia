@@ -64,16 +64,13 @@ class Player(pygame.sprite.Sprite):
     test_list = [1, 2, 3, 4, 5, 0, 0, 6, 7, 0, 0, 8, 0, 9, 0]
     pack_list(test_list, 0, True)
 
-
     def update_spell(self):
         for i in range(3):
             if self.current_spell[i] is None:
                 pack_list(self.current_spell, None)
                 self.current_spell[2] = self.waiting_spell[0]
-                print(self.waiting_spell)
                 self.waiting_spell[0] = None
                 pack_list(self.waiting_spell, None)
-                print(self.waiting_spell)
 
     def __init__(self, game, x, y, x_dt, y_dt, image, name, center=True):
         # Setup
@@ -84,6 +81,8 @@ class Player(pygame.sprite.Sprite):
 
         # Settings
         self.name = name
+        randomListDict(self.waiting_spell, self.game.spell_images)
+
 
         # Position
         self.pos = [x, y]
@@ -150,7 +149,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Item(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, type, center=True, bobbing=False):
+    def __init__(self, game, x, y, dictionary, type, center=True, bobbing=False):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.items
@@ -158,6 +157,7 @@ class Item(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         # Settings
+        self.dictionary = dictionary
         self.type = type
 
         # Position
@@ -166,13 +166,13 @@ class Item(pygame.sprite.Sprite):
         # Surface
         self.base_index = 0
         self.index = self.base_index
-        self.images = self.game.item_images[self.type]
+        self.images = self.dictionary[self.type]
         self.instance_list = isinstance(self.images, list)
 
         if self.instance_list:
-            self.image = self.game.item_images[self.type][self.index]
+            self.image = self.dictionary[self.type][self.index]
         else:
-            self.image = self.game.item_images[self.type]
+            self.image = self.dictionary[self.type]
 
         # Rect
         self.rect = self.image.get_rect()
