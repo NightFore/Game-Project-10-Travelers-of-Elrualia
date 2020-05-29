@@ -108,15 +108,17 @@ class Game:
         Item(self, 640, 60, self.item_images, "clock")
         Item(self, 520, 670, self.item_images, "mana")
 
-        for i in range(3):
-            if self.player.current_spell[i] == 1:
-                Item(self, 230, 670, self.spell_images, "sword_1")
-                Item(self, 290, 670, self.spell_images, "sword_1")
-                Item(self, 350, 670, self.spell_images, "sword_1")
+        for i in range(len(self.player.current_spell)):
+            if self.player.current_spell[i] is not None:
+                Item(self, 230+60*i, 670, self.spell_images, self.player.current_spell[i])
 
         for i in range(len(self.player.waiting_spell)):
             if self.player.waiting_spell[i] is not None:
-                Item(self, 100, 100+80*i, self.spell_images, self.player.waiting_spell[i])
+                if i == 0:
+                    Item(self, 130, 670, self.spell_images, self.player.waiting_spell[i])
+                else:
+                    Item(self, 70, 730-60*i, self.spell_images, self.player.waiting_spell[i])
+
 
     def run(self):
         self.playing = True

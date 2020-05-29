@@ -57,20 +57,23 @@ class Player(pygame.sprite.Sprite):
     armor = max_armor/2
     mana = 2.5
 
-    waiting_spell = [1] * 9
-    current_spell = [None, 1, 1]
+    waiting_spell = [None] * 9
+    current_spell = [None] * 3
     current_passive = [None]
 
-    test_list = [1, 2, 3, 4, 5, 0, 0, 6, 7, 0, 0, 8, 0, 9, 0]
-    pack_list(test_list, 0, True)
-
     def update_spell(self):
-        for i in range(3):
-            if self.current_spell[i] is None:
-                pack_list(self.current_spell, None)
-                self.current_spell[2] = self.waiting_spell[0]
-                self.waiting_spell[0] = None
-                pack_list(self.waiting_spell, None)
+        if None in self.current_spell:
+            sort_list(self.current_spell, None)
+            for index in range(len(self.current_spell)):
+                if self.current_spell[index] is None:
+                    self.current_spell[index] = self.waiting_spell[index]
+                    self.waiting_spell[index] = None
+
+        if None in self.waiting_spell:
+            sort_list(self.waiting_spell, None)
+            for index in range(len(self.waiting_spell)):
+                if self.waiting_spell[index] is None:
+                    self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
 
     def __init__(self, game, x, y, x_dt, y_dt, image, name, center=True):
         # Setup
@@ -81,8 +84,7 @@ class Player(pygame.sprite.Sprite):
 
         # Settings
         self.name = name
-        randomListDict(self.waiting_spell, self.game.spell_images)
-
+        self.update_spell()
 
         # Position
         self.pos = [x, y]
