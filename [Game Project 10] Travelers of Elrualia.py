@@ -80,8 +80,8 @@ class Game:
 
         # Spell Images
         self.spell_images = {}
-        for item in SPELL_IMAGES:
-            self.spell_images[item] = load_image(graphics_folder, SPELL_IMAGES[item]["image"])
+        for item in SPELL_DICT:
+            self.spell_images[item] = load_image(graphics_folder, SPELL_DICT[item]["image"])
 
         # Passive Images
         self.passive_images = {}
@@ -181,6 +181,7 @@ class Game:
 
         # Interface
         self.player.draw_status()
+        self.player.draw_spell()
         self.enemy.draw_status()
 
         # Sprite

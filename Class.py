@@ -138,6 +138,26 @@ class Player(pygame.sprite.Sprite):
             if self.mana-i >= 0:
                 pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (PLAYER_MANA_X + i*MANA_X_DT, PLAYER_MANA_Y, min(1, self.mana-i) * MANA_WIDTH, MANA_HEIGHT))
 
+    def draw_spell(self):
+        spell_pos_x = 455 + (self.pos[0] - PLAYER_X)
+        spell_pos_y = self.pos[1]
+
+        for spell in self.current_spell:
+            if SPELL_DICT[spell]["type"] == 0:
+                pass
+
+            if SPELL_DICT[spell]["type"] == 1:
+                pass
+
+
+        for i in range(SPELL_DICT["sword_1"]["h_range"]):
+            v_list = SPELL_DICT["sword_1"]["v_range"][i]
+            for j in range(len(v_list)):
+                if v_list[j]:
+                    pos_x = self.pos[0] + PLAYER_ENEMY_X_DT + i*SPELL_X_DT
+                    pos_y = self.pos[1] + (j-int(len(v_list)/2))*SPELL_Y_DT
+                    pygame.draw.circle(self.game.gameDisplay, RED, (pos_x, pos_y), 38)
+
     def update(self):
         self.update_spell()
 
