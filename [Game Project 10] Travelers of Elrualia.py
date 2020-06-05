@@ -78,15 +78,23 @@ class Game:
         for item in ITEM_IMAGES:
             self.item_images[item] = load_image(graphics_folder, ITEM_IMAGES[item])
 
-        # Spell Images
+        # Spell images & rect
         self.spell_images = {}
         for item in SPELL_DICT:
             self.spell_images[item] = load_image(graphics_folder, SPELL_DICT[item]["image"])
 
-        # Passive Images
+        self.spell_rect = {}
+        for item in self.spell_images:
+            self.spell_rect[item] = load_rect(self.spell_images[item])
+
+        # Passive images & rect
         self.passive_images = {}
         for item in PASSIVE_IMAGES:
             self.passive_images[item] = load_image(graphics_folder, PASSIVE_IMAGES[item]["image"])
+
+        self.passive_rect = {}
+        for item in self.passive_images:
+            self.passive_rect[item] = load_rect(self.passive_images[item])
 
         # Image Effects
         self.effect_images = {}
@@ -114,20 +122,6 @@ class Game:
         Item(self, 60, 80, self.item_images, "shield")
         Item(self, 640, 60, self.item_images, "clock")
         Item(self, 520, 670, self.item_images, "mana")
-
-        for i in range(len(self.player.current_spell)):
-            if self.player.current_spell[i] is not None:
-                Item(self, 230+60*i, 670, self.spell_images, self.player.current_spell[i])
-
-        for i in range(len(self.player.waiting_spell)):
-            if self.player.waiting_spell[i] is not None:
-                if i == 0:
-                    Item(self, 130, 670, self.spell_images, self.player.waiting_spell[i])
-                else:
-                    Item(self, 70, 730-60*i, self.spell_images, self.player.waiting_spell[i])
-
-        Item(self, 410, 670, self.passive_images, self.player.current_passive[0])
-
 
     def run(self):
         self.playing = True
@@ -157,6 +151,16 @@ class Game:
                 if event.key == pygame.K_p:
                     self.paused = not self.paused
 
+                if event.key == pygame.K_z:
+                    self.player.current_spell[0] = None
+                    self.player.update_spell()
+                if event.key == pygame.K_x:
+                    self.player.current_spell[1] = None
+                    self.player.update_spell()
+                if event.key == pygame.K_c:
+                    self.player.current_spell[2] = None
+                    self.player.update_spell()
+
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     self.player.move(dx=-1)
                     self.cursor.move(dx=-1)
@@ -182,6 +186,7 @@ class Game:
         # Interface
         self.player.draw_status()
         self.player.draw_spell()
+        self.player.draw_spell_range()
         self.enemy.draw_status()
 
         # Sprite
@@ -197,5 +202,4 @@ class Game:
 
 g = Game()
 while True:
-    g.new()
     g.run()

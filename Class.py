@@ -122,6 +122,32 @@ class Player(pygame.sprite.Sprite):
                 pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (PLAYER_MANA_X + i*MANA_X_DT, PLAYER_MANA_Y, min(1, self.mana-i) * MANA_WIDTH, MANA_HEIGHT))
 
     def draw_spell(self):
+        for i in range(len(self.current_spell)):
+            if self.current_spell[i] is not None:
+                image = self.game.spell_images[self.current_spell[i]][0]
+                rect = self.game.spell_rect[self.current_spell[i]][0]
+                rect.center = 230 + 60 * i, 670
+                self.game.gameDisplay.blit(image, rect)
+
+        for i in range(len(self.waiting_spell)):
+            if self.waiting_spell[i] is not None:
+                if i == 0:
+                    image = self.game.spell_images[self.waiting_spell[i]][0]
+                    rect = self.game.spell_rect[self.waiting_spell[i]][0]
+                    rect.center = 130, 670
+                    self.game.gameDisplay.blit(image, rect)
+                else:
+                    image = self.game.spell_images[self.waiting_spell[i]][0]
+                    rect = self.game.spell_rect[self.waiting_spell[i]][0]
+                    rect.center = 70, 730-60*i
+                    self.game.gameDisplay.blit(image, rect)
+
+        image = self.game.passive_images[self.current_passive[0]][0]
+        rect = self.game.passive_rect[self.current_passive[0]][0]
+        rect.center = 410, 670
+        self.game.gameDisplay.blit(image, rect)
+
+    def draw_spell_range(self):
         COLOR_SPELL = [RED, BLUE, GREEN]
         for index in range(len(self.current_spell)):
             spell = self.current_spell[index]
@@ -141,25 +167,26 @@ class Player(pygame.sprite.Sprite):
 
 
     def update_spell(self):
-        if None in self.current_spell:
-            sort_list(self.current_spell, None)
-            for index in range(len(self.current_spell)):
-                if self.current_spell[index] is None:
-                    self.current_spell[index] = self.waiting_spell[index]
-                    self.waiting_spell[index] = None
-
-        if None in self.waiting_spell:
+        while None in self.waiting_spell or None in self.current_spell:
             sort_list(self.waiting_spell, None)
             for index in range(len(self.waiting_spell)):
                 if self.waiting_spell[index] is None:
                     self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
 
+            index_w = 0
+            for index in range(len(self.current_spell)):
+                if self.current_spell[index] is None:
+                    if self.waiting_spell[index_w] is not None:
+                        self.current_spell[index] = self.waiting_spell[index_w]
+                        self.waiting_spell[index_w] = None
+                        index_w += 1
+                    else:
+                        index_w += 1
+
         if None in self.current_passive:
             self.current_passive[0] = random.choice(list(self.game.passive_images.keys()))
 
     def update(self):
-        self.update_spell()
-
         if self.instance_list:
             update_time_dependent(self)
             self.current_time += self.dt

@@ -40,6 +40,13 @@ def load_image(image_path, image_list):
     return images
 
 
+def load_rect(image_list):
+    rect_list = []
+    for image in image_list:
+        rect_list.append(image.get_rect())
+    return rect_list
+
+
 def load_tile_table(filename, width, height, colorkey=(0, 0, 0)):
     image = pygame.image.load(filename).convert()
     image.set_colorkey(colorkey)
