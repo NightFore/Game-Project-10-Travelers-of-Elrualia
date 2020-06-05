@@ -61,23 +61,6 @@ class Player(pygame.sprite.Sprite):
     current_spell = [None] * 3
     current_passive = [None]
 
-    def update_spell(self):
-        if None in self.current_spell:
-            sort_list(self.current_spell, None)
-            for index in range(len(self.current_spell)):
-                if self.current_spell[index] is None:
-                    self.current_spell[index] = self.waiting_spell[index]
-                    self.waiting_spell[index] = None
-
-        if None in self.waiting_spell:
-            sort_list(self.waiting_spell, None)
-            for index in range(len(self.waiting_spell)):
-                if self.waiting_spell[index] is None:
-                    self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
-
-        if None in self.current_passive:
-            self.current_passive[0] = random.choice(list(self.game.passive_images.keys()))
-
     def __init__(self, game, x, y, x_dt, y_dt, image, name, center=True):
         # Setup
         self.game = game
@@ -139,24 +122,40 @@ class Player(pygame.sprite.Sprite):
                 pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (PLAYER_MANA_X + i*MANA_X_DT, PLAYER_MANA_Y, min(1, self.mana-i) * MANA_WIDTH, MANA_HEIGHT))
 
     def draw_spell(self):
-        spell_pos_x = 455 + (self.pos[0] - PLAYER_X)
-        spell_pos_y = self.pos[1]
+        COLOR_SPELL = [RED, BLUE, GREEN]
+        for index in range(len(self.current_spell)):
+            spell = self.current_spell[index]
 
-        for spell in self.current_spell:
             if SPELL_DICT[spell]["type"] == 0:
                 pass
 
             if SPELL_DICT[spell]["type"] == 1:
-                pass
+                h_range = SPELL_DICT[spell]["range"]
+                for i in range(len(h_range)):
+                    v_range = SPELL_DICT[spell]["range"][i]
+                    for j in range(len(v_range)):
+                        if SPELL_DICT[spell]["range"][i][j]:
+                            pos_x = self.pos[0] + PLAYER_ENEMY_X_DT + i*SPELL_X_DT
+                            pos_y = self.pos[1] + (j-int(len(v_range)/2))*SPELL_Y_DT
+                            pygame.draw.circle(self.game.gameDisplay, COLOR_SPELL[index], (pos_x, pos_y), 38)
 
 
-        for i in range(SPELL_DICT["sword_1"]["h_range"]):
-            v_list = SPELL_DICT["sword_1"]["v_range"][i]
-            for j in range(len(v_list)):
-                if v_list[j]:
-                    pos_x = self.pos[0] + PLAYER_ENEMY_X_DT + i*SPELL_X_DT
-                    pos_y = self.pos[1] + (j-int(len(v_list)/2))*SPELL_Y_DT
-                    pygame.draw.circle(self.game.gameDisplay, RED, (pos_x, pos_y), 38)
+    def update_spell(self):
+        if None in self.current_spell:
+            sort_list(self.current_spell, None)
+            for index in range(len(self.current_spell)):
+                if self.current_spell[index] is None:
+                    self.current_spell[index] = self.waiting_spell[index]
+                    self.waiting_spell[index] = None
+
+        if None in self.waiting_spell:
+            sort_list(self.waiting_spell, None)
+            for index in range(len(self.waiting_spell)):
+                if self.waiting_spell[index] is None:
+                    self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
+
+        if None in self.current_passive:
+            self.current_passive[0] = random.choice(list(self.game.passive_images.keys()))
 
     def update(self):
         self.update_spell()

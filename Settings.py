@@ -100,15 +100,15 @@ ITEM_IMAGES = {"health": ["item_beyonderboy_heart_edited.png"],
                          "item_nyknck_sandclock_3_58x58.png", "item_nyknck_sandclock_4_58x58.png",
                          "item_nyknck_sandclock_5_58x58.png"]}
 
-SPELL_DICT = {"sword_1": {"image": ["item_alex_s_assets_sword_1_48x48.png"], "type": 1, "h_range": 1, "v_range": [[0, 1, 0]]},
-                "sword_2": {"image": ["item_alex_s_assets_sword_2_48x48.png"], "type": 1, "h_range": 1, "v_range": [[1, 1, 1]]},
-                "sword_3": {"image": ["item_alex_s_assets_sword_3_48x48.png"], "type": 1, "h_range": 1, "v_range": [[1, 1, 1], [0, 1, 0]]},
-                "spear_1": {"image": ["item_alex_s_assets_spear_1_48x48.png"], "type": 1, "h_range": 2, "v_range": [[0, 1, 0], [0, 1, 0]]},
-                "spear_2": {"image": ["item_alex_s_assets_spear_3_48x48.png"], "type": 1, "h_range": 2, "v_range": [[0, 1, 0], [0, 1, 0], [0, 1, 0]]},
-                "spear_3": {"image": ["item_alex_s_assets_spear_4_48x48.png"], "type": 1, "h_range": 2, "v_range": [[0, 1, 0], [0, 1, 0], [0, 1, 0], [0, 1, 0]]},
-                "armor_1": {"image": ["item_alex_s_assets_armor_1_48x48.png"], "type": 0},
-                "armor_2": {"image": ["item_alex_s_assets_armor_3_48x48.png"], "type": 0},
-                "armor_3": {"image": ["item_alex_s_assets_armor_4_48x48.png"], "type": 0}}
+SPELL_DICT = {"sword_1": {"image": ["item_alex_s_assets_sword_1_48x48.png"], "type": 1, "range": [[0, 1, 0]]},
+              "sword_2": {"image": ["item_alex_s_assets_sword_2_48x48.png"], "type": 1, "range": [[1, 1, 1]]},
+              "sword_3": {"image": ["item_alex_s_assets_sword_3_48x48.png"], "type": 1, "range": [[1, 1, 1], [0, 1, 0]]},
+              "spear_1": {"image": ["item_alex_s_assets_spear_1_48x48.png"], "type": 1, "range": [[0, 1, 0], [0, 1, 0]]},
+              "spear_2": {"image": ["item_alex_s_assets_spear_3_48x48.png"], "type": 1, "range": [[0, 1, 0], [0, 1, 0], [0, 1, 0]]},
+              "spear_3": {"image": ["item_alex_s_assets_spear_4_48x48.png"], "type": 1, "range": [[0, 1, 0], [0, 1, 0], [0, 1, 0], [0, 1, 0]]},
+              "armor_1": {"image": ["item_alex_s_assets_armor_1_48x48.png"], "type": 0},
+              "armor_2": {"image": ["item_alex_s_assets_armor_3_48x48.png"], "type": 0},
+              "armor_3": {"image": ["item_alex_s_assets_armor_4_48x48.png"], "type": 0}}
 
 PASSIVE_IMAGES = {"atk_crystal": {"image": ["item_raventale_variables_1_necklace_withruby_45x45.png"]},
                   "def_crystal": {"image": ["item_raventale_variables_1_necklace_withamethyst_45x45.png"]},
