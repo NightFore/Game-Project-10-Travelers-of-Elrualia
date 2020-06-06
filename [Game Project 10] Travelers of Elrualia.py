@@ -51,6 +51,28 @@ class Game:
             text_rect.center = (x, y)
         self.gameDisplay.blit(text_surface, text_rect)
 
+    def draw_image(self, image, x, y, align="center"):
+        image_rect = image.get_rect()
+        if align == "nw":
+            image_rect.topleft = (x, y)
+        if align == "ne":
+            image_rect.topright = (x, y)
+        if align == "sw":
+            image_rect.bottomleft = (x, y)
+        if align == "se":
+            image_rect.bottomright = (x, y)
+        if align == "n":
+            image_rect.midtop = (x, y)
+        if align == "s":
+            image_rect.midbottom = (x, y)
+        if align == "e":
+            image_rect.midright = (x, y)
+        if align == "w":
+            image_rect.midleft = (x, y)
+        if align == "center":
+            image_rect.center = (x, y)
+        self.gameDisplay.blit(image, image_rect)
+
     def load_data(self):
         game_folder = path.dirname(__file__)
         data_folder = path.join(game_folder, "data")

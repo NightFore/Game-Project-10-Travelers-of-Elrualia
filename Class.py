@@ -118,35 +118,22 @@ class Player(pygame.sprite.Sprite):
         pygame.draw.rect(self.game.gameDisplay, HEALTH_COLOR, (PLAYER_HEALTH_X, PLAYER_HEALTH_Y, self.health/self.max_health * PLAYER_HEALTH_WIDTH, PLAYER_HEALTH_HEIGHT))
         pygame.draw.rect(self.game.gameDisplay, ARMOR_COLOR, (PLAYER_ARMOR_X, PLAYER_ARMOR_Y, self.armor/self.max_armor * PLAYER_ARMOR_WIDTH, PLAYER_ARMOR_HEIGHT))
 
-        for i in range(self.max_mana):
-            if self.mana-i >= 0:
-                pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (PLAYER_MANA_X + i*MANA_X_DT, PLAYER_MANA_Y, min(1, self.mana-i) * MANA_WIDTH, MANA_HEIGHT))
+        for i in range(int(self.mana)+1):
+            pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (PLAYER_MANA_X + i*MANA_X_DT, PLAYER_MANA_Y, min(1, self.mana-i) * MANA_WIDTH, MANA_HEIGHT))
 
     def draw_spell(self):
         for i in range(len(self.current_spell)):
             if self.current_spell[i] is not None:
-                image = self.game.spell_images[self.current_spell[i]][0]
-                rect = self.game.spell_rect[self.current_spell[i]][0]
-                rect.center = 230 + 60 * i, 670
-                self.game.gameDisplay.blit(image, rect)
+                self.game.draw_image(self.game.spell_images[self.current_spell[i]][0], 230 + 60*i, 670)
 
         for i in range(len(self.waiting_spell)):
             if self.waiting_spell[i] is not None:
                 if i == 0:
-                    image = self.game.spell_images[self.waiting_spell[i]][0]
-                    rect = self.game.spell_rect[self.waiting_spell[i]][0]
-                    rect.center = 130, 670
-                    self.game.gameDisplay.blit(image, rect)
+                    self.game.draw_image(self.game.spell_images[self.waiting_spell[i]][0], 130, 670)
                 else:
-                    image = self.game.spell_images[self.waiting_spell[i]][0]
-                    rect = self.game.spell_rect[self.waiting_spell[i]][0]
-                    rect.center = 70, 730-60*i
-                    self.game.gameDisplay.blit(image, rect)
+                    self.game.draw_image(self.game.spell_images[self.waiting_spell[i]][0], 70, 730-60*i)
 
-        image = self.game.passive_images[self.current_passive[0]][0]
-        rect = self.game.passive_rect[self.current_passive[0]][0]
-        rect.center = 410, 670
-        self.game.gameDisplay.blit(image, rect)
+        self.game.draw_image(self.game.passive_images[self.current_passive[0]][0], 410, 670)
 
     def draw_spell_range(self):
         COLOR_SPELL = [RED, BLUE, GREEN]
