@@ -116,7 +116,6 @@ class Game:
 
         self.player = Player(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT, self.player_img, "Player")
         self.enemy = Enemy(self, ENEMY_X, ENEMY_Y, self.enemy_img, "Wolf")
-        self.cursor = Cursor(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT)
 
         Item(self, 60, 40, self.item_images, "health")
         Item(self, 60, 80, self.item_images, "shield")
@@ -163,16 +162,12 @@ class Game:
 
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     self.player.move(dx=-1)
-                    self.cursor.move(dx=-1)
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     self.player.move(dx=+1)
-                    self.cursor.move(dx=+1)
                 if event.key == pygame.K_UP or event.key == pygame.K_w:
                     self.player.move(dy=-1)
-                    self.cursor.move(dy=-1)
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     self.player.move(dy=+1)
-                    self.cursor.move(dy=+1)
 
     def update(self):
         self.all_sprites.update()

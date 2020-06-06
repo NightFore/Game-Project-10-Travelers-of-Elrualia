@@ -70,6 +70,7 @@ class Player(pygame.sprite.Sprite):
 
         # Settings
         self.name = name
+        self.grid_pos = [0, 0]
         self.update_spell()
 
         # Position
@@ -77,8 +78,7 @@ class Player(pygame.sprite.Sprite):
         self.pos_dt = [x_dt, y_dt]
 
         # Surface
-        self.base_index = 0
-        self.index = self.base_index
+        self.index = 0
         self.instance_list = isinstance(image, list)
 
         if self.instance_list:
@@ -87,8 +87,8 @@ class Player(pygame.sprite.Sprite):
             self.images_left = self.images[1]
             self.images_right = self.images[2]
             self.images_top = self.images[3]
-            self.images = self.images_bottom
-            self.image = self.images_bottom[self.index]
+            self.images = self.images_right
+            self.image = self.images[self.index]
         else:
             self.image = image
 
@@ -108,10 +108,11 @@ class Player(pygame.sprite.Sprite):
         self.animation_time = 0.50
 
     def move(self, dx=0, dy=0):
-        self.pos[0] += dx * self.pos_dt[0]
-        self.pos[1] += dy * self.pos_dt[1]
-        self.rect.x = self.pos[0]
-        self.rect.y = self.pos[1]
+        if 0 <= self.grid_pos[0] + dx < 4 and 0 <= self.grid_pos[1] + dy < 4:
+            self.pos[0] += dx * self.pos_dt[0]
+            self.pos[1] += dy * self.pos_dt[1]
+            self.grid_pos[0] += dx
+            self.grid_pos[1] += dy
 
     def draw_status(self):
         pygame.draw.rect(self.game.gameDisplay, HEALTH_COLOR, (PLAYER_HEALTH_X, PLAYER_HEALTH_Y, self.health/self.max_health * PLAYER_HEALTH_WIDTH, PLAYER_HEALTH_HEIGHT))
@@ -179,9 +180,7 @@ class Player(pygame.sprite.Sprite):
                     if self.waiting_spell[index_w] is not None:
                         self.current_spell[index] = self.waiting_spell[index_w]
                         self.waiting_spell[index_w] = None
-                        index_w += 1
-                    else:
-                        index_w += 1
+                    index_w += 1
 
         if None in self.current_passive:
             self.current_passive[0] = random.choice(list(self.game.passive_images.keys()))
@@ -270,8 +269,7 @@ class Item(pygame.sprite.Sprite):
         self.pos = [x, y]
 
         # Surface
-        self.base_index = 0
-        self.index = self.base_index
+        self.index = 0
         self.images = self.dictionary[self.type]
         self.instance_list = isinstance(self.images, list)
 
