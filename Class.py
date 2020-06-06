@@ -50,6 +50,8 @@ class Cursor(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
+    grid_pos = [0, 0]
+
     max_health = 100
     max_armor = 50
     max_mana = 5
@@ -70,7 +72,6 @@ class Player(pygame.sprite.Sprite):
 
         # Settings
         self.name = name
-        self.grid_pos = [0, 0]
         self.update_spell()
 
         # Position
@@ -89,6 +90,9 @@ class Player(pygame.sprite.Sprite):
             self.images_top = self.images[3]
             self.images = self.images_right
             self.image = self.images[self.index]
+            self.dt = game.dt
+            self.current_time = 0
+            self.animation_time = 0.50
         else:
             self.image = image
 
@@ -102,10 +106,6 @@ class Player(pygame.sprite.Sprite):
         if self.center:
             self.rect.center = self.pos
 
-        # Time
-        self.dt = game.dt
-        self.current_time = 0
-        self.animation_time = 0.50
 
     def move(self, dx=0, dy=0):
         if 0 <= self.grid_pos[0] + dx < 4 and 0 <= self.grid_pos[1] + dy < 4:
@@ -115,17 +115,21 @@ class Player(pygame.sprite.Sprite):
             self.grid_pos[1] += dy
 
     def draw_status(self):
+        # Health & Armor
         pygame.draw.rect(self.game.gameDisplay, HEALTH_COLOR, (PLAYER_HEALTH_X, PLAYER_HEALTH_Y, self.health/self.max_health * PLAYER_HEALTH_WIDTH, PLAYER_HEALTH_HEIGHT))
         pygame.draw.rect(self.game.gameDisplay, ARMOR_COLOR, (PLAYER_ARMOR_X, PLAYER_ARMOR_Y, self.armor/self.max_armor * PLAYER_ARMOR_WIDTH, PLAYER_ARMOR_HEIGHT))
 
+        # Mana
         for i in range(int(self.mana)+1):
             pygame.draw.rect(self.game.gameDisplay, MANA_COLOR, (PLAYER_MANA_X + i*MANA_X_DT, PLAYER_MANA_Y, min(1, self.mana-i) * MANA_WIDTH, MANA_HEIGHT))
 
     def draw_spell(self):
+        # Current Spell
         for i in range(len(self.current_spell)):
             if self.current_spell[i] is not None:
                 self.game.draw_image(self.game.spell_images[self.current_spell[i]], 230 + 60*i, 670)
 
+        # Waiting Spell
         for i in range(len(self.waiting_spell)):
             if self.waiting_spell[i] is not None:
                 if i == 0:
@@ -133,6 +137,7 @@ class Player(pygame.sprite.Sprite):
                 else:
                     self.game.draw_image(self.game.spell_images[self.waiting_spell[i]], 70, 730-60*i)
 
+        # Passive
         self.game.draw_image(self.game.passive_images[self.current_passive], 410, 670)
 
     def draw_spell_range(self):
@@ -141,16 +146,17 @@ class Player(pygame.sprite.Sprite):
             spell = self.current_spell[index]
 
             if SPELL_DICT[spell]["type"] == 0:
-                pass
+                pos_x = self.pos[0]
+                pos_y = self.pos[1]
+                pygame.draw.circle(self.game.gameDisplay, COLOR_SPELL[index], (pos_x, pos_y), 38)
 
             if SPELL_DICT[spell]["type"] == 1:
-                h_range = SPELL_DICT[spell]["range"]
-                for i in range(len(h_range)):
-                    v_range = SPELL_DICT[spell]["range"][i]
-                    for j in range(len(v_range)):
-                        if SPELL_DICT[spell]["range"][i][j]:
-                            pos_x = self.pos[0] + PLAYER_ENEMY_X_DT + i*SPELL_X_DT
-                            pos_y = self.pos[1] + (j-int(len(v_range)/2))*SPELL_Y_DT
+                for h in range(len(SPELL_DICT[spell]["range"])):
+                    for v in range(len(SPELL_DICT[spell]["range"][h])):
+                        if SPELL_DICT[spell]["range"][h][v]:
+                            v = (v-int(len(SPELL_DICT[spell]["range"][h])/2))
+                            pos_x = self.pos[0] + h*SPELL_X_DT + PLAYER_ENEMY_X_DT
+                            pos_y = self.pos[1] + v*SPELL_Y_DT
                             pygame.draw.circle(self.game.gameDisplay, COLOR_SPELL[index], (pos_x, pos_y), 38)
 
 
