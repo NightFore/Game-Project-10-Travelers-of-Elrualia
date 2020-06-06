@@ -73,6 +73,17 @@ class Game:
             image_rect.center = (x, y)
         self.gameDisplay.blit(image, image_rect)
 
+    def draw_sprite(self, sprite):
+        sprite.rect.x = sprite.pos[0]
+        sprite.rect.y = sprite.pos[1]
+        if sprite.instance_list:
+            update_time_dependent(sprite)
+            sprite.current_time += sprite.dt
+        if sprite.bobbing:
+            update_bobbing(sprite)
+        if sprite.center:
+            sprite.rect.center = sprite.pos
+
     def load_data(self):
         game_folder = path.dirname(__file__)
         data_folder = path.join(game_folder, "data")
@@ -128,8 +139,8 @@ class Game:
         self.characters = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
 
-        self.player = Player(self, PLAYER_X, PLAYER_Y, PLAYER_X_DT, PLAYER_Y_DT, self.player_img, "Player")
-        self.enemy = Enemy(self, ENEMY_X, ENEMY_Y, self.enemy_img, "Wolf")
+        self.player = Player(self, PLAYER_X, PLAYER_Y, GRID_DT, GRID_DT, self.player_img, "Player")
+        self.enemy = Enemy(self, ENEMY_X, ENEMY_Y, GRID_DT, GRID_DT, self.enemy_img, "Wolf")
 
         Item(self, 60, 40, self.item_images, "health")
         Item(self, 60, 80, self.item_images, "shield")
