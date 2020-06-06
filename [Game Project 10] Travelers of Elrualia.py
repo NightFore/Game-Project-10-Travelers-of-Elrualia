@@ -100,23 +100,15 @@ class Game:
         for item in ITEM_IMAGES:
             self.item_images[item] = load_image(graphics_folder, ITEM_IMAGES[item])
 
-        # Spell images & rect
+        # Spell Images
         self.spell_images = {}
         for item in SPELL_DICT:
             self.spell_images[item] = load_image(graphics_folder, SPELL_DICT[item]["image"])
 
-        self.spell_rect = {}
-        for item in self.spell_images:
-            self.spell_rect[item] = load_rect(self.spell_images[item])
-
-        # Passive images & rect
+        # Passive Images
         self.passive_images = {}
-        for item in PASSIVE_IMAGES:
-            self.passive_images[item] = load_image(graphics_folder, PASSIVE_IMAGES[item]["image"])
-
-        self.passive_rect = {}
-        for item in self.passive_images:
-            self.passive_rect[item] = load_rect(self.passive_images[item])
+        for item in PASSIVE_DICT:
+            self.passive_images[item] = load_image(graphics_folder, PASSIVE_DICT[item]["image"])
 
         # Image Effects
         self.effect_images = {}

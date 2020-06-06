@@ -33,11 +33,14 @@ def load_file(path, image=False):
     return file
 
 
-def load_image(image_path, image_list):
-    images = []
-    for image in image_list:
-        images.append(pygame.image.load(path.join(image_path, image)).convert_alpha())
-    return images
+def load_image(image_path, image_directory):
+    if isinstance(image_directory, list):
+        images = []
+        for image in image_directory:
+            images.append(pygame.image.load(path.join(image_path, image)).convert_alpha())
+        return images
+    else:
+        return pygame.image.load(path.join(image_path, image_directory)).convert_alpha()
 
 
 def load_rect(image_list):

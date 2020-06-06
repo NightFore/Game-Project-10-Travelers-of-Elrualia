@@ -59,7 +59,7 @@ class Player(pygame.sprite.Sprite):
 
     waiting_spell = [None] * 9
     current_spell = [None] * 3
-    current_passive = [None]
+    current_passive = None
 
     def __init__(self, game, x, y, x_dt, y_dt, image, name, center=True):
         # Setup
@@ -124,16 +124,16 @@ class Player(pygame.sprite.Sprite):
     def draw_spell(self):
         for i in range(len(self.current_spell)):
             if self.current_spell[i] is not None:
-                self.game.draw_image(self.game.spell_images[self.current_spell[i]][0], 230 + 60*i, 670)
+                self.game.draw_image(self.game.spell_images[self.current_spell[i]], 230 + 60*i, 670)
 
         for i in range(len(self.waiting_spell)):
             if self.waiting_spell[i] is not None:
                 if i == 0:
-                    self.game.draw_image(self.game.spell_images[self.waiting_spell[i]][0], 130, 670)
+                    self.game.draw_image(self.game.spell_images[self.waiting_spell[i]], 130, 670)
                 else:
-                    self.game.draw_image(self.game.spell_images[self.waiting_spell[i]][0], 70, 730-60*i)
+                    self.game.draw_image(self.game.spell_images[self.waiting_spell[i]], 70, 730-60*i)
 
-        self.game.draw_image(self.game.passive_images[self.current_passive[0]][0], 410, 670)
+        self.game.draw_image(self.game.passive_images[self.current_passive], 410, 670)
 
     def draw_spell_range(self):
         COLOR_SPELL = [RED, BLUE, GREEN]
@@ -169,8 +169,8 @@ class Player(pygame.sprite.Sprite):
                         self.waiting_spell[index_w] = None
                     index_w += 1
 
-        if None in self.current_passive:
-            self.current_passive[0] = random.choice(list(self.game.passive_images.keys()))
+        if self.current_passive is None:
+            self.current_passive = random.choice(list(self.game.passive_images.keys()))
 
     def update(self):
         if self.instance_list:
