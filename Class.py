@@ -50,18 +50,6 @@ class Cursor(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    max_health = 100
-    max_armor = 50
-    max_mana = 5
-    health = max_health
-    armor = max_armor/2
-    mana = 3.75
-
-    current_spell = [None] * 3
-    waiting_spell = [None] * 9
-    next_spell = None
-    current_passive = None
-
     def __init__(self, game, dict, ui_dict=None):
         # Setup
         self.game = game
@@ -72,8 +60,8 @@ class Player(pygame.sprite.Sprite):
         # Initialization
         self.dict = dict
         self.ui_dict = ui_dict
-        self.init_spell()
         self.init_dict()
+        self.init_spell()
 
         # Settings
         self.name = self.dict["name"]
@@ -111,15 +99,14 @@ class Player(pygame.sprite.Sprite):
         self.step = 0
         self.dir = 1
 
-    def init_spell(self):
-        for index in range(len(self.waiting_spell)):
-            self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
-        for index in range(len(self.current_spell)):
-            self.current_spell[index] = random.choice(list(self.game.spell_images.keys()))
-        self.next_spell = random.choice(list(self.game.spell_images.keys()))
-        self.current_passive = random.choice(list(self.game.passive_images.keys()))
-
     def init_dict(self):
+        self.max_health = self.dict["max_health"]
+        self.health = self.dict["health"]
+        self.max_armor = self.dict["max_armor"]
+        self.armor = self.dict["armor"]
+        self.max_mana = self.dict["max_mana"]
+        self.mana = self.dict["mana"]
+
         self.grid_pos = self.dict["grid_pos"]
         self.health_rect = self.dict["health_rect"]
         self.armor_rect = self.dict["armor_rect"]
@@ -142,6 +129,16 @@ class Player(pygame.sprite.Sprite):
         self.spell_size = self.ui_dict["spell_size"]
         self.spell_dt = self.ui_dict["spell_dt"]
         self.spell_side_dt = self.ui_dict["spell_side_dt"]
+
+    def init_spell(self):
+        self.waiting_spell = [None] * 9
+        for index in range(len(self.waiting_spell)):
+            self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
+        self.current_spell = [None] * 3
+        for index in range(len(self.current_spell)):
+            self.current_spell[index] = random.choice(list(self.game.spell_images.keys()))
+        self.next_spell = random.choice(list(self.game.spell_images.keys()))
+        self.current_passive = random.choice(list(self.game.passive_images.keys()))
 
     def move(self, dx=0, dy=0):
         if 0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]:

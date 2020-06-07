@@ -50,17 +50,16 @@ UI_DICT = {"grid_size": [4, 4],
            "spell_color": [RED, BLUE, GREEN], "spell_color_pos": [203, 643, 54, 54], "spell_color_dt": [60, 0],
            "spell_size": 38, "spell_dt": 95, "spell_side_dt": 190}
 
-PLAYER_DICT = {"name": "Player", "tile": True, "tile_dt": [32, 32], "center": True, "bobbing": False,
-               "image": "character_pipoya_male_01_2.png",
-               "pos": [260, 260], "pos_dt": [95, 95], "grid_pos": [0, 0],
-               "health_rect": [83, 23, 254, 34],
-               "armor_rect": [83, 63, 254, 34],
-               "mana_rect": [553, 653, 34, 34], "mana_dt": [40, 0],
+PLAYER_DICT = {"name": "Player",
+               "tile": True, "tile_dt": [32, 32], "center": True, "bobbing": False,
+               "image": "character_pipoya_male_01_2.png", "pos": [260, 260], "pos_dt": [95, 95], "grid_pos": [0, 0],
+               "max_health": 100, "health": 100, "health_rect": [83, 23, 254, 34],
+               "max_armor": 50, "armor": 25, "armor_rect": [83, 63, 254, 34],
+               "max_mana": 5, "mana": 3.75, "mana_rect": [553, 653, 34, 34], "mana_dt": [40, 0],
+               "spell_range_dt": 95,
                "current_spell_pos": [230, 670], "current_spell_dt": [60, 0],
                "waiting_spell_pos": [70, 730], "waiting_spell_dt": [0, -60],
-               "next_spell_pos": [130, 670],
-               "passive_spell_pos": [410, 670],
-               "spell_range_dt": 95}
+               "next_spell_pos": [130, 670], "passive_spell_pos": [410, 670]}
 
 ENEMY_DICT = {"name": "Skeleton",
               "image": "character_pipoya_enemy_04_1.png", "pos": [1020, 260], "pos_dt": [95, 95], "tile_dt": [32, 32],
