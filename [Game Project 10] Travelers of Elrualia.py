@@ -101,8 +101,6 @@ class Game:
         self.dim_screen.fill((100, 100, 100, 120))
 
         # Graphics
-        self.enemy_img = load_tile_table(path.join(self.graphics_folder, ENEMY_DICT["image"]), 32, 32)
-        self.enemy_icon = load_image(self.graphics_folder, ENEMY_DICT["icon"])
         self.background_battle_img = load_image(self.graphics_folder, BACKGROUND_BATTLE_IMG)
 
         # Item Images
@@ -139,7 +137,7 @@ class Game:
         self.items = pygame.sprite.Group()
 
         self.player = Player(self, PLAYER_DICT, UI_DICT)
-        self.enemy = Enemy(self, ENEMY_DICT["pos"], ENEMY_DICT["pos_dt"], self.enemy_img, "Wolf")
+        self.enemy = Enemy(self, ENEMY_DICT, UI_DICT)
 
         Item(self, 60, 40, self.item_images, "health")
         Item(self, 60, 80, self.item_images, "shield")

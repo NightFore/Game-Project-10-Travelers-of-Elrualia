@@ -100,29 +100,31 @@ class Player(pygame.sprite.Sprite):
         self.dir = 1
 
     def init_dict(self):
+        self.grid_pos = self.dict["grid_pos"]
+        self.grid_size = self.ui_dict["grid_size"]
+
         self.max_health = self.dict["max_health"]
         self.health = self.dict["health"]
+        self.health_rect = self.dict["health_rect"]
+        self.health_color = self.ui_dict["health"]
+
         self.max_armor = self.dict["max_armor"]
         self.armor = self.dict["armor"]
+        self.armor_rect = self.dict["armor_rect"]
+        self.armor_color = self.ui_dict["armor"]
+
         self.max_mana = self.dict["max_mana"]
         self.mana = self.dict["mana"]
-
-        self.grid_pos = self.dict["grid_pos"]
-        self.health_rect = self.dict["health_rect"]
-        self.armor_rect = self.dict["armor_rect"]
         self.mana_rect = self.dict["mana_rect"]
         self.mana_dt = self.dict["mana_dt"]
+        self.mana_color = self.ui_dict["mana"]
+
         self.c_spell_pos = self.dict["current_spell_pos"]
         self.c_spell_dt = self.dict["current_spell_dt"]
         self.w_spell_pos = self.dict["waiting_spell_pos"]
         self.w_spell_dt = self.dict["waiting_spell_dt"]
         self.n_spell_pos = self.dict["next_spell_pos"]
         self.p_spell_pos = self.dict["passive_spell_pos"]
-
-        self.grid_size = self.ui_dict["grid_size"]
-        self.health_color = self.ui_dict["health"]
-        self.armor_color = self.ui_dict["armor"]
-        self.mana_color = self.ui_dict["mana"]
         self.color_spell = self.ui_dict["spell_color"]
         self.color_spell_pos = self.ui_dict["spell_color_pos"]
         self.color_spell_dt = self.ui_dict["spell_color_dt"]
@@ -207,70 +209,69 @@ class Player(pygame.sprite.Sprite):
 
 
 class Enemy(pygame.sprite.Sprite):
-    max_health = 100
-    max_armor = 50
-    max_mana = 3
-    health = max_health
-    armor = max_armor/2
-    mana = 4.50
-
-    icon = ENEMY_DICT["icon"]
-    icon_pos = ENEMY_DICT["icon_pos"]
-
-    health_rect = ENEMY_DICT["health_rect"]
-    mana_rect = ENEMY_DICT["mana_rect"]
-    mana_dt = ENEMY_DICT["mana_dt"]
-
-    health_color = UI_DICT["health"]
-    mana_color = UI_DICT["mana"]
-
-    def __init__(self, game, pos, pos_dt, image, name, center=True, bobbing=False):
+    def __init__(self, game, dict, ui_dict=None):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.characters
         self._layer = LAYER_CHARACTERS
         pygame.sprite.Sprite.__init__(self, self.groups)
 
+        # Initialization
+        self.dict = dict
+        self.ui_dict = ui_dict
+        self.init_dict()
+
         # Settings
-        self.name = name
+        self.name = self.dict["name"]
+        self.pos = self.dict["pos"]
+        self.pos_dt = self.dict["pos_dt"]
 
-        # Position
-        self.pos = pos
-        self.pos_dt = pos_dt
-
-        # Surface
-        self.index = 0
-        self.tile = isinstance(image, list)
-
+        # Image
+        self.tile = dict["tile"]
         if self.tile:
-            self.images = image
-            self.images_bottom = self.images[0]
-            self.images_left = self.images[1]
-            self.images_right = self.images[2]
-            self.images_top = self.images[3]
+            image = load_tile_table(path.join(self.game.graphics_folder, self.dict["image"]), self.dict["tile_dt"][0], self.dict["tile_dt"][1])
+            self.index = 0
+            self.images_bottom = image[0]
+            self.images_left = image[1]
+            self.images_right = image[2]
+            self.images_top = image[3]
             self.images = self.images_left
             self.image = self.images[self.index]
             self.dt = game.dt
-            self.current_time = 00
+            self.current_time = 0
             self.animation_time = 0.50
         else:
-            self.image = image
-
-        # Rect
+            self.image = load_image(self.game.graphics_folder, self.dict["image"])
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
 
         # Center
-        self.center = center
+        self.center = dict["center"]
         if self.center:
             self.rect.center = self.pos
 
         # Bobbing
-        self.bobbing = bobbing
+        self.bobbing = dict["bobbing"]
         self.tween = tween.linear
         self.step = 0
         self.dir = 1
+
+    def init_dict(self):
+        self.grid_pos = self.dict["grid_pos"]
+        self.grid_size = self.ui_dict["grid_size"]
+
+        self.max_health = self.dict["max_health"]
+        self.health = self.dict["health"]
+        self.health_rect = self.dict["health_rect"]
+        self.health_color = self.ui_dict["health"]
+
+        self.max_mana = self.dict["max_mana"]
+        self.mana = self.dict["mana"]
+        self.mana_rect = self.dict["mana_rect"]
+        self.mana_dt = self.dict["mana_dt"]
+        self.mana_color = self.ui_dict["mana"]
+
 
     def draw_status(self):
         # Health / Mana
