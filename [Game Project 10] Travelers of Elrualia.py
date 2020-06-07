@@ -173,14 +173,11 @@ class Game:
                     self.paused = not self.paused
 
                 if event.key == pygame.K_z:
-                    self.player.current_spell[0] = None
-                    self.player.update_spell()
+                    self.player.use_spell(0)
                 if event.key == pygame.K_x:
-                    self.player.current_spell[1] = None
-                    self.player.update_spell()
+                    self.player.use_spell(1)
                 if event.key == pygame.K_c:
-                    self.player.current_spell[2] = None
-                    self.player.update_spell()
+                    self.player.use_spell(2)
 
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     self.player.move(dx=-1)
@@ -190,6 +187,15 @@ class Game:
                     self.player.move(dy=-1)
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     self.player.move(dy=+1)
+
+                if event.key == pygame.K_j:
+                    self.enemy.move(dx=-1)
+                if event.key == pygame.K_l:
+                    self.enemy.move(dx=+1)
+                if event.key == pygame.K_i:
+                    self.enemy.move(dy=-1)
+                if event.key == pygame.K_k:
+                    self.enemy.move(dy=+1)
 
     def update(self):
         self.all_sprites.update()

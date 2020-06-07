@@ -189,6 +189,21 @@ class Player(pygame.sprite.Sprite):
                             pos_y = self.pos[1] + (v-int(len(SPELL_DICT[spell]["range"][h])/2))*self.spell_dt
                             pygame.draw.circle(self.game.gameDisplay, self.color_spell[index], (pos_x, pos_y), self.spell_size)
 
+    def use_spell(self, index):
+        spell = self.current_spell[index]
+        if SPELL_DICT[spell]["type"] == 1:
+            hit = False
+            for h in range(len(SPELL_DICT[spell]["range"])):
+                for v in range(len(SPELL_DICT[spell]["range"][h])):
+                    x_pos = self.pos[0] + h
+                    y_pos = self.pos[1] + v
+                    if x_pos == self.game.enemy.pos[0] or y_pos == self.game.enemy.pos[1]:
+                        hit = True
+            if hit:
+                self.game.enemy.health -= SPELL_DICT[spell]["damage"]
+        self.current_spell[index] = None
+        self.update_spell()
+
     def update_spell(self):
         for index in range(len(self.current_spell)):
             if self.current_spell[index] is None:
@@ -272,6 +287,12 @@ class Enemy(pygame.sprite.Sprite):
         self.mana_dt = self.dict["mana_dt"]
         self.mana_color = self.ui_dict["mana"]
 
+    def move(self, dx=0, dy=0):
+        if 0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]:
+            self.pos[0] += dx * self.pos_dt[0]
+            self.pos[1] += dy * self.pos_dt[1]
+            self.grid_pos[0] += dx
+            self.grid_pos[1] += dy
 
     def draw_status(self):
         # Health / Mana
