@@ -184,7 +184,9 @@ class Player(pygame.sprite.Sprite):
             if SPELL_DICT[spell]["type"] == 1:
                 for h in range(len(SPELL_DICT[spell]["range"])):
                     for v in range(len(SPELL_DICT[spell]["range"][h])):
-                        if SPELL_DICT[spell]["range"][h][v]:
+                        grid_pos_x = self.grid_pos[0] + h + 1 - self.grid_size[0]
+                        grid_pos_y = self.grid_pos[1] + (v-int(len(SPELL_DICT[spell]["range"][h])/2))
+                        if 0 <= grid_pos_x < self.grid_size[0] and 0 <= grid_pos_y < self.grid_size[1]:
                             pos_x = self.pos[0] + h*self.spell_dt + self.spell_side_dt
                             pos_y = self.pos[1] + (v-int(len(SPELL_DICT[spell]["range"][h])/2))*self.spell_dt
                             pygame.draw.circle(self.game.gameDisplay, self.color_spell[index], (pos_x, pos_y), self.spell_size)
@@ -195,12 +197,13 @@ class Player(pygame.sprite.Sprite):
             hit = False
             for h in range(len(SPELL_DICT[spell]["range"])):
                 for v in range(len(SPELL_DICT[spell]["range"][h])):
-                    x_pos = self.pos[0] + h
-                    y_pos = self.pos[1] + v
-                    if x_pos == self.game.enemy.pos[0] or y_pos == self.game.enemy.pos[1]:
+                    grid_pos_x = self.grid_pos[0] + h + 1 - self.grid_size[0]
+                    grid_pos_y = self.grid_pos[1] + (v-int(len(SPELL_DICT[spell]["range"][h])/2))
+                    if grid_pos_x == self.game.enemy.grid_pos[0] and grid_pos_y == self.game.enemy.grid_pos[1]:
                         hit = True
             if hit:
-                self.game.enemy.health -= SPELL_DICT[spell]["damage"]
+                self.game.enemy.health = max(0, self.game.enemy.health - SPELL_DICT[spell]["damage"])
+
         self.current_spell[index] = None
         self.update_spell()
 
@@ -296,7 +299,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw_status(self):
         # Health / Mana
-        pygame.draw.rect(self.game.gameDisplay, self.health_color, (self.health_rect[0], self.health_rect[1], self.health/self.max_health * self.health_rect[2], self.health_rect[3]))
+        pygame.draw.rect(self.game.gameDisplay, self.health_color, (self.health_rect[0], self.health_rect[1] + (1 - self.health / self.max_health) * self.health_rect[3], self.health_rect[2], self.health/self.max_health * self.health_rect[3]))
         for i in range(int(self.mana)+1):
             pygame.draw.rect(self.game.gameDisplay, self.mana_color, (self.mana_rect[0] + i*self.mana_dt[0], self.mana_rect[1] + i*self.mana_dt[1] + (1-min(1, self.mana-i))*self.mana_rect[3], self.mana_rect[2], min(1, self.mana-i) * self.mana_rect[3]))
 
