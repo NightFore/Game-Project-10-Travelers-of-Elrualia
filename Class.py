@@ -50,8 +50,6 @@ class Cursor(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    grid_pos = [0, 0]
-
     max_health = 100
     max_armor = 50
     max_mana = 5
@@ -63,6 +61,9 @@ class Player(pygame.sprite.Sprite):
     waiting_spell = [None] * 9
     next_spell = None
     current_passive = None
+
+    grid_pos = [0, 0]
+    grid_size = UI_DICT["grid_size"]
 
     health_rect = PLAYER_DICT["health_rect"]
     armor_rect = PLAYER_DICT["armor_rect"]
@@ -85,7 +86,7 @@ class Player(pygame.sprite.Sprite):
     spell_dt = UI_DICT["spell_dt"]
     spell_side_dt = UI_DICT["spell_side_dt"]
 
-    def __init__(self, game, x, y, x_dt, y_dt, image, name, center=True, bobbing=False):
+    def __init__(self, game, pos, pos_dt, image, name, center=True, bobbing=False):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.characters
@@ -97,15 +98,15 @@ class Player(pygame.sprite.Sprite):
         self.init_spell()
 
         # Position
-        self.pos = [x, y]
-        self.pos_dt = [x_dt, y_dt]
+        self.pos = pos
+        self.pos_dt = pos_dt
 
         # Surface
         self.index = 0
         self.instance_list = isinstance(image, list)
 
         if self.instance_list:
-            self.images = self.game.player_img
+            self.images = image
             self.images_bottom = self.images[0]
             self.images_left = self.images[1]
             self.images_right = self.images[2]
@@ -135,7 +136,7 @@ class Player(pygame.sprite.Sprite):
         self.dir = 1
 
     def move(self, dx=0, dy=0):
-        if 0 <= self.grid_pos[0] + dx < 4 and 0 <= self.grid_pos[1] + dy < 4:
+        if 0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]:
             self.pos[0] += dx * self.pos_dt[0]
             self.pos[1] += dy * self.pos_dt[1]
             self.grid_pos[0] += dx
@@ -197,8 +198,13 @@ class Player(pygame.sprite.Sprite):
                 sort_list(self.waiting_spell, None)
                 self.waiting_spell[len(self.waiting_spell)-1] = random.choice(list(self.game.spell_images.keys()))
 
+    def draw_ui(self):
+        self.draw_status()
+        self.draw_spell()
+        self.draw_spell_range()
+
     def update(self):
-        self.game.draw_sprite(self)
+        self.game.update_sprite(self)
 
 
 
@@ -211,6 +217,9 @@ class Enemy(pygame.sprite.Sprite):
     armor = max_armor/2
     mana = 4.50
 
+    icon = ENEMY_DICT["icon"]
+    icon_pos = ENEMY_DICT["icon_pos"]
+
     health_rect = ENEMY_DICT["health_rect"]
     mana_rect = ENEMY_DICT["mana_rect"]
     mana_dt = ENEMY_DICT["mana_dt"]
@@ -218,7 +227,7 @@ class Enemy(pygame.sprite.Sprite):
     health_color = UI_DICT["health"]
     mana_color = UI_DICT["mana"]
 
-    def __init__(self, game, x, y, x_dt, y_dt, image, name, center=True, bobbing=False):
+    def __init__(self, game, pos, pos_dt, image, name, center=True, bobbing=False):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.characters
@@ -229,20 +238,20 @@ class Enemy(pygame.sprite.Sprite):
         self.name = name
 
         # Position
-        self.pos = [x, y]
-        self.pos_dt = [x_dt, y_dt]
+        self.pos = pos
+        self.pos_dt = pos_dt
 
         # Surface
         self.index = 0
         self.instance_list = isinstance(image, list)
 
         if self.instance_list:
-            self.images = self.game.player_img
+            self.images = image
             self.images_bottom = self.images[0]
             self.images_left = self.images[1]
             self.images_right = self.images[2]
             self.images_top = self.images[3]
-            self.images = self.images_right
+            self.images = self.images_left
             self.image = self.images[self.index]
             self.dt = game.dt
             self.current_time = 00
@@ -272,8 +281,11 @@ class Enemy(pygame.sprite.Sprite):
         for i in range(int(self.mana)+1):
             pygame.draw.rect(self.game.gameDisplay, self.mana_color, (self.mana_rect[0] + i*self.mana_dt[0], self.mana_rect[1] + i*self.mana_dt[1] + (1-min(1, self.mana-i))*self.mana_rect[3], self.mana_rect[2], min(1, self.mana-i) * self.mana_rect[3]))
 
+    def draw_ui(self):
+        self.draw_status()
+
     def update(self):
-        self.game.draw_sprite(self)
+        self.game.update_sprite(self)
 
 
 
@@ -325,4 +337,4 @@ class Item(pygame.sprite.Sprite):
         self.dir = 1
 
     def update(self):
-        self.game.draw_sprite(self)
+        self.game.update_sprite(self)

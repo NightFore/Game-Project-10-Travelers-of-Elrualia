@@ -73,7 +73,7 @@ class Game:
             image_rect.center = (x, y)
         self.gameDisplay.blit(image, image_rect)
 
-    def draw_sprite(self, sprite):
+    def update_sprite(self, sprite):
         sprite.rect.x = sprite.pos[0]
         sprite.rect.y = sprite.pos[1]
         if sprite.instance_list:
@@ -101,9 +101,9 @@ class Game:
         self.dim_screen.fill((100, 100, 100, 120))
 
         # Graphics
-        # self.player_img = pygame.image.load(path.join(graphics_folder, PLAYER_IMG)).convert_alpha()
         self.player_img = load_tile_table(path.join(graphics_folder, PLAYER_DICT["image"]), 32, 32)
-        self.enemy_img = load_image(graphics_folder, ENEMY_DICT["image"])
+        self.enemy_img = load_tile_table(path.join(graphics_folder, ENEMY_DICT["image"]), 32, 32)
+        self.enemy_icon = load_image(graphics_folder, ENEMY_DICT["icon"])
         self.background_battle_img = load_image(graphics_folder, BACKGROUND_BATTLE_IMG)
 
         # Item Images
@@ -139,8 +139,8 @@ class Game:
         self.characters = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
 
-        self.player = Player(self, PLAYER_DICT["pos"][0], PLAYER_DICT["pos"][1], PLAYER_DICT["pos_dt"][0], PLAYER_DICT["pos_dt"][1], self.player_img, "Player")
-        self.enemy = Enemy(self, ENEMY_DICT["pos"][0], ENEMY_DICT["pos"][1], ENEMY_DICT["pos_dt"][0], ENEMY_DICT["pos_dt"][1], self.enemy_img, "Wolf")
+        self.player = Player(self, PLAYER_DICT["pos"], PLAYER_DICT["pos_dt"], self.player_img, "Player")
+        self.enemy = Enemy(self, ENEMY_DICT["pos"], ENEMY_DICT["pos_dt"], self.enemy_img, "Wolf")
 
         Item(self, 60, 40, self.item_images, "health")
         Item(self, 60, 80, self.item_images, "shield")
@@ -204,10 +204,8 @@ class Game:
         self.gameDisplay.blit(self.background_battle_img, (0, 0))
 
         # Interface
-        self.player.draw_status()
-        self.player.draw_spell()
-        self.player.draw_spell_range()
-        self.enemy.draw_status()
+        for sprite in self.characters:
+            sprite.draw_ui()
 
         # Sprite
         for sprite in self.all_sprites:

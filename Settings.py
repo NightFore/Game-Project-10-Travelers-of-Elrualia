@@ -45,14 +45,12 @@ CURSOR_HEIGHT = 40
 CURSOR_COLOR = BLUE
 
 # Characters settings
-PLAYER_IMG = "Sprite_iris.png"
-ENEMY_IMG = "Icon_Wolf.png"
-
-UI_DICT = {"health": GREEN, "armor": ORANGE, "mana": LIGHTSKYBLUE,
+UI_DICT = {"grid_size": [4, 4],
+           "health": GREEN, "armor": ORANGE, "mana": LIGHTSKYBLUE,
            "spell_color": [RED, BLUE, GREEN], "spell_color_pos": [203, 643, 54, 54], "spell_color_dt": [60, 0],
            "spell_size": 38, "spell_dt": 95, "spell_side_dt": 190}
 
-PLAYER_DICT = {"image": "character_pipoya_male_01_2.png",
+PLAYER_DICT = {"image": "character_pipoya_male_01_2.png", "tile_dt": [32, 32],
                "pos": [260, 260], "pos_dt": [95, 95],
                "health_rect": [83, 23, 254, 34],
                "armor_rect": [83, 63, 254, 34],
@@ -63,8 +61,8 @@ PLAYER_DICT = {"image": "character_pipoya_male_01_2.png",
                "passive_spell_pos": [410, 670],
                "spell_range_dt": 95}
 
-ENEMY_DICT = {"image": "Icon_Wolf.png",
-              "pos": [1200, 660], "pos_dt": [95, 95],
+ENEMY_DICT = {"image": "character_pipoya_enemy_04_1.png", "pos": [1020, 260], "pos_dt": [95, 95], "tile_dt": [32, 32],
+              "icon": "Icon_Wolf.png", "icon_pos": [1200, 660],
               "health_rect": [1203, 223, 34, 394],
               "mana_rect": [1163, 583, 34, 34], "mana_dt": [0, -40]}
 
