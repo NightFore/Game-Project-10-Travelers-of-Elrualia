@@ -59,8 +59,9 @@ class Player(pygame.sprite.Sprite):
     armor = max_armor/2
     mana = 3.75
 
-    waiting_spell = [None] * 9
     current_spell = [None] * 3
+    waiting_spell = [None] * 9
+    next_spell = None
     current_passive = None
 
     def __init__(self, game, x, y, x_dt, y_dt, image, name, center=True, bobbing=False):
@@ -72,7 +73,7 @@ class Player(pygame.sprite.Sprite):
 
         # Settings
         self.name = name
-        self.update_spell()
+        self.init_spell()
 
         # Position
         self.pos = [x, y]
@@ -170,23 +171,21 @@ class Player(pygame.sprite.Sprite):
                             pos_y = self.pos[1] + (v-int(len(SPELL_DICT[spell]["range"][h])/2))*SPELL_DT
                             pygame.draw.circle(self.game.gameDisplay, COLOR_SPELL[index], (pos_x, pos_y), 38)
 
+    def init_spell(self):
+        for index in range(len(self.waiting_spell)):
+            self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
+        for index in range(len(self.current_spell)):
+            self.current_spell[index] = random.choice(list(self.game.spell_images.keys()))
+        self.next_spell = random.choice(list(self.game.spell_images.keys()))
+        self.current_passive = random.choice(list(self.game.passive_images.keys()))
+
     def update_spell(self):
-        while None in self.waiting_spell or None in self.current_spell:
-            sort_list(self.waiting_spell, None)
-            for index in range(len(self.waiting_spell)):
-                if self.waiting_spell[index] is None:
-                    self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
-
-            index_w = 0
-            for index in range(len(self.current_spell)):
-                if self.current_spell[index] is None:
-                    if self.waiting_spell[index_w] is not None:
-                        self.current_spell[index] = self.waiting_spell[index_w]
-                        self.waiting_spell[index_w] = None
-                    index_w += 1
-
-        if self.current_passive is None:
-            self.current_passive = random.choice(list(self.game.passive_images.keys()))
+        for index in range(len(self.current_spell)):
+            if self.current_spell[index] is None:
+                self.current_spell[index] = self.next_spell = self.waiting_spell[0]
+                self.waiting_spell[0] = None
+                sort_list(self.waiting_spell, None)
+                self.waiting_spell[len(self.waiting_spell)-1] = random.choice(list(self.game.spell_images.keys()))
 
     def update(self):
         self.game.draw_sprite(self)
