@@ -227,7 +227,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, game, dict, ui_dict=None):
+    def __init__(self, game, dict, ui_dict=None, character="Skeleton"):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.characters
@@ -237,17 +237,17 @@ class Enemy(pygame.sprite.Sprite):
         # Initialization
         self.dict = dict
         self.ui_dict = ui_dict
+        self.char_dict = self.dict[character]
         self.init_dict()
 
         # Settings
-        self.name = self.dict["name"]
         self.pos = self.dict["pos"]
         self.pos_dt = self.dict["pos_dt"]
 
         # Image
         self.tile = dict["tile"]
         if self.tile:
-            image = load_tile_table(path.join(self.game.graphics_folder, self.dict["image"]), self.dict["tile_dt"][0], self.dict["tile_dt"][1])
+            image = load_tile_table(path.join(self.game.graphics_folder, self.char_dict["image"]), self.dict["tile_dt"][0], self.dict["tile_dt"][1])
             self.index = 0
             self.images_bottom = image[0]
             self.images_left = image[1]
@@ -259,7 +259,7 @@ class Enemy(pygame.sprite.Sprite):
             self.current_time = 0
             self.animation_time = 0.50
         else:
-            self.image = load_image(self.game.graphics_folder, self.dict["image"])
+            self.image = load_image(self.game.graphics_folder, self.char_dict["image"])
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
@@ -276,19 +276,20 @@ class Enemy(pygame.sprite.Sprite):
         self.dir = 1
 
     def init_dict(self):
-        self.grid_pos = self.dict["grid_pos"]
+        # Independent of character
         self.grid_size = self.ui_dict["grid_size"]
-
-        self.max_health = self.dict["max_health"]
-        self.health = self.dict["health"]
         self.health_rect = self.dict["health_rect"]
         self.health_color = self.ui_dict["health"]
-
-        self.max_mana = self.dict["max_mana"]
-        self.mana = self.dict["mana"]
         self.mana_rect = self.dict["mana_rect"]
         self.mana_dt = self.dict["mana_dt"]
         self.mana_color = self.ui_dict["mana"]
+
+        # Dependent of character
+        self.grid_pos = self.char_dict["grid_pos"]
+        self.max_health = self.char_dict["max_health"]
+        self.health = self.char_dict["health"]
+        self.max_mana = self.char_dict["max_mana"]
+        self.mana = self.char_dict["mana"]
 
     def move(self, dx=0, dy=0):
         if 0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]:

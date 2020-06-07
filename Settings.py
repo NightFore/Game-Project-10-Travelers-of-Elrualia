@@ -61,11 +61,11 @@ PLAYER_DICT = {"name": "Player",
                "waiting_spell_pos": [70, 730], "waiting_spell_dt": [0, -60],
                "next_spell_pos": [130, 670], "passive_spell_pos": [410, 670]}
 
-ENEMY_DICT = {"name": "Skeleton",
+ENEMY_DICT = {"Skeleton": {"image": "character_pipoya_enemy_04_1.png", "grid_pos": [3, 0],
+                           "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50},
               "tile": True, "tile_dt": [32, 32], "center": True, "bobbing": False,
-              "image": "character_pipoya_enemy_04_1.png", "pos": [1020, 260], "pos_dt": [95, 95], "grid_pos": [3, 0],
-              "max_health": 100, "health": 100, "health_rect": [1203, 223, 34, 394],
-              "max_mana": 6, "mana": 4.50, "mana_rect": [1163, 583, 34, 34], "mana_dt": [0, -40]}
+              "pos": [1020, 260], "pos_dt": [95, 95],
+              "health_rect": [1203, 223, 34, 394], "mana_rect": [1163, 583, 34, 34], "mana_dt": [0, -40]}
 
 # Background settings
 BACKGROUND_COLOR = LIGHTBLUE

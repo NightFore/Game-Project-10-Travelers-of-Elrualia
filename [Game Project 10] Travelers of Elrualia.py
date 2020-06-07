@@ -137,7 +137,7 @@ class Game:
         self.items = pygame.sprite.Group()
 
         self.player = Player(self, PLAYER_DICT, UI_DICT)
-        self.enemy = Enemy(self, ENEMY_DICT, UI_DICT)
+        self.enemy = Enemy(self, ENEMY_DICT, UI_DICT, "Skeleton")
 
         Item(self, 60, 40, self.item_images, "health")
         Item(self, 60, 80, self.item_images, "shield")
