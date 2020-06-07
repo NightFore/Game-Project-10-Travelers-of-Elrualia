@@ -102,7 +102,7 @@ class Game:
 
         # Graphics
         # self.player_img = pygame.image.load(path.join(graphics_folder, PLAYER_IMG)).convert_alpha()
-        self.player_img = load_tile_table(path.join(graphics_folder, PLAYER_IMG_2), 32, 32)
+        self.player_img = load_tile_table(path.join(graphics_folder, PLAYER_DICT["image"]), 32, 32)
         self.enemy_img = pygame.image.load(path.join(graphics_folder, ENEMY_IMG)).convert_alpha()
         self.background_battle_img = pygame.image.load(path.join(graphics_folder, BACKGROUND_BATTLE_IMG)).convert_alpha()
 
@@ -139,7 +139,7 @@ class Game:
         self.characters = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
 
-        self.player = Player(self, PLAYER_X, PLAYER_Y, GRID_DT, GRID_DT, self.player_img, "Player")
+        self.player = Player(self, PLAYER_DICT["pos"][0], PLAYER_DICT["pos"][1], PLAYER_DICT["pos_dt"][0], PLAYER_DICT["pos_dt"][1], self.player_img, "Player")
         self.enemy = Enemy(self, ENEMY_X, ENEMY_Y, GRID_DT, GRID_DT, self.enemy_img, "Wolf")
 
         Item(self, 60, 40, self.item_images, "health")

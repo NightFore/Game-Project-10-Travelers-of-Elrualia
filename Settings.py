@@ -52,26 +52,27 @@ ENEMY_IMG = "Icon_Wolf.png"
 GRID_DT = 95
 GRID_SIDE_DT = 190
 
-PLAYER_X = 260
-PLAYER_Y = 260
 
+COLOR_DICT = {"health": GREEN, "armor": ORANGE, "mana": LIGHTSKYBLUE, "spell": [RED, BLUE, GREEN]}
 HEALTH_COLOR = GREEN
 ARMOR_COLOR = ORANGE
 MANA_COLOR = LIGHTSKYBLUE
+COLOR_SPELL = [RED, BLUE, GREEN]
 
-PLAYER_HEALTH_X = 83
-PLAYER_HEALTH_Y = 23
-PLAYER_HEALTH_WIDTH = 254
-PLAYER_HEALTH_HEIGHT = 34
+PLAYER_DICT = {"image": "character_pipoya_male_01_2.png",
+               "pos": [260, 260], "pos_dt": [95, 95],
+               "health_rect": [83, 23, 254, 34],
+               "armor_rect": [83, 63, 254, 34],
+               "mana_rect": [553, 653, 34, 34], "mana_dt": [40, 0],
+               "current_spell_pos": [230, 670], "current_spell_dt": [60, 0],
+               "waiting_spell_pos": [70, 730], "waiting_spell_dt": [0, -60],
+               "next_spell_pos": [130, 670],
+               "passive_spell_pos": [410, 670],
+               "spell_range_dt": 95}
 
-PLAYER_ARMOR_X = 83
-PLAYER_ARMOR_Y = 63
-PLAYER_ARMOR_WIDTH = 254
-PLAYER_ARMOR_HEIGHT = 34
-
-PLAYER_MANA_X = 553
-PLAYER_MANA_Y = 653
-
+ENEMY_DICT = {"character_pos": [1200, 660], "character_dt": [95, 95],
+              "health_pos": [1203, 223], "health_dt": [34, 394],
+              "mana_pos": [1163, 583], "mana_dt": [40, 40]}
 ENEMY_X = 1200
 ENEMY_Y = 660
 ENEMY_HEALTH_X = 1203
@@ -81,7 +82,6 @@ ENEMY_HEALTH_HEIGHT = 394
 ENEMY_MANA_X = 1163
 ENEMY_MANA_Y = 583
 
-COLOR_SPELL = [RED, BLUE, GREEN]
 SPELL_DT = 95
 
 MANA_X_DT = 40
