@@ -62,78 +62,86 @@ class Player(pygame.sprite.Sprite):
     next_spell = None
     current_passive = None
 
-    grid_pos = [0, 0]
-    grid_size = UI_DICT["grid_size"]
-
-    health_rect = PLAYER_DICT["health_rect"]
-    armor_rect = PLAYER_DICT["armor_rect"]
-    mana_rect = PLAYER_DICT["mana_rect"]
-    mana_dt = PLAYER_DICT["mana_dt"]
-    c_spell_pos = PLAYER_DICT["current_spell_pos"]
-    c_spell_dt = PLAYER_DICT["current_spell_dt"]
-    w_spell_pos = PLAYER_DICT["waiting_spell_pos"]
-    w_spell_dt = PLAYER_DICT["waiting_spell_dt"]
-    n_spell_pos = PLAYER_DICT["next_spell_pos"]
-    p_spell_pos = PLAYER_DICT["passive_spell_pos"]
-
-    health_color = UI_DICT["health"]
-    armor_color = UI_DICT["armor"]
-    mana_color = UI_DICT["mana"]
-    color_spell = UI_DICT["spell_color"]
-    color_spell_pos = UI_DICT["spell_color_pos"]
-    color_spell_dt = UI_DICT["spell_color_dt"]
-    spell_size = UI_DICT["spell_size"]
-    spell_dt = UI_DICT["spell_dt"]
-    spell_side_dt = UI_DICT["spell_side_dt"]
-
-    def __init__(self, game, pos, pos_dt, image, name, center=True, bobbing=False):
+    def __init__(self, game, dict, ui_dict=None):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.characters
         self._layer = LAYER_CHARACTERS
         pygame.sprite.Sprite.__init__(self, self.groups)
 
-        # Settings
-        self.name = name
+        # Initialization
+        self.dict = dict
+        self.ui_dict = ui_dict
         self.init_spell()
+        self.init_dict()
 
-        # Position
-        self.pos = pos
-        self.pos_dt = pos_dt
+        # Settings
+        self.name = self.dict["name"]
+        self.pos = self.dict["pos"]
+        self.pos_dt = self.dict["pos_dt"]
 
-        # Surface
-        self.index = 0
-        self.instance_list = isinstance(image, list)
-
-        if self.instance_list:
-            self.images = image
-            self.images_bottom = self.images[0]
-            self.images_left = self.images[1]
-            self.images_right = self.images[2]
-            self.images_top = self.images[3]
+        # Image
+        self.tile = dict["tile"]
+        if self.tile:
+            image = load_tile_table(path.join(self.game.graphics_folder, self.dict["image"]), self.dict["tile_dt"][0], self.dict["tile_dt"][1])
+            self.index = 0
+            self.images_bottom = image[0]
+            self.images_left = image[1]
+            self.images_right = image[2]
+            self.images_top = image[3]
             self.images = self.images_right
             self.image = self.images[self.index]
             self.dt = game.dt
             self.current_time = 0
             self.animation_time = 0.50
         else:
-            self.image = image
-
-        # Rect
+            self.image = load_image(self.game.graphics_folder, self.dict["image"])
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
 
         # Center
-        self.center = center
+        self.center = dict["center"]
         if self.center:
             self.rect.center = self.pos
 
         # Bobbing
-        self.bobbing = bobbing
+        self.bobbing = dict["bobbing"]
         self.tween = tween.linear
         self.step = 0
         self.dir = 1
+
+    def init_spell(self):
+        for index in range(len(self.waiting_spell)):
+            self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
+        for index in range(len(self.current_spell)):
+            self.current_spell[index] = random.choice(list(self.game.spell_images.keys()))
+        self.next_spell = random.choice(list(self.game.spell_images.keys()))
+        self.current_passive = random.choice(list(self.game.passive_images.keys()))
+
+    def init_dict(self):
+        self.grid_pos = self.dict["grid_pos"]
+        self.health_rect = self.dict["health_rect"]
+        self.armor_rect = self.dict["armor_rect"]
+        self.mana_rect = self.dict["mana_rect"]
+        self.mana_dt = self.dict["mana_dt"]
+        self.c_spell_pos = self.dict["current_spell_pos"]
+        self.c_spell_dt = self.dict["current_spell_dt"]
+        self.w_spell_pos = self.dict["waiting_spell_pos"]
+        self.w_spell_dt = self.dict["waiting_spell_dt"]
+        self.n_spell_pos = self.dict["next_spell_pos"]
+        self.p_spell_pos = self.dict["passive_spell_pos"]
+
+        self.grid_size = self.ui_dict["grid_size"]
+        self.health_color = self.ui_dict["health"]
+        self.armor_color = self.ui_dict["armor"]
+        self.mana_color = self.ui_dict["mana"]
+        self.color_spell = self.ui_dict["spell_color"]
+        self.color_spell_pos = self.ui_dict["spell_color_pos"]
+        self.color_spell_dt = self.ui_dict["spell_color_dt"]
+        self.spell_size = self.ui_dict["spell_size"]
+        self.spell_dt = self.ui_dict["spell_dt"]
+        self.spell_side_dt = self.ui_dict["spell_side_dt"]
 
     def move(self, dx=0, dy=0):
         if 0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]:
@@ -181,14 +189,6 @@ class Player(pygame.sprite.Sprite):
                             pos_x = self.pos[0] + h*self.spell_dt + self.spell_side_dt
                             pos_y = self.pos[1] + (v-int(len(SPELL_DICT[spell]["range"][h])/2))*self.spell_dt
                             pygame.draw.circle(self.game.gameDisplay, self.color_spell[index], (pos_x, pos_y), self.spell_size)
-
-    def init_spell(self):
-        for index in range(len(self.waiting_spell)):
-            self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
-        for index in range(len(self.current_spell)):
-            self.current_spell[index] = random.choice(list(self.game.spell_images.keys()))
-        self.next_spell = random.choice(list(self.game.spell_images.keys()))
-        self.current_passive = random.choice(list(self.game.passive_images.keys()))
 
     def update_spell(self):
         for index in range(len(self.current_spell)):
@@ -243,9 +243,9 @@ class Enemy(pygame.sprite.Sprite):
 
         # Surface
         self.index = 0
-        self.instance_list = isinstance(image, list)
+        self.tile = isinstance(image, list)
 
-        if self.instance_list:
+        if self.tile:
             self.images = image
             self.images_bottom = self.images[0]
             self.images_left = self.images[1]
@@ -308,9 +308,9 @@ class Item(pygame.sprite.Sprite):
         # Surface
         self.index = 0
         self.images = self.dictionary[self.type]
-        self.instance_list = isinstance(self.images, list)
+        self.tile = isinstance(self.images, list)
 
-        if self.instance_list:
+        if self.tile:
             self.image = self.dictionary[self.type][self.index]
         else:
             self.image = self.dictionary[self.type]

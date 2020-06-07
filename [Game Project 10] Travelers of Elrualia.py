@@ -76,7 +76,7 @@ class Game:
     def update_sprite(self, sprite):
         sprite.rect.x = sprite.pos[0]
         sprite.rect.y = sprite.pos[1]
-        if sprite.instance_list:
+        if sprite.tile:
             update_time_dependent(sprite)
             sprite.current_time += sprite.dt
         if sprite.bobbing:
@@ -85,13 +85,13 @@ class Game:
             sprite.rect.center = sprite.pos
 
     def load_data(self):
-        game_folder = path.dirname(__file__)
-        data_folder = path.join(game_folder, "data")
-        graphics_folder = path.join(data_folder, "graphics")
-        sfx_folder = path.join(data_folder, "sfx")
-        voice_folder = path.join(data_folder, "voice")
-        music_folder = path.join(data_folder, "music")
-        map_folder = path.join(data_folder, "map")
+        self.game_folder = path.dirname(__file__)
+        self.data_folder = path.join(self.game_folder, "data")
+        self.graphics_folder = path.join(self.data_folder, "graphics")
+        self.sfx_folder = path.join(self.data_folder, "sfx")
+        self.voice_folder = path.join(self.data_folder, "voice")
+        self.music_folder = path.join(self.data_folder, "music")
+        self.map_folder = path.join(self.data_folder, "map")
 
         # Font
         self.font = None
@@ -101,25 +101,24 @@ class Game:
         self.dim_screen.fill((100, 100, 100, 120))
 
         # Graphics
-        self.player_img = load_tile_table(path.join(graphics_folder, PLAYER_DICT["image"]), 32, 32)
-        self.enemy_img = load_tile_table(path.join(graphics_folder, ENEMY_DICT["image"]), 32, 32)
-        self.enemy_icon = load_image(graphics_folder, ENEMY_DICT["icon"])
-        self.background_battle_img = load_image(graphics_folder, BACKGROUND_BATTLE_IMG)
+        self.enemy_img = load_tile_table(path.join(self.graphics_folder, ENEMY_DICT["image"]), 32, 32)
+        self.enemy_icon = load_image(self.graphics_folder, ENEMY_DICT["icon"])
+        self.background_battle_img = load_image(self.graphics_folder, BACKGROUND_BATTLE_IMG)
 
         # Item Images
         self.item_images = {}
         for item in ITEM_IMAGES:
-            self.item_images[item] = load_image(graphics_folder, ITEM_IMAGES[item])
+            self.item_images[item] = load_image(self.graphics_folder, ITEM_IMAGES[item])
 
         # Spell Images
         self.spell_images = {}
         for item in SPELL_DICT:
-            self.spell_images[item] = load_image(graphics_folder, SPELL_DICT[item]["image"])
+            self.spell_images[item] = load_image(self.graphics_folder, SPELL_DICT[item]["image"])
 
         # Passive Images
         self.passive_images = {}
         for item in PASSIVE_DICT:
-            self.passive_images[item] = load_image(graphics_folder, PASSIVE_DICT[item]["image"])
+            self.passive_images[item] = load_image(self.graphics_folder, PASSIVE_DICT[item]["image"])
 
         # Image Effects
         self.effect_images = {}
@@ -139,7 +138,7 @@ class Game:
         self.characters = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
 
-        self.player = Player(self, PLAYER_DICT["pos"], PLAYER_DICT["pos_dt"], self.player_img, "Player")
+        self.player = Player(self, PLAYER_DICT, UI_DICT)
         self.enemy = Enemy(self, ENEMY_DICT["pos"], ENEMY_DICT["pos_dt"], self.enemy_img, "Wolf")
 
         Item(self, 60, 40, self.item_images, "health")
