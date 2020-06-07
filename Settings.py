@@ -46,18 +46,11 @@ CURSOR_COLOR = BLUE
 
 # Characters settings
 PLAYER_IMG = "Sprite_iris.png"
-PLAYER_IMG_2 = "character_pipoya_male_01_2.png"
 ENEMY_IMG = "Icon_Wolf.png"
 
-GRID_DT = 95
-GRID_SIDE_DT = 190
-
-
-COLOR_DICT = {"health": GREEN, "armor": ORANGE, "mana": LIGHTSKYBLUE, "spell": [RED, BLUE, GREEN]}
-HEALTH_COLOR = GREEN
-ARMOR_COLOR = ORANGE
-MANA_COLOR = LIGHTSKYBLUE
-COLOR_SPELL = [RED, BLUE, GREEN]
+UI_DICT = {"health": GREEN, "armor": ORANGE, "mana": LIGHTSKYBLUE,
+           "spell_color": [RED, BLUE, GREEN], "spell_color_pos": [203, 643, 54, 54], "spell_color_dt": [60, 0],
+           "spell_size": 38, "spell_dt": 95, "spell_side_dt": 190}
 
 PLAYER_DICT = {"image": "character_pipoya_male_01_2.png",
                "pos": [260, 260], "pos_dt": [95, 95],
@@ -70,24 +63,10 @@ PLAYER_DICT = {"image": "character_pipoya_male_01_2.png",
                "passive_spell_pos": [410, 670],
                "spell_range_dt": 95}
 
-ENEMY_DICT = {"character_pos": [1200, 660], "character_dt": [95, 95],
-              "health_pos": [1203, 223], "health_dt": [34, 394],
-              "mana_pos": [1163, 583], "mana_dt": [40, 40]}
-ENEMY_X = 1200
-ENEMY_Y = 660
-ENEMY_HEALTH_X = 1203
-ENEMY_HEALTH_Y = 223
-ENEMY_HEALTH_WIDTH = 34
-ENEMY_HEALTH_HEIGHT = 394
-ENEMY_MANA_X = 1163
-ENEMY_MANA_Y = 583
-
-SPELL_DT = 95
-
-MANA_X_DT = 40
-MANA_Y_DT = -40
-MANA_WIDTH = 34
-MANA_HEIGHT = 34
+ENEMY_DICT = {"image": "Icon_Wolf.png",
+              "pos": [1200, 660], "pos_dt": [95, 95],
+              "health_rect": [1203, 223, 34, 394],
+              "mana_rect": [1163, 583, 34, 34], "mana_dt": [0, -40]}
 
 # Background settings
 BACKGROUND_COLOR = LIGHTBLUE
