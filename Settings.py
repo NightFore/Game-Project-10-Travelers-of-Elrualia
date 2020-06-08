@@ -48,7 +48,8 @@ CURSOR_COLOR = BLUE
 UI_DICT = {"grid_size": [4, 4],
            "health": GREEN, "armor": ORANGE, "mana": LIGHTSKYBLUE,
            "spell_color": [RED, BLUE, GREEN], "spell_color_pos": [203, 643, 54, 54], "spell_color_dt": [60, 0],
-           "spell_size": 38, "spell_dt": 95, "spell_side_dt": 190}
+           "spell_size": 38, "spell_dt": 95, "spell_side_dt": 190,
+           "status_font": None, "status_size": 50, "status_color": BLACK, "status_enemy_pos": [960, 670]}
 
 PLAYER_DICT = {"name": "Player",
                "tile": True, "tile_dt": [32, 32], "center": True, "bobbing": False,
@@ -61,10 +62,10 @@ PLAYER_DICT = {"name": "Player",
                "waiting_spell_pos": [70, 730], "waiting_spell_dt": [0, -60],
                "next_spell_pos": [130, 670], "passive_spell_pos": [410, 670]}
 
-ENEMY_DICT = {"Skeleton": {"image": "character_pipoya_enemy_04_1.png", "grid_pos": [3, 0],
-                           "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50},
+ENEMY_DICT = {"Skeleton": {"image": "character_pipoya_enemy_04_1.png", "icon": "character_pipoya_enemy_04_1_icon_64x64.png",
+                           "grid_pos": [0, 0], "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50},
               "tile": True, "tile_dt": [32, 32], "center": True, "bobbing": False,
-              "pos": [1020, 260], "pos_dt": [95, 95],
+              "pos": [1020, 260], "pos_dt": [95, 95], "icon_pos": [1200, 660],
               "health_rect": [1203, 223, 34, 394], "mana_rect": [1163, 583, 34, 34], "mana_dt": [0, -40]}
 
 # Background settings

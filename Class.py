@@ -237,12 +237,9 @@ class Enemy(pygame.sprite.Sprite):
         # Initialization
         self.dict = dict
         self.ui_dict = ui_dict
-        self.char_dict = self.dict[character]
+        self.name = character
+        self.char_dict = self.dict[self.name]
         self.init_dict()
-
-        # Settings
-        self.pos = self.dict["pos"]
-        self.pos_dt = self.dict["pos_dt"]
 
         # Image
         self.tile = dict["tile"]
@@ -264,10 +261,20 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
 
+        # Icon
+        self.icon = None
+        if "icon" in self.char_dict:
+            self.icon = load_image(self.game.graphics_folder, self.char_dict["icon"])
+            self.rect_icon = self.icon.get_rect()
+            self.rect_icon.x = self.icon_pos[0]
+            self.rect_icon.y = self.icon_pos[1]
+
         # Center
         self.center = dict["center"]
         if self.center:
             self.rect.center = self.pos
+            if self.icon is not None:
+                self.rect_icon.center = self.icon_pos
 
         # Bobbing
         self.bobbing = dict["bobbing"]
@@ -277,12 +284,19 @@ class Enemy(pygame.sprite.Sprite):
 
     def init_dict(self):
         # Independent of character
+        self.pos = self.dict["pos"]
+        self.pos_dt = self.dict["pos_dt"]
+        self.icon_pos = self.dict["icon_pos"]
         self.grid_size = self.ui_dict["grid_size"]
         self.health_rect = self.dict["health_rect"]
         self.health_color = self.ui_dict["health"]
         self.mana_rect = self.dict["mana_rect"]
         self.mana_dt = self.dict["mana_dt"]
         self.mana_color = self.ui_dict["mana"]
+        self.status_font = self.ui_dict["status_font"]
+        self.status_size = self.ui_dict["status_size"]
+        self.status_color = self.ui_dict["status_color"]
+        self.status_pos = self.ui_dict["status_enemy_pos"]
 
         # Dependent of character
         self.grid_pos = self.char_dict["grid_pos"]
@@ -299,6 +313,11 @@ class Enemy(pygame.sprite.Sprite):
             self.grid_pos[1] += dy
 
     def draw_status(self):
+        # Text
+        self.game.draw_text(self.name, self.status_font, self.status_size, self.status_color, self.status_pos[0], self.status_pos[1], align="center")
+        if self.icon is not None:
+            self.game.gameDisplay.blit(self.icon, self.rect_icon)
+
         # Health / Mana
         pygame.draw.rect(self.game.gameDisplay, self.health_color, (self.health_rect[0], self.health_rect[1] + (1 - self.health / self.max_health) * self.health_rect[3], self.health_rect[2], self.health/self.max_health * self.health_rect[3]))
         for i in range(int(self.mana)+1):
