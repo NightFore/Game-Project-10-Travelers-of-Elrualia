@@ -1,5 +1,6 @@
 import pygame
 import pytweening as tween
+import random
 
 from Settings import *
 from Function import *
@@ -148,6 +149,9 @@ class Player(pygame.sprite.Sprite):
             self.pos[1] += dy * self.pos_dt[1]
             self.grid_pos[0] += dx
             self.grid_pos[1] += dy
+            return True
+        else:
+            return False
 
     def draw_status(self):
         # Health / Armor / Mana
@@ -299,6 +303,8 @@ class Enemy(pygame.sprite.Sprite):
         self.status_pos = self.ui_dict["status_enemy_pos"]
 
         # Dependent of character
+        self.move_time = pygame.time.get_ticks()
+        self.move_frequency = self.char_dict["move_frequency"]
         self.grid_pos = self.char_dict["grid_pos"]
         self.max_health = self.char_dict["max_health"]
         self.health = self.char_dict["health"]
@@ -311,6 +317,9 @@ class Enemy(pygame.sprite.Sprite):
             self.pos[1] += dy * self.pos_dt[1]
             self.grid_pos[0] += dx
             self.grid_pos[1] += dy
+            return True
+        else:
+            return False
 
     def draw_status(self):
         # Text
@@ -326,8 +335,21 @@ class Enemy(pygame.sprite.Sprite):
     def draw_ui(self):
         self.draw_status()
 
+    def update_movement(self):
+        if pygame.time.get_ticks() - self.move_time > self.move_frequency:
+            dx = dy = 0
+            while dx == dy == 0 or dx != 0 and dy != 0:
+                dx = random.randint(-1, 1)
+                dy = random.randint(-1, 1)
+            if self.move(dx, dy):
+                self.move_time = pygame.time.get_ticks()
+            else:
+                self.update_movement()
+
+
     def update(self):
         self.game.update_sprite(self)
+        self.update_movement()
 
 
 

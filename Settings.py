@@ -63,9 +63,9 @@ PLAYER_DICT = {"name": "Player",
                "next_spell_pos": [130, 670], "passive_spell_pos": [410, 670]}
 
 ENEMY_DICT = {"Skeleton": {"image": "character_pipoya_enemy_04_1.png", "icon": "character_pipoya_enemy_04_1_icon_64x64.png",
-                           "grid_pos": [0, 0], "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50},
+                           "grid_pos": [0, 0], "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50, "move_frequency": 1000},
               "tile": True, "tile_dt": [32, 32], "center": True, "bobbing": False,
-              "pos": [1020, 260], "pos_dt": [95, 95], "icon_pos": [1200, 660],
+              "pos": [735, 260], "pos_dt": [95, 95], "icon_pos": [1200, 660],
               "health_rect": [1203, 223, 34, 394], "mana_rect": [1163, 583, 34, 34], "mana_dt": [0, -40]}
 
 # Background settings
