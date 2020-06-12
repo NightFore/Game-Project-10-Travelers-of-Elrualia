@@ -128,6 +128,7 @@ class Game:
 
     def new(self):
         self.paused = False
+        self.debug_move = False
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
@@ -162,6 +163,8 @@ class Game:
                     self.quit_game()
                 if event.key == pygame.K_p:
                     self.paused = not self.paused
+                if event.key == pygame.K_h:
+                    self.debug_move = not self.debug_move
 
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     self.player.move(dx=-1)
@@ -189,6 +192,9 @@ class Game:
         self.gameDisplay.fill(BACKGROUND_COLOR)
         self.gameDisplay.blit(self.background_battle_img, (0, 0))
 
+        if self.debug_move:
+            self.player.draw_debug_move()
+
         # Interface
         for sprite in self.characters:
             sprite.draw_ui()
@@ -201,6 +207,7 @@ class Game:
         if self.paused:
             self.gameDisplay.blit(self.dim_screen, (0, 0))
             self.draw_text("Paused", self.font, 105, RED, WIDTH / 2, HEIGHT / 2, align="center")
+
 
         self.gameDisplay.update(self.event)
 

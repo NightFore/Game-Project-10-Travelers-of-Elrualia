@@ -62,9 +62,10 @@ class Player(pygame.sprite.Sprite):
         # Initialization
         self.dict, self.char_dict, self.game_dict = dict, dict[character], game_dict
         self.init_dict(), self.init_spell()
+        self.dt = game.dt
 
         # Vector
-        self.pos = vec(self.pos[0], self.pos[1])
+        self.pos = vec(self.pos)
         self.pos_dt = vec(0, 0)
         self.vel = vec(0, 0)
         self.d_pos = []
@@ -76,9 +77,7 @@ class Player(pygame.sprite.Sprite):
             self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1])
             self.images = self.images_side[self.side]
             self.image = self.images[self.index]
-            self.dt = game.dt
             self.current_time = 0
-            self.animation_time = 0.08
         else:
             self.image = load_image(self.game.graphics_folder, self.image)
         self.rect = self.image.get_rect()
@@ -107,6 +106,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.char_dict["image"]
         self.size = self.char_dict["size"]
         self.side = self.char_dict["side"]
+        self.animation_time = self.char_dict["animation_time"]
 
         self.level = self.char_dict["level"]
         self.max_health = self.char_dict["max_health"]
@@ -156,7 +156,7 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, dx=0, dy=0):
         if len(self.d_pos) < 2:
-            self.d_pos.append([dx, dy])
+            self.d_pos.append(vec(dx, dy))
 
     def update_move(self):
         if len(self.d_pos) > 0:
@@ -164,15 +164,13 @@ class Player(pygame.sprite.Sprite):
                 if self.vel == (0, 0) and self.pos_dt == (0, 0):
                     self.pos_dt[0] = self.d_pos[0][0] * self.grid_dt[0]
                     self.pos_dt[1] = self.d_pos[0][1] * self.grid_dt[1]
-                    self.vel.x = self.d_pos[0][0] * self.movespeed[0]
-                    self.vel.y = self.d_pos[0][1] * self.movespeed[1]
+                    self.vel = self.d_pos[0] * self.movespeed
 
                 if self.d_pos[0][0] * self.pos_dt[0] > 0 or self.d_pos[0][1] * self.pos_dt[1] > 0:
                     self.pos += self.vel * self.game.dt
                     self.pos_dt -= self.vel * self.game.dt
                 else:
-                    self.grid_pos[0] += self.d_pos[0][0]
-                    self.grid_pos[1] += self.d_pos[0][1]
+                    self.grid_pos += self.d_pos[0]
                     self.pos.x = self.char_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0]
                     self.pos.y = self.char_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1]
                     self.pos_dt = vec(0, 0)
@@ -180,6 +178,11 @@ class Player(pygame.sprite.Sprite):
                     del self.d_pos[0]
             else:
                 del self.d_pos[0]
+
+    def draw_debug_move(self):
+        pos_x = 165 + self.grid_pos[0] * self.grid_dt[0]
+        pos_y = 330 + self.grid_pos[1] * self.grid_dt[1]
+        pygame.draw.rect(self.game.gameDisplay, RED, (pos_x, pos_y, 110, 60))
 
     def draw_ui(self):
         pass
