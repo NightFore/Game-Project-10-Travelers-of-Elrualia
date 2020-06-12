@@ -67,7 +67,7 @@ class Player(pygame.sprite.Sprite):
         self.pos = vec(self.pos[0], self.pos[1])
         self.pos_dt = vec(0, 0)
         self.vel = vec(0, 0)
-        self.dx, self.dy = 0, 0
+        self.d_pos = []
 
         # Image
         self.tile = self.table
@@ -139,30 +139,8 @@ class Player(pygame.sprite.Sprite):
                 sort_list(self.waiting_spell, None)
                 self.waiting_spell[len(self.waiting_spell)-1] = random.choice(list(self.game.spell_images.keys()))
 
-    def move(self, dx=0, dy=0):
-        if self.vel == (0, 0):
-            self.dx, self.dy = dx, dy
-            if 0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]:
-                self.grid_pos[0] += dx
-                self.grid_pos[1] += dy
-                self.pos_dt[0] = dx * self.grid_dt[0]
-                self.pos_dt[1] = dy * self.grid_dt[1]
-                self.vel.x = dx * self.movespeed[0]
-                self.vel.y = dy * self.movespeed[1]
-
-    def update_move(self):
-        if self.dx * self.pos_dt[0] > 0 or self.dy * self.pos_dt[1] > 0:
-            self.pos += self.vel * self.game.dt
-            self.pos_dt -= self.vel * self.game.dt
-        else:
-            self.pos.x = self.char_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0]
-            self.pos.y = self.char_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1]
-            self.pos_dt = vec(0, 0)
-            self.vel = vec(0, 0)
-
     def use_spell(self, index):
         spell = self.current_spell[index]
-
         if SPELL_DICT[spell]["type"] == 1:
             hit = False
             for h in range(len(SPELL_DICT[spell]["range"])):
@@ -173,9 +151,35 @@ class Player(pygame.sprite.Sprite):
                         hit = True
             if hit:
                 self.game.enemy.health = max(0, self.game.enemy.health - SPELL_DICT[spell]["damage"])
-
         self.current_spell[index] = None
         self.update_spell()
+
+    def move(self, dx=0, dy=0):
+        if len(self.d_pos) < 2:
+            self.d_pos.append([dx, dy])
+
+    def update_move(self):
+        if len(self.d_pos) > 0:
+            if 0 <= self.grid_pos[0] + self.d_pos[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.d_pos[0][1] < self.grid_size[1]:
+                if self.vel == (0, 0) and self.pos_dt == (0, 0):
+                    self.pos_dt[0] = self.d_pos[0][0] * self.grid_dt[0]
+                    self.pos_dt[1] = self.d_pos[0][1] * self.grid_dt[1]
+                    self.vel.x = self.d_pos[0][0] * self.movespeed[0]
+                    self.vel.y = self.d_pos[0][1] * self.movespeed[1]
+
+                if self.d_pos[0][0] * self.pos_dt[0] > 0 or self.d_pos[0][1] * self.pos_dt[1] > 0:
+                    self.pos += self.vel * self.game.dt
+                    self.pos_dt -= self.vel * self.game.dt
+                else:
+                    self.grid_pos[0] += self.d_pos[0][0]
+                    self.grid_pos[1] += self.d_pos[0][1]
+                    self.pos.x = self.char_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0]
+                    self.pos.y = self.char_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1]
+                    self.pos_dt = vec(0, 0)
+                    self.vel = vec(0, 0)
+                    del self.d_pos[0]
+            else:
+                del self.d_pos[0]
 
     def draw_ui(self):
         pass
