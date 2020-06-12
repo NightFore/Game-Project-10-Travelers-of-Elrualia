@@ -74,7 +74,7 @@ class Game:
         self.gameDisplay.blit(image, image_rect)
 
     def update_sprite(self, sprite):
-        sprite.rect.x, sprite.rect.y = sprite.pos[0],  sprite.pos[1]
+        sprite.rect.x, sprite.rect.y = int(sprite.pos[0]), int(sprite.pos[1])
         if sprite.tile:
             update_time_dependent(sprite)
         if sprite.bobbing:
@@ -134,11 +134,6 @@ class Game:
 
         self.player = Player(self, CHARACTER_DICT, GAME_DICT, "player")
         self.enemy = Enemy(self, ENEMY_DICT, UI_DICT, "Skeleton")
-
-        Item(self, 60, 40, self.item_images, "health")
-        Item(self, 60, 80, self.item_images, "shield")
-        Item(self, 640, 60, self.item_images, "clock")
-        Item(self, 520, 670, self.item_images, "mana")
 
     def run(self):
         self.playing = True

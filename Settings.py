@@ -53,7 +53,7 @@ UI_DICT = {"grid_size": [4, 4],
 
 
 
-GAME_DICT = {"grid_size": [4, 4], "pos_dt": [120, 70],
+GAME_DICT = {"grid_size": [4, 4], "grid_dt": [120, 70], "movespeed": [600, 600],
              "pos": {"player_name": [0, 0], "enemy_name": [0, 0], "enemy_name_dt": [0, 0],
                      "player_level": [0, 0], "player_exp": [0, 0], "player_mana": [0, 0],
                      "next_spell": [0, 0], "current_spell": [0, 0], "current_attack": [0, 0],

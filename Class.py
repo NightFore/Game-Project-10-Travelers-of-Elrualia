@@ -4,6 +4,7 @@ import random
 
 from Settings import *
 from Function import *
+vec = pygame.math.Vector2
 
 
 PLACEHOLDER = 32
@@ -62,6 +63,12 @@ class Player(pygame.sprite.Sprite):
         self.dict, self.char_dict, self.game_dict = dict, dict[character], game_dict
         self.init_dict(), self.init_spell()
 
+        # Vector
+        self.pos = vec(self.pos[0], self.pos[1])
+        self.pos_dt = vec(0, 0)
+        self.vel = vec(0, 0)
+        self.dx, self.dy = 0, 0
+
         # Image
         self.tile = self.table
         if self.table:
@@ -108,7 +115,8 @@ class Player(pygame.sprite.Sprite):
         self.mana = self.char_dict["mana"]
 
         self.grid_size = self.game_dict["grid_size"]
-        self.pos_dt = self.game_dict["pos_dt"]
+        self.grid_dt = self.game_dict["grid_dt"]
+        self.movespeed = self.game_dict["movespeed"]
         self.spell_color = self.game_dict["color"]["spell"]
 
 
@@ -132,14 +140,25 @@ class Player(pygame.sprite.Sprite):
                 self.waiting_spell[len(self.waiting_spell)-1] = random.choice(list(self.game.spell_images.keys()))
 
     def move(self, dx=0, dy=0):
-        if 0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]:
-            self.pos[0] += dx * self.pos_dt[0]
-            self.pos[1] += dy * self.pos_dt[1]
-            self.grid_pos[0] += dx
-            self.grid_pos[1] += dy
-            return True
+        if self.vel == (0, 0):
+            self.dx, self.dy = dx, dy
+            if 0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]:
+                self.grid_pos[0] += dx
+                self.grid_pos[1] += dy
+                self.pos_dt[0] = dx * self.grid_dt[0]
+                self.pos_dt[1] = dy * self.grid_dt[1]
+                self.vel.x = dx * self.movespeed[0]
+                self.vel.y = dy * self.movespeed[1]
+
+    def update_move(self):
+        if self.dx * self.pos_dt[0] > 0 or self.dy * self.pos_dt[1] > 0:
+            self.pos += self.vel * self.game.dt
+            self.pos_dt -= self.vel * self.game.dt
         else:
-            return False
+            self.pos.x = self.char_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0]
+            self.pos.y = self.char_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1]
+            self.pos_dt = vec(0, 0)
+            self.vel = vec(0, 0)
 
     def use_spell(self, index):
         spell = self.current_spell[index]
@@ -162,6 +181,7 @@ class Player(pygame.sprite.Sprite):
         pass
 
     def update(self):
+        self.update_move()
         self.game.update_sprite(self)
 
 
