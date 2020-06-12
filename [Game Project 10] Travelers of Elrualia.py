@@ -168,13 +168,6 @@ class Game:
                 if event.key == pygame.K_p:
                     self.paused = not self.paused
 
-                if event.key == pygame.K_z:
-                    self.player.use_spell(0)
-                if event.key == pygame.K_x:
-                    self.player.use_spell(1)
-                if event.key == pygame.K_c:
-                    self.player.use_spell(2)
-
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     self.player.move(dx=-1)
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
@@ -197,9 +190,8 @@ class Game:
         self.all_sprites.update()
 
     def draw(self):
-        self.gameDisplay.fill(BACKGROUND_COLOR)
-
         # Background
+        self.gameDisplay.fill(BACKGROUND_COLOR)
         self.gameDisplay.blit(self.background_battle_img, (0, 0))
 
         # Interface

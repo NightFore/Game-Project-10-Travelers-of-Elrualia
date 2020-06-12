@@ -52,7 +52,7 @@ def load_rect(image_list):
 
 
 def load_tile_table(filename, width, height, colorkey=(0, 0, 0)):
-    image = pygame.image.load(filename).convert()
+    image = pygame.image.load(filename).convert_alpha()
     image.set_colorkey(colorkey)
     image_width, image_height = image.get_size()
     tile_table = []
