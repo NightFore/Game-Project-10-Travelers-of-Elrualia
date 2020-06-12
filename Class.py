@@ -51,7 +51,7 @@ class Cursor(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, game, dict, ui_dict=None):
+    def __init__(self, game, dict, game_dict=None, character="player"):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.characters
@@ -59,74 +59,59 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         # Initialization
-        self.dict, self.ui_dict = dict, ui_dict
+        self.dict, self.char_dict, self.game_dict = dict, dict[character], game_dict
         self.init_dict(), self.init_spell()
 
-        # Settings
-        self.name = self.dict["name"]
-        self.pos = self.dict["pos"]
-        self.pos_dt = self.dict["pos_dt"]
-
         # Image
-        self.tile = dict["tile"]
-        if self.tile:
+        self.tile = self.table
+        if self.table:
             self.index = 0
-            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.dict["image"]), self.dict["tile_dt"][0], self.dict["tile_dt"][1])
-            self.images = self.images_side[self.dict["default_side"]]
+            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1])
+            self.images = self.images_side[self.side]
             self.image = self.images[self.index]
             self.dt = game.dt
             self.current_time = 0
-            self.animation_time = 0.10
+            self.animation_time = 0.08
         else:
-            self.image = load_image(self.game.graphics_folder, self.dict["image"])
+            self.image = load_image(self.game.graphics_folder, self.image)
         self.rect = self.image.get_rect()
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
 
         # Center
-        self.center = dict["center"]
         if self.center:
             self.rect.center = self.pos
 
         # Bobbing
-        self.bobbing = dict["bobbing"]
         if self.bobbing:
             self.tween = tween.linear
             self.step = 0
             self.dir = 1
 
     def init_dict(self):
-        self.grid_pos = self.dict["grid_pos"]
-        self.grid_size = self.ui_dict["grid_size"]
+        self.center = self.dict["center"]
+        self.bobbing = self.dict["bobbing"]
 
-        self.max_health = self.dict["max_health"]
-        self.health = self.dict["health"]
-        self.health_rect = self.dict["health_rect"]
-        self.health_color = self.ui_dict["health"]
+        self.name = self.char_dict["name"]
+        self.pos = self.char_dict["pos"]
+        self.grid_pos = self.char_dict["grid_pos"]
+        self.table = self.char_dict["table"]
 
-        self.max_armor = self.dict["max_armor"]
-        self.armor = self.dict["armor"]
-        self.armor_rect = self.dict["armor_rect"]
-        self.armor_color = self.ui_dict["armor"]
+        self.image = self.char_dict["image"]
+        self.size = self.char_dict["size"]
+        self.side = self.char_dict["side"]
 
-        self.max_mana = self.dict["max_mana"]
-        self.mana = self.dict["mana"]
-        self.mana_rect = self.dict["mana_rect"]
-        self.mana_dt = self.dict["mana_dt"]
-        self.mana_color = self.ui_dict["mana"]
+        self.level = self.char_dict["level"]
+        self.max_health = self.char_dict["max_health"]
+        self.health = self.char_dict["health"]
+        self.max_mana = self.char_dict["max_mana"]
+        self.mana = self.char_dict["mana"]
 
-        self.c_spell_pos = self.dict["current_spell_pos"]
-        self.c_spell_dt = self.dict["current_spell_dt"]
-        self.w_spell_pos = self.dict["waiting_spell_pos"]
-        self.w_spell_dt = self.dict["waiting_spell_dt"]
-        self.n_spell_pos = self.dict["next_spell_pos"]
-        self.p_spell_pos = self.dict["passive_spell_pos"]
-        self.color_spell = self.ui_dict["spell_color"]
-        self.color_spell_pos = self.ui_dict["spell_color_pos"]
-        self.color_spell_dt = self.ui_dict["spell_color_dt"]
-        self.spell_size = self.ui_dict["spell_size"]
-        self.spell_dt = self.ui_dict["spell_dt"]
-        self.spell_side_dt = self.ui_dict["spell_side_dt"]
+        self.grid_size = self.game_dict["grid_size"]
+        self.pos_dt = self.game_dict["pos_dt"]
+        self.spell_color = self.game_dict["color"]["spell"]
+
+
 
     def init_spell(self):
         self.waiting_spell = [None] * 9
@@ -138,6 +123,14 @@ class Player(pygame.sprite.Sprite):
         self.next_spell = random.choice(list(self.game.spell_images.keys()))
         self.current_passive = random.choice(list(self.game.passive_images.keys()))
 
+    def update_spell(self):
+        for index in range(len(self.current_spell)):
+            if self.current_spell[index] is None:
+                self.current_spell[index] = self.next_spell = self.waiting_spell[0]
+                self.waiting_spell[0] = None
+                sort_list(self.waiting_spell, None)
+                self.waiting_spell[len(self.waiting_spell)-1] = random.choice(list(self.game.spell_images.keys()))
+
     def move(self, dx=0, dy=0):
         if 0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]:
             self.pos[0] += dx * self.pos_dt[0]
@@ -148,50 +141,9 @@ class Player(pygame.sprite.Sprite):
         else:
             return False
 
-    def draw_status(self):
-        # Health / Armor / Mana
-        pygame.draw.rect(self.game.gameDisplay, self.health_color, (self.health_rect[0], self.health_rect[1], self.health/self.max_health * self.health_rect[2], self.health_rect[3]))
-        pygame.draw.rect(self.game.gameDisplay, self.armor_color, (self.armor_rect[0], self.armor_rect[1], self.armor/self.max_armor * self.armor_rect[2], self.armor_rect[3]))
-        for i in range(int(self.mana)+1):
-            pygame.draw.rect(self.game.gameDisplay, self.mana_color, (self.mana_rect[0] + i*self.mana_dt[0], self.mana_rect[1] + i*self.mana_dt[1], min(1, self.mana-i) * self.mana_rect[2], self.mana_rect[3]))
-
-    def draw_spell(self):
-        # Current Spell & Colors
-        for i in range(len(self.current_spell)):
-            pygame.draw.rect(self.game.gameDisplay, self.color_spell[i], (self.color_spell_pos[0] + i*self.color_spell_dt[0], self.color_spell_pos[1] + i*self.color_spell_dt[1], self.color_spell_pos[2], self.color_spell_pos[3]))
-            if self.current_spell[i] is not None:
-                self.game.draw_image(self.game.spell_images[self.current_spell[i]], self.c_spell_pos[0] + i*self.c_spell_dt[0], self.c_spell_pos[1] + i*self.c_spell_dt[1])
-
-        # Waiting Spell
-        for i in range(len(self.waiting_spell)):
-            if self.waiting_spell[i] is not None:
-                if i == 0:
-                    self.game.draw_image(self.game.spell_images[self.waiting_spell[i]], self.n_spell_pos[0], self.n_spell_pos[1])
-                else:
-                    self.game.draw_image(self.game.spell_images[self.waiting_spell[i]], self.w_spell_pos[0] + i*self.w_spell_dt[0], self.w_spell_pos[1] + i*self.w_spell_dt[1])
-
-        # Current Passive
-        self.game.draw_image(self.game.passive_images[self.current_passive], self.p_spell_pos[0], self.p_spell_pos[1])
-
-    def draw_spell_range(self):
-        for index in range(len(self.current_spell)):
-            spell = self.current_spell[index]
-
-            if SPELL_DICT[spell]["type"] == 0:
-                pygame.draw.circle(self.game.gameDisplay, self.color_spell[index], (self.pos[0], self.pos[1]), self.spell_size)
-
-            if SPELL_DICT[spell]["type"] == 1:
-                for h in range(len(SPELL_DICT[spell]["range"])):
-                    for v in range(len(SPELL_DICT[spell]["range"][h])):
-                        grid_pos_x = self.grid_pos[0] + h + 1 - self.grid_size[0]
-                        grid_pos_y = self.grid_pos[1] + (v-int(len(SPELL_DICT[spell]["range"][h])/2))
-                        if 0 <= grid_pos_x < self.grid_size[0] and 0 <= grid_pos_y < self.grid_size[1]:
-                            pos_x = self.pos[0] + h*self.spell_dt + self.spell_side_dt
-                            pos_y = self.pos[1] + (v-int(len(SPELL_DICT[spell]["range"][h])/2))*self.spell_dt
-                            pygame.draw.circle(self.game.gameDisplay, self.color_spell[index], (pos_x, pos_y), self.spell_size)
-
     def use_spell(self, index):
         spell = self.current_spell[index]
+
         if SPELL_DICT[spell]["type"] == 1:
             hit = False
             for h in range(len(SPELL_DICT[spell]["range"])):
@@ -206,18 +158,8 @@ class Player(pygame.sprite.Sprite):
         self.current_spell[index] = None
         self.update_spell()
 
-    def update_spell(self):
-        for index in range(len(self.current_spell)):
-            if self.current_spell[index] is None:
-                self.current_spell[index] = self.next_spell = self.waiting_spell[0]
-                self.waiting_spell[0] = None
-                sort_list(self.waiting_spell, None)
-                self.waiting_spell[len(self.waiting_spell)-1] = random.choice(list(self.game.spell_images.keys()))
-
     def draw_ui(self):
-        self.draw_status()
-        self.draw_spell()
-        self.draw_spell_range()
+        pass
 
     def update(self):
         self.game.update_sprite(self)

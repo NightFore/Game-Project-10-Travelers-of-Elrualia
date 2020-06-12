@@ -51,28 +51,30 @@ UI_DICT = {"grid_size": [4, 4],
            "spell_size": 38, "spell_dt": 95, "spell_side_dt": 190,
            "status_font": None, "status_size": 50, "status_color": BLACK, "status_enemy_pos": [960, 670]}
 
-GAME_DICT = {"pos": {"player_sprite": [260, 260], "enemy_sprite": [735, 260], "sprite_dt": [95, 95],
-                     "player_name": [0, 0], "enemy_name": [0, 0], "enemy_name_dt": [0, 0],
+
+
+GAME_DICT = {"grid_size": [4, 4], "pos_dt": [120, 70],
+             "pos": {"player_name": [0, 0], "enemy_name": [0, 0], "enemy_name_dt": [0, 0],
                      "player_level": [0, 0], "player_exp": [0, 0], "player_mana": [0, 0],
                      "next_spell": [0, 0], "current_spell": [0, 0], "current_attack": [0, 0],
                      "stage": [0, 0], "time": [0, 0], "option": [0, 0], "fps": [0, 0]},
-             "color": {"health": GREEN, "mana": LIGHTSKYBLUE},
+             "color": {"health": GREEN, "mana": LIGHTSKYBLUE, "spell": [RED, BLUE, GREEN]},
              "font": None
              }
 
 CHARACTER_DICT = {"center": True, "bobbing": False,
-                  "Player": {"name": "Player", "grid_pos": [0, 0],
-                             "image": "character_oco_Knight_Idle_strip_noBKG_x4.png", "size": [256, 256], "side": 0,
+                  "player": {"name": "Player", "pos": [208, 332], "grid_pos": [0, 0], "table": True,
+                             "image": "character_oco_Knight_Idle_strip_noBKG_256x256.png", "size": [256, 256], "side": 0,
                              "level": 1, "max_health": 100, "health": 100, "max_mana": 5, "mana": 3.75},
-                  "Skeleton": {"name": "Skeleton", "grid_pos": [0, 0],
+                  "skeleton": {"name": "Skeleton", "grid_pos": [0, 0],
                                "image": "character_pipoya_enemy_04_1.png", "size": [32, 32], "side": 1,
                                "level": 1, "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50,
                                "move_frequency": 1000}
                   }
 
 PLAYER_DICT = {"name": "Player", "center": True, "bobbing": False,
-               "image": "character_oco_Knight_Idle_strip_noBKG_x4.png", "tile": True, "tile_dt": [256, 256], "default_side": 0,
-               "pos": [260, 260], "pos_dt": [95, 95], "grid_pos": [0, 0],
+               "image": "character_oco_Knight_Idle_strip_noBKG_256x256.png", "tile": True, "tile_dt": [256, 256], "default_side": 0,
+               "pos": [208, 332], "pos_dt": [120, 70], "grid_pos": [0, 0],
                "max_health": 100, "health": 100, "health_rect": [83, 23, 254, 34],
                "max_armor": 50, "armor": 25, "armor_rect": [83, 63, 254, 34],
                "max_mana": 5, "mana": 3.75, "mana_rect": [553, 653, 34, 34], "mana_dt": [40, 0],
