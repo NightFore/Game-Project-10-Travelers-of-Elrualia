@@ -74,15 +74,11 @@ class Game:
         self.gameDisplay.blit(image, image_rect)
 
     def update_sprite(self, sprite):
-        sprite.rect.x = sprite.pos[0]
-        sprite.rect.y = sprite.pos[1]
+        sprite.rect.x, sprite.rect.y = sprite.pos[0],  sprite.pos[1]
         if sprite.tile:
             update_time_dependent(sprite)
-            sprite.current_time += sprite.dt
         if sprite.bobbing:
             update_bobbing(sprite)
-        if sprite.center:
-            sprite.rect.center = sprite.pos
 
     def load_data(self):
         self.game_folder = path.dirname(__file__)

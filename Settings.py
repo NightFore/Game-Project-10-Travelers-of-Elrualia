@@ -44,16 +44,30 @@ CURSOR_WIDTH = 40
 CURSOR_HEIGHT = 40
 CURSOR_COLOR = BLUE
 
-# Characters settings
+# Characters settings / 0: bottom, 1: left, 2: right, 3: top
 UI_DICT = {"grid_size": [4, 4],
            "health": GREEN, "armor": ORANGE, "mana": LIGHTSKYBLUE,
            "spell_color": [RED, BLUE, GREEN], "spell_color_pos": [203, 643, 54, 54], "spell_color_dt": [60, 0],
            "spell_size": 38, "spell_dt": 95, "spell_side_dt": 190,
            "status_font": None, "status_size": 50, "status_color": BLACK, "status_enemy_pos": [960, 670]}
 
-PLAYER_DICT = {"name": "Player",
-               "tile": True, "tile_dt": [32, 32], "center": True, "bobbing": False,
-               "image": "character_pipoya_male_01_2.png", "pos": [260, 260], "pos_dt": [95, 95], "grid_pos": [0, 0],
+CHARACTER_DICT = {"center": True, "bobbing": False,
+                  "Player": {"name": "Player", "grid_pos": [0, 0],
+                             "image": "character_oco_Knight_Idle_strip_noBKG.png", "size": [64, 64], "side": 0,
+                             "max_health": 100, "health": 100,
+                             "max_armor": 50, "armor": 25,
+                             "max_mana": 5, "mana": 3.75},
+                  "Skeleton": {"name": "Skeleton", "grid_pos": [0, 0],
+                               "image": "character_pipoya_enemy_04_1.png",
+                               "icon": "character_pipoya_enemy_04_1_icon_64x64.png",
+                               "max_health": 100, "health": 100,
+                               "max_mana": 6, "mana": 4.50,
+                               "move_frequency": 1000}
+                  }
+
+PLAYER_DICT = {"name": "Player", "center": True, "bobbing": False,
+               "image": "character_oco_Knight_Idle_strip_noBKG.png", "tile": True, "tile_dt": [64, 64], "default_side": 0,
+               "pos": [260, 260], "pos_dt": [95, 95], "grid_pos": [0, 0],
                "max_health": 100, "health": 100, "health_rect": [83, 23, 254, 34],
                "max_armor": 50, "armor": 25, "armor_rect": [83, 63, 254, 34],
                "max_mana": 5, "mana": 3.75, "mana_rect": [553, 653, 34, 34], "mana_dt": [40, 0],

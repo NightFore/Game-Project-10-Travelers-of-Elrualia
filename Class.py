@@ -59,10 +59,8 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         # Initialization
-        self.dict = dict
-        self.ui_dict = ui_dict
-        self.init_dict()
-        self.init_spell()
+        self.dict, self.ui_dict = dict, ui_dict
+        self.init_dict(), self.init_spell()
 
         # Settings
         self.name = self.dict["name"]
@@ -72,17 +70,13 @@ class Player(pygame.sprite.Sprite):
         # Image
         self.tile = dict["tile"]
         if self.tile:
-            image = load_tile_table(path.join(self.game.graphics_folder, self.dict["image"]), self.dict["tile_dt"][0], self.dict["tile_dt"][1])
             self.index = 0
-            self.images_bottom = image[0]
-            self.images_left = image[1]
-            self.images_right = image[2]
-            self.images_top = image[3]
-            self.images = self.images_right
+            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.dict["image"]), self.dict["tile_dt"][0], self.dict["tile_dt"][1])
+            self.images = self.images_side[self.dict["default_side"]]
             self.image = self.images[self.index]
             self.dt = game.dt
             self.current_time = 0
-            self.animation_time = 0.50
+            self.animation_time = 0.10
         else:
             self.image = load_image(self.game.graphics_folder, self.dict["image"])
         self.rect = self.image.get_rect()
@@ -96,9 +90,10 @@ class Player(pygame.sprite.Sprite):
 
         # Bobbing
         self.bobbing = dict["bobbing"]
-        self.tween = tween.linear
-        self.step = 0
-        self.dir = 1
+        if self.bobbing:
+            self.tween = tween.linear
+            self.step = 0
+            self.dir = 1
 
     def init_dict(self):
         self.grid_pos = self.dict["grid_pos"]
