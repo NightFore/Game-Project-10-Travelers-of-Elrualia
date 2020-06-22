@@ -50,6 +50,72 @@ class Cursor(pygame.sprite.Sprite):
 
 
 
+class Spell(pygame.sprite.Sprite):
+    def __init__(self, game, dict, game_dict=None, object=None, character=None):
+        # Setup
+        self.game = game
+        self.groups = self.game.all_sprites, self.game.spell
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        # Initialization
+        self.character = character
+        self.init_dict(dict, game_dict, object), self.init_vec(), self.init_image()
+        self.dt = game.dt
+
+        # Settings
+        self.hit = False
+        self.spawn_time = pygame.time.get_ticks()
+
+    def init_dict(self, dict, game_dict, object):
+        self.dict = dict
+        self.game_dict = game_dict
+        self.object_dict = self.dict[object]
+
+    def init_vec(self):
+        self.pos = vec(self.character.pos + self.dict["offset"])
+        self.vel = vec(self.object_dict["vel"])
+
+    def init_image(self):
+        self._layer = self.dict["layer"]
+        self.image = self.object_dict["image"]
+        self.table = self.object_dict["table"]
+        self.size = self.object_dict["size"]
+        self.side = self.object_dict["side"]
+        self.center = self.object_dict["center"]
+        self.bobbing = self.object_dict["bobbing"]
+        self.animation_time = self.object_dict["animation_time"]
+
+        # Image
+        if self.table:
+            self.index = 0
+            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1])
+            self.images = self.images_side[self.side]
+            self.image = self.images[self.index]
+            self.current_time = 0
+        else:
+            self.image = load_image(self.game.graphics_folder, self.image)
+        self.rect = self.image.get_rect()
+
+        # Center
+        if self.center:
+            self.rect.center = self.pos
+
+        # Bobbing
+        if self.bobbing:
+            self.tween = tween.linear
+            self.step = 0
+            self.dir = 1
+
+    def move(self):
+        self.pos += self.vel * self.game.dt
+        self.rect.center = self.pos
+
+    def update(self):
+        self.move()
+        self.game.update_sprite(self)
+        if pygame.time.get_ticks() - self.spawn_time > 500:
+            self.kill()
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, dict, game_dict=None, character="player"):
@@ -61,7 +127,7 @@ class Player(pygame.sprite.Sprite):
 
         # Initialization
         self.dict, self.char_dict, self.game_dict = dict, dict[character], game_dict
-        self.init_dict(), self.init_spell()
+        self.init_dict()
         self.dt = game.dt
 
         # Vector
@@ -71,7 +137,6 @@ class Player(pygame.sprite.Sprite):
         self.d_pos = []
 
         # Image
-        self.tile = self.table
         if self.table:
             self.index = 0
             self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1])
@@ -119,43 +184,8 @@ class Player(pygame.sprite.Sprite):
         self.movespeed = self.game_dict["movespeed"]
         self.spell_color = self.game_dict["color"]["spell"]
 
-
-
-    def init_spell(self):
-        self.waiting_spell = [None] * 9
-        for index in range(len(self.waiting_spell)):
-            self.waiting_spell[index] = random.choice(list(self.game.spell_images.keys()))
-        self.current_spell = [None] * 3
-        for index in range(len(self.current_spell)):
-            self.current_spell[index] = random.choice(list(self.game.spell_images.keys()))
-        self.next_spell = random.choice(list(self.game.spell_images.keys()))
-        self.current_passive = random.choice(list(self.game.passive_images.keys()))
-
-    def update_spell(self):
-        for index in range(len(self.current_spell)):
-            if self.current_spell[index] is None:
-                self.current_spell[index] = self.next_spell = self.waiting_spell[0]
-                self.waiting_spell[0] = None
-                sort_list(self.waiting_spell, None)
-                self.waiting_spell[len(self.waiting_spell)-1] = random.choice(list(self.game.spell_images.keys()))
-
-    def use_spell(self, index):
-        spell = self.current_spell[index]
-        if SPELL_DICT[spell]["type"] == 1:
-            hit = False
-            for h in range(len(SPELL_DICT[spell]["range"])):
-                for v in range(len(SPELL_DICT[spell]["range"][h])):
-                    grid_pos_x = self.grid_pos[0] + h + 1 - self.grid_size[0]
-                    grid_pos_y = self.grid_pos[1] + (v-int(len(SPELL_DICT[spell]["range"][h])/2))
-                    if grid_pos_x == self.game.enemy.grid_pos[0] and grid_pos_y == self.game.enemy.grid_pos[1]:
-                        hit = True
-            if hit:
-                self.game.enemy.health = max(0, self.game.enemy.health - SPELL_DICT[spell]["damage"])
-        self.current_spell[index] = None
-        self.update_spell()
-
     def move(self, dx=0, dy=0):
-        if len(self.d_pos) < 2:
+        if len(self.d_pos) < 3:
             self.d_pos.append(vec(dx, dy))
 
     def update_move(self):
@@ -210,8 +240,8 @@ class Enemy(pygame.sprite.Sprite):
         self.init_dict()
 
         # Image
-        self.tile = dict["tile"]
-        if self.tile:
+        self.table = dict["table"]
+        if self.table:
             image = load_tile_table(path.join(self.game.graphics_folder, self.char_dict["image"]), self.dict["tile_dt"][0], self.dict["tile_dt"][1])
             self.index = 0
             self.images_bottom = image[0]
@@ -336,9 +366,9 @@ class Item(pygame.sprite.Sprite):
         # Surface
         self.index = 0
         self.images = self.dictionary[self.type]
-        self.tile = isinstance(self.images, list)
+        self.table = isinstance(self.images, list)
 
-        if self.tile:
+        if self.table:
             self.image = self.dictionary[self.type][self.index]
         else:
             self.image = self.dictionary[self.type]

@@ -75,7 +75,7 @@ class Game:
 
     def update_sprite(self, sprite):
         sprite.rect.x, sprite.rect.y = int(sprite.pos[0]), int(sprite.pos[1])
-        if sprite.tile:
+        if sprite.table:
             update_time_dependent(sprite)
         if sprite.bobbing:
             update_bobbing(sprite)
@@ -99,21 +99,6 @@ class Game:
         # Graphics
         self.background_battle_img = load_image(self.graphics_folder, BACKGROUND_BATTLE_IMG)
 
-        # Item Images
-        self.item_images = {}
-        for item in ITEM_IMAGES:
-            self.item_images[item] = load_image(self.graphics_folder, ITEM_IMAGES[item])
-
-        # Spell Images
-        self.spell_images = {}
-        for item in SPELL_DICT:
-            self.spell_images[item] = load_image(self.graphics_folder, SPELL_DICT[item]["image"])
-
-        # Passive Images
-        self.passive_images = {}
-        for item in PASSIVE_DICT:
-            self.passive_images[item] = load_image(self.graphics_folder, PASSIVE_DICT[item]["image"])
-
         # Image Effects
         self.effect_images = {}
 
@@ -131,6 +116,7 @@ class Game:
         self.debug_move = False
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
+        self.spell = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
 
         self.player = Player(self, CHARACTER_DICT, GAME_DICT, "player")
@@ -183,6 +169,9 @@ class Game:
                     self.enemy.move(dy=-1)
                 if event.key == pygame.K_k:
                     self.enemy.move(dy=+1)
+
+                if event.key == pygame.K_x:
+                    Spell(self, SPELL_DICT, GAME_DICT, "energy_ball", self.player)
 
     def update(self):
         self.all_sprites.update()

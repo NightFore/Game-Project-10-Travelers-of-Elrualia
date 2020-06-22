@@ -14,7 +14,7 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 # Layer Settings
 LAYER_ITEMS = 1
 LAYER_CHARACTERS = 2
-LAYER_CURSOR = 3
+LAYER_CURSOR = 4
 
 """
     Colors
@@ -73,7 +73,7 @@ CHARACTER_DICT = {"center": True, "bobbing": False,
                   }
 
 PLAYER_DICT = {"name": "Player", "center": True, "bobbing": False,
-               "image": "character_oco_Knight_Idle_strip_noBKG_256x256.png", "tile": True, "tile_dt": [256, 256], "default_side": 0,
+               "image": "character_oco_Knight_Idle_strip_noBKG_256x256.png", "table": True, "tile_dt": [256, 256], "default_side": 0,
                "pos": [208, 332], "pos_dt": [120, 70], "grid_pos": [0, 0],
                "max_health": 100, "health": 100, "health_rect": [83, 23, 254, 34],
                "max_armor": 50, "armor": 25, "armor_rect": [83, 63, 254, 34],
@@ -85,7 +85,7 @@ PLAYER_DICT = {"name": "Player", "center": True, "bobbing": False,
 
 ENEMY_DICT = {"Skeleton": {"image": "character_pipoya_enemy_04_1.png", "icon": "character_pipoya_enemy_04_1_icon_64x64.png",
                            "grid_pos": [0, 0], "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50, "move_frequency": 1000},
-              "tile": True, "tile_dt": [32, 32], "center": True, "bobbing": False,
+              "table": True, "tile_dt": [32, 32], "center": True, "bobbing": False,
               "pos": [735, 260], "pos_dt": [95, 95], "icon_pos": [1200, 660],
               "health_rect": [1203, 223, 34, 394], "mana_rect": [1163, 583, 34, 34], "mana_dt": [0, -40]}
 
@@ -101,7 +101,13 @@ ITEM_IMAGES = {"health": ["item_beyonderboy_heart_edited.png"],
                          "item_nyknck_sandclock_3_58x58.png", "item_nyknck_sandclock_4_58x58.png",
                          "item_nyknck_sandclock_5_58x58.png"]}
 
-SPELL_DICT = {"sword_1": {"image": "item_alex_s_assets_sword_1_48x48.png", "type": 1, "damage": 20, "range": [[1, 1, 1]]},
+SPELL_DICT = {"layer": 3, "offset": (100, 0),
+              "energy_ball": {"image": "effect_pimen_EnergyBall.png", "side": 0, "center": True, "bobbing": False,
+                              "table": True, "size": [128, 128], "animation_time": 0.100,
+                              "vel": (800, 0), "damage": 10, "range": 3}
+}
+
+SPELL_OLD1 = {"sword_1": {"image": "item_alex_s_assets_sword_1_48x48.png", "type": 1, "damage": 20, "range": [[1, 1, 1]]},
               "sword_2": {"image": "item_alex_s_assets_sword_2_48x48.png", "type": 1, "damage": 30, "range": [[1, 1, 1], [1]]},
               "sword_3": {"image": "item_alex_s_assets_sword_3_48x48.png", "type": 1, "damage": 50, "range": [[1, 1, 1], [1, 1, 1]]},
               "spear_1": {"image": "item_alex_s_assets_spear_1_48x48.png", "type": 1, "damage": 15, "range": [[1], [1]]},
