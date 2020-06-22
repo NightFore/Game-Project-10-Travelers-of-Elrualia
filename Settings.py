@@ -54,7 +54,8 @@ UI_DICT = {"grid_size": [4, 4],
 
 
 GAME_DICT = {"grid_size": [4, 4], "grid_dt": [120, 70], "movespeed": 600,
-             "pos": {"player_name": [0, 0], "enemy_name": [0, 0], "enemy_name_dt": [0, 0],
+             "pos": {"player": [220, 360], "enemy": [0, 0],
+                     "player_name": [0, 0], "enemy_name": [0, 0], "enemy_name_dt": [0, 0],
                      "player_level": [0, 0], "player_exp": [0, 0], "player_mana": [0, 0],
                      "next_spell": [0, 0], "current_spell": [0, 0], "current_attack": [0, 0],
                      "stage": [0, 0], "time": [0, 0], "option": [0, 0], "fps": [0, 0]},
@@ -101,10 +102,10 @@ ITEM_IMAGES = {"health": ["item_beyonderboy_heart_edited.png"],
                          "item_nyknck_sandclock_3_58x58.png", "item_nyknck_sandclock_4_58x58.png",
                          "item_nyknck_sandclock_5_58x58.png"]}
 
-SPELL_DICT = {"layer": 3, "offset": (100, 0),
+SPELL_DICT = {"layer": 3, "offset": [0, -40], "cast_offset": [40, 0],
               "energy_ball": {"image": "effect_pimen_EnergyBall.png", "side": 0, "center": True, "bobbing": False,
                               "table": True, "size": [128, 128], "animation_time": 0.100,
-                              "vel": (800, 0), "damage": 10, "range": 3}
+                              "speed": [800, 0], "damage": 10, "range": 8 * [[1, 0]]}
 }
 
 SPELL_OLD1 = {"sword_1": {"image": "item_alex_s_assets_sword_1_48x48.png", "type": 1, "damage": 20, "range": [[1, 1, 1]]},

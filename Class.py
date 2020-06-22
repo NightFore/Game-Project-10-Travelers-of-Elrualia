@@ -55,15 +55,15 @@ class Spell(pygame.sprite.Sprite):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.spell
+        self._layer = dict["layer"]
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         # Initialization
         self.character = character
-        self.init_dict(dict, game_dict, object), self.init_vec(), self.init_image()
+        self.init_dict(dict, game_dict, object), self.init_settings(), self.init_vec(), self.init_image()
         self.dt = game.dt
 
         # Settings
-        self.hit = False
         self.spawn_time = pygame.time.get_ticks()
 
     def init_dict(self, dict, game_dict, object):
@@ -71,12 +71,22 @@ class Spell(pygame.sprite.Sprite):
         self.game_dict = game_dict
         self.object_dict = self.dict[object]
 
+    def init_settings(self):
+        self.grid_size = self.game_dict["grid_size"]
+        self.grid_dt = self.game_dict["grid_dt"]
+        self.grid_pos = self.character.grid_pos[:]
+        self.range = self.object_dict["range"][:]
+
     def init_vec(self):
-        self.pos = vec(self.character.pos + self.dict["offset"])
-        self.vel = vec(self.object_dict["vel"])
+        self.offset = self.dict["offset"]
+        self.cast_offset = self.dict["cast_offset"]
+        self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0] + self.cast_offset[0],
+                       self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1] + self.cast_offset[1])
+        self.pos_dt = vec(0, 0)
+        self.vel = vec(0, 0)
+        self.speed = vec(self.object_dict["speed"])
 
     def init_image(self):
-        self._layer = self.dict["layer"]
         self.image = self.object_dict["image"]
         self.table = self.object_dict["table"]
         self.size = self.object_dict["size"]
@@ -107,13 +117,34 @@ class Spell(pygame.sprite.Sprite):
             self.dir = 1
 
     def move(self):
-        self.pos += self.vel * self.game.dt
-        self.rect.center = self.pos
+        if len(self.range) > 0:
+            if 0 <= self.grid_pos[0] + self.range[0][0] < 2 * self.grid_size[0] and 0 <= self.grid_pos[1] + self.range[0][1] < 2 * self.grid_size[1]:
+                if self.vel == (0, 0):
+                    self.pos_dt[0] = self.game_dict["pos"]["player"][0] + (self.grid_pos[0] + self.range[0][0]) * self.grid_dt[0] - self.pos[0]
+                    self.pos_dt[1] = self.game_dict["pos"]["player"][1] + (self.grid_pos[1] + self.range[0][1]) * self.grid_dt[1] - self.pos[1]
+                    self.vel.x = self.range[0][0] * self.speed[0]
+                    self.vel.y = self.range[0][1] * self.speed[1]
+
+                if self.range[0][0] * self.pos_dt[0] > 0 or self.range[0][1] * self.pos_dt[1] > 0:
+                    self.pos += self.vel * self.game.dt
+                    self.pos_dt -= self.vel * self.game.dt
+                else:
+                    self.grid_pos[0] += self.range[0][0]
+                    self.grid_pos[1] += self.range[0][1]
+                    self.pos[0] = self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0]
+                    self.pos[1] = self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1]
+                    self.pos_dt = vec(0, 0)
+                    self.vel = vec(0, 0)
+                    del self.range[0]
+            else:
+                self.kill()
+        else:
+            self.kill()
 
     def update(self):
         self.move()
         self.game.update_sprite(self)
-        if pygame.time.get_ticks() - self.spawn_time > 500:
+        if pygame.time.get_ticks() - self.spawn_time > 2500:
             self.kill()
 
 

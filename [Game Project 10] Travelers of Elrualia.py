@@ -113,7 +113,7 @@ class Game:
 
     def new(self):
         self.paused = False
-        self.debug_move = False
+        self.debug_move = True
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
         self.spell = pygame.sprite.Group()
@@ -191,6 +191,8 @@ class Game:
         # Sprite
         for sprite in self.all_sprites:
             self.gameDisplay.blit(sprite.image, sprite)
+            if self.debug_move:
+                pygame.draw.rect(self.gameDisplay, CYAN, sprite.rect, 1)
 
         # Pause
         if self.paused:
