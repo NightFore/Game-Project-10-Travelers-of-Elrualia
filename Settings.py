@@ -53,7 +53,7 @@ UI_DICT = {"grid_size": [4, 4],
 
 
 
-GAME_DICT = {"grid_size": [4, 4], "grid_dt": [120, 70], "movespeed": 625,
+GAME_DICT = {"grid_size": [4, 4], "grid_dt": [120, 70],
              "pos": {"player": [220, 360], "enemy": [0, 0],
                      "player_name": [0, 0], "enemy_name": [0, 0], "enemy_name_dt": [0, 0],
                      "player_level": [0, 0], "player_exp": [0, 0], "player_mana": [0, 0],
@@ -63,16 +63,22 @@ GAME_DICT = {"grid_size": [4, 4], "grid_dt": [120, 70], "movespeed": 625,
              "font": None
              }
 
-CHARACTER_DICT = {"center": True, "bobbing": False,
-                  "player": {"name": "Player", "pos": [208, 332], "grid_pos": [0, 0], "table": True,
-                             "image": "character_oco_Knight_Idle_strip_noBKG_256x256.png", "size": [256, 256], "side": 0, "animation_time": 0.075,
+CHARACTER_DICT = {"layer": 2,
+                  "player": {"name": "Player", "pos": [208, 332], "grid_pos": [0, 0],
+                             "image": "character_oco_Knight_Idle_strip_noBKG_256x256.png", "side": 0, "center": True, "bobbing": False,
+                             "table": True, "size": [256, 256], "animation_time": 0.075, "speed": [625, 625],
                              "level": 1, "max_health": 100, "health": 100, "max_mana": 5, "mana": 3.75,
                              "attack_rate": 225},
                   "skeleton": {"name": "Skeleton", "grid_pos": [0, 0],
                                "image": "character_pipoya_enemy_04_1.png", "size": [32, 32], "side": 1,
                                "level": 1, "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50,
-                               "move_frequency": 1000}
-                  }
+                               "move_frequency": 1000}}
+
+SPELL_DICT = {"layer": 3, "offset": [0, -40], "cast_offset": [40, 0],
+              "energy_ball": {"image": "effect_pimen_EnergyBall.png", "side": 0, "center": True, "bobbing": False,
+                              "table": True, "size": [128, 128], "animation_time": 0.100, "movespeed": [800, 800],
+                              "damage": 10, "range": 8 * [[1, 0]]}}
+
 
 PLAYER_DICT = {"name": "Player", "center": True, "bobbing": False,
                "image": "character_oco_Knight_Idle_strip_noBKG_256x256.png", "table": True, "tile_dt": [256, 256], "default_side": 0,
@@ -85,7 +91,7 @@ PLAYER_DICT = {"name": "Player", "center": True, "bobbing": False,
                "waiting_spell_pos": [70, 730], "waiting_spell_dt": [0, -60],
                "next_spell_pos": [130, 670], "passive_spell_pos": [410, 670]}
 
-ENEMY_DICT = {"Skeleton": {"image": "character_pipoya_enemy_04_1.png", "icon": "character_pipoya_enemy_04_1_icon_64x64.png",
+ENEMY_DICT = {"skeleton": {"image": "character_pipoya_enemy_04_1.png", "icon": "character_pipoya_enemy_04_1_icon_64x64.png",
                            "grid_pos": [0, 0], "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50, "move_frequency": 1000},
               "table": True, "tile_dt": [32, 32], "center": True, "bobbing": False,
               "pos": [735, 260], "pos_dt": [95, 95], "icon_pos": [1200, 660],
@@ -102,12 +108,6 @@ ITEM_IMAGES = {"health": ["item_beyonderboy_heart_edited.png"],
                "clock": ["item_nyknck_sandclock_1_58x58.png", "item_nyknck_sandclock_2_58x58.png",
                          "item_nyknck_sandclock_3_58x58.png", "item_nyknck_sandclock_4_58x58.png",
                          "item_nyknck_sandclock_5_58x58.png"]}
-
-SPELL_DICT = {"layer": 3, "offset": [0, -40], "cast_offset": [40, 0],
-              "energy_ball": {"image": "effect_pimen_EnergyBall.png", "side": 0, "center": True, "bobbing": False,
-                              "table": True, "size": [128, 128], "animation_time": 0.100,
-                              "speed": [800, 0], "damage": 10, "range": 8 * [[1, 0]]}
-}
 
 SPELL_OLD1 = {"sword_1": {"image": "item_alex_s_assets_sword_1_48x48.png", "type": 1, "damage": 20, "range": [[1, 1, 1]]},
               "sword_2": {"image": "item_alex_s_assets_sword_2_48x48.png", "type": 1, "damage": 30, "range": [[1, 1, 1], [1]]},

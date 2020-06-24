@@ -75,19 +75,19 @@ class Spell(pygame.sprite.Sprite):
         self.grid_size = self.game_dict["grid_size"]
         self.grid_dt = self.game_dict["grid_dt"]
         self.grid_pos = self.character.grid_pos[:]
-        self.range = self.object_dict["range"][:]
 
     def init_vec(self):
         self.offset = self.dict["offset"]
         self.cast_offset = self.dict["cast_offset"]
         character_offset = 0
         if self.character.pos_dt[0] != 0:
-            character_offset = self.grid_dt[0] * self.character.d_pos[0][0] - self.character.pos_dt[0]
+            character_offset = self.grid_dt[0] * self.character.pos_buffer[0][0] - self.character.pos_dt[0]
         self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0] + self.cast_offset[0] + character_offset,
                        self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1] + self.cast_offset[1])
+        self.pos_buffer = self.object_dict["range"][:]
         self.pos_dt = vec(0, 0)
         self.vel = vec(0, 0)
-        self.speed = vec(self.object_dict["speed"])
+        self.movespeed = vec(self.object_dict["movespeed"])
 
     def init_image(self):
         self.image = self.object_dict["image"]
@@ -120,25 +120,25 @@ class Spell(pygame.sprite.Sprite):
             self.dir = 1
 
     def move(self):
-        if len(self.range) > 0:
-            if 0 <= self.grid_pos[0] + self.range[0][0] < 2 * self.grid_size[0] and 0 <= self.grid_pos[1] + self.range[0][1] < 2 * self.grid_size[1]:
+        if len(self.pos_buffer) > 0:
+            if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < 2 * self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < 2 * self.grid_size[1]:
                 if self.vel == (0, 0):
-                    self.pos_dt[0] = self.game_dict["pos"]["player"][0] + (self.grid_pos[0] + self.range[0][0]) * self.grid_dt[0] - self.pos[0]
-                    self.pos_dt[1] = self.game_dict["pos"]["player"][1] + (self.grid_pos[1] + self.range[0][1]) * self.grid_dt[1] - self.pos[1]
-                    self.vel.x = self.range[0][0] * self.speed[0]
-                    self.vel.y = self.range[0][1] * self.speed[1]
+                    self.pos_dt[0] = self.game_dict["pos"]["player"][0] + (self.grid_pos[0] + self.pos_buffer[0][0]) * self.grid_dt[0] - self.pos[0]
+                    self.pos_dt[1] = self.game_dict["pos"]["player"][1] + (self.grid_pos[1] + self.pos_buffer[0][1]) * self.grid_dt[1] - self.pos[1]
+                    self.vel.x = self.pos_buffer[0][0] * self.movespeed[0]
+                    self.vel.y = self.pos_buffer[0][1] * self.movespeed[1]
 
-                if self.range[0][0] * self.pos_dt[0] > 0 or self.range[0][1] * self.pos_dt[1] > 0:
+                if self.pos_buffer[0][0] * self.pos_dt[0] > 0 or self.pos_buffer[0][1] * self.pos_dt[1] > 0:
                     self.pos += self.vel * self.game.dt
                     self.pos_dt -= self.vel * self.game.dt
                 else:
-                    self.grid_pos[0] += self.range[0][0]
-                    self.grid_pos[1] += self.range[0][1]
+                    self.grid_pos[0] += self.pos_buffer[0][0]
+                    self.grid_pos[1] += self.pos_buffer[0][1]
                     self.pos[0] = self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0]
                     self.pos[1] = self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1]
                     self.pos_dt = vec(0, 0)
                     self.vel = vec(0, 0)
-                    del self.range[0]
+                    del self.pos_buffer[0]
             else:
                 self.kill()
         else:
@@ -152,27 +152,56 @@ class Spell(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, game, dict, game_dict=None, character="player"):
+    def __init__(self, game, dict, game_dict=None, object="player"):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.characters
-        self._layer = LAYER_CHARACTERS
+        self._layer = dict["layer"]
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         # Initialization
-        self.dict, self.char_dict, self.game_dict = dict, dict[character], game_dict
-        self.init_dict()
+        self.init_dict(dict, game_dict, object), self.init_settings(), self.init_vec(), self.init_image()
         self.dt = game.dt
 
-        # Vector
-        self.pos = vec(self.pos)
-        self.pos_dt = vec(0, 0)
-        self.vel = vec(0, 0)
-        self.d_pos = []
+    def init_dict(self, dict, game_dict, object):
+        self.dict = dict
+        self.game_dict = game_dict
+        self.object_dict = self.dict[object]
 
-        # Settings
+    def init_settings(self):
+        # Status
+        self.name = self.object_dict["name"]
+        self.level = self.object_dict["level"]
+        self.max_health = self.object_dict["max_health"]
+        self.health = self.object_dict["health"]
+        self.max_mana = self.object_dict["max_mana"]
+        self.mana = self.object_dict["mana"]
+
+        # Movement
+        self.grid_size = self.game_dict["grid_size"]
+        self.grid_dt = self.game_dict["grid_dt"]
+        self.grid_pos = self.object_dict["grid_pos"][:]
+
+        # Gameplay
         self.last_attack = pygame.time.get_ticks()
-        self.attack_rate = self.char_dict["attack_rate"]
+        self.attack_rate = self.object_dict["attack_rate"]
+
+    def init_vec(self):
+        self.pos = vec(self.object_dict["pos"])
+        self.pos_reset = vec(self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0], self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1])
+        self.pos_dt = vec(0, 0)
+        self.pos_buffer = []
+        self.vel = vec(0, 0)
+        self.movespeed = vec(self.object_dict["speed"])
+
+    def init_image(self):
+        self.image = self.object_dict["image"]
+        self.table = self.object_dict["table"]
+        self.size = self.object_dict["size"]
+        self.side = self.object_dict["side"]
+        self.center = self.object_dict["center"]
+        self.bobbing = self.object_dict["bobbing"]
+        self.animation_time = self.object_dict["animation_time"]
 
         # Image
         if self.table:
@@ -184,8 +213,6 @@ class Player(pygame.sprite.Sprite):
         else:
             self.image = load_image(self.game.graphics_folder, self.image)
         self.rect = self.image.get_rect()
-        self.rect.x = self.pos[0]
-        self.rect.y = self.pos[1]
 
         # Center
         if self.center:
@@ -197,63 +224,37 @@ class Player(pygame.sprite.Sprite):
             self.step = 0
             self.dir = 1
 
-    def init_dict(self):
-        self.center = self.dict["center"]
-        self.bobbing = self.dict["bobbing"]
-
-        self.name = self.char_dict["name"]
-        self.pos = self.char_dict["pos"]
-        self.grid_pos = self.char_dict["grid_pos"]
-        self.table = self.char_dict["table"]
-
-        self.image = self.char_dict["image"]
-        self.size = self.char_dict["size"]
-        self.side = self.char_dict["side"]
-        self.animation_time = self.char_dict["animation_time"]
-
-        self.level = self.char_dict["level"]
-        self.max_health = self.char_dict["max_health"]
-        self.health = self.char_dict["health"]
-        self.max_mana = self.char_dict["max_mana"]
-        self.mana = self.char_dict["mana"]
-
-        self.grid_size = self.game_dict["grid_size"]
-        self.grid_dt = self.game_dict["grid_dt"]
-        self.movespeed = self.game_dict["movespeed"]
-        self.spell_color = self.game_dict["color"]["spell"]
-
     def move(self, dx=0, dy=0):
-        if len(self.d_pos) < 3:
-            self.d_pos.append(vec(dx, dy))
+        if len(self.pos_buffer) < 3:
+            self.pos_buffer.append([dx, dy])
 
     def update_move(self):
-        if len(self.d_pos) > 0:
-            if 0 <= self.grid_pos[0] + self.d_pos[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.d_pos[0][1] < self.grid_size[1]:
-                if self.vel == (0, 0) and self.pos_dt == (0, 0):
-                    self.pos_dt[0] = self.d_pos[0][0] * self.grid_dt[0]
-                    self.pos_dt[1] = self.d_pos[0][1] * self.grid_dt[1]
-                    self.vel = self.d_pos[0] * self.movespeed
+        if len(self.pos_buffer) > 0:
+            if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < self.grid_size[1]:
+                if self.vel == (0, 0):
+                    self.pos_dt[0] = self.pos_buffer[0][0] * self.grid_dt[0]
+                    self.pos_dt[1] = self.pos_buffer[0][1] * self.grid_dt[1]
+                    self.vel.x = self.pos_buffer[0][0] * self.movespeed[0]
+                    self.vel.y = self.pos_buffer[0][1] * self.movespeed[1]
 
-                if self.d_pos[0][0] * self.pos_dt[0] > 0 or self.d_pos[0][1] * self.pos_dt[1] > 0:
+                if self.pos_buffer[0][0] * self.pos_dt[0] > 0 or self.pos_buffer[0][1] * self.pos_dt[1] > 0:
                     self.pos += self.vel * self.game.dt
                     self.pos_dt -= self.vel * self.game.dt
                 else:
-                    self.grid_pos += self.d_pos[0]
-                    self.pos.x = self.char_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0]
-                    self.pos.y = self.char_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1]
+                    self.grid_pos[0] += self.pos_buffer[0][0]
+                    self.grid_pos[1] += self.pos_buffer[0][1]
+                    self.pos.x = self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0]
+                    self.pos.y = self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1]
                     self.pos_dt = vec(0, 0)
                     self.vel = vec(0, 0)
-                    del self.d_pos[0]
+                    del self.pos_buffer[0]
             else:
-                del self.d_pos[0]
+                del self.pos_buffer[0]
 
     def draw_debug_move(self):
         pos_x = 165 + self.grid_pos[0] * self.grid_dt[0]
         pos_y = 330 + self.grid_pos[1] * self.grid_dt[1]
         pygame.draw.rect(self.game.gameDisplay, RED, (pos_x, pos_y, 110, 60))
-
-    def draw_ui(self):
-        pass
 
     def get_keys(self):
         keys = pygame.key.get_pressed()
