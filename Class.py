@@ -80,7 +80,10 @@ class Spell(pygame.sprite.Sprite):
     def init_vec(self):
         self.offset = self.dict["offset"]
         self.cast_offset = self.dict["cast_offset"]
-        self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0] + self.cast_offset[0],
+        character_offset = 0
+        if self.character.pos_dt[0] != 0:
+            character_offset = self.grid_dt[0] * self.character.d_pos[0][0] - self.character.pos_dt[0]
+        self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0] + self.cast_offset[0] + character_offset,
                        self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1] + self.cast_offset[1])
         self.pos_dt = vec(0, 0)
         self.vel = vec(0, 0)
@@ -167,6 +170,10 @@ class Player(pygame.sprite.Sprite):
         self.vel = vec(0, 0)
         self.d_pos = []
 
+        # Settings
+        self.last_attack = pygame.time.get_ticks()
+        self.attack_rate = self.char_dict["attack_rate"]
+
         # Image
         if self.table:
             self.index = 0
@@ -248,7 +255,15 @@ class Player(pygame.sprite.Sprite):
     def draw_ui(self):
         pass
 
+    def get_keys(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_x] or keys[pygame.K_SPACE]:
+            if pygame.time.get_ticks() - self.last_attack >= self.attack_rate:
+                Spell(self.game, SPELL_DICT, self.game_dict, "energy_ball", self)
+                self.last_attack = pygame.time.get_ticks()
+
     def update(self):
+        self.get_keys()
         self.update_move()
         self.game.update_sprite(self)
 

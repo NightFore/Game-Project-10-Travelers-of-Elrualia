@@ -170,9 +170,6 @@ class Game:
                 if event.key == pygame.K_k:
                     self.enemy.move(dy=+1)
 
-                if event.key == pygame.K_x:
-                    Spell(self, SPELL_DICT, GAME_DICT, "energy_ball", self.player)
-
     def update(self):
         self.all_sprites.update()
 

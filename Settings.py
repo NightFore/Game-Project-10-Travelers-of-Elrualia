@@ -53,7 +53,7 @@ UI_DICT = {"grid_size": [4, 4],
 
 
 
-GAME_DICT = {"grid_size": [4, 4], "grid_dt": [120, 70], "movespeed": 600,
+GAME_DICT = {"grid_size": [4, 4], "grid_dt": [120, 70], "movespeed": 625,
              "pos": {"player": [220, 360], "enemy": [0, 0],
                      "player_name": [0, 0], "enemy_name": [0, 0], "enemy_name_dt": [0, 0],
                      "player_level": [0, 0], "player_exp": [0, 0], "player_mana": [0, 0],
@@ -66,7 +66,8 @@ GAME_DICT = {"grid_size": [4, 4], "grid_dt": [120, 70], "movespeed": 600,
 CHARACTER_DICT = {"center": True, "bobbing": False,
                   "player": {"name": "Player", "pos": [208, 332], "grid_pos": [0, 0], "table": True,
                              "image": "character_oco_Knight_Idle_strip_noBKG_256x256.png", "size": [256, 256], "side": 0, "animation_time": 0.075,
-                             "level": 1, "max_health": 100, "health": 100, "max_mana": 5, "mana": 3.75},
+                             "level": 1, "max_health": 100, "health": 100, "max_mana": 5, "mana": 3.75,
+                             "attack_rate": 225},
                   "skeleton": {"name": "Skeleton", "grid_pos": [0, 0],
                                "image": "character_pipoya_enemy_04_1.png", "size": [32, 32], "side": 1,
                                "level": 1, "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50,
