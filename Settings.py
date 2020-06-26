@@ -69,8 +69,9 @@ CHARACTER_DICT = {"layer": 2,
                              "table": True, "size": [256, 256], "animation_time": 0.075, "speed": [625, 625],
                              "level": 1, "max_health": 100, "health": 100, "max_mana": 5, "mana": 3.75,
                              "attack_rate": 225},
-                  "skeleton": {"name": "Skeleton", "grid_pos": [0, 0],
-                               "image": "character_pipoya_enemy_04_1.png", "size": [32, 32], "side": 1,
+                  "skeleton": {"name": "Skeleton", "pos": [700, 360], "grid_pos": [0, 0],
+                               "image": "character_pipoya_enemy_04_1.png", "side": 1, "center": True, "bobbing": False,
+                               "table": True, "size": [32, 32], "animation_time": 0.075, "speed": [625, 625],
                                "level": 1, "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50,
                                "move_frequency": 1000}}
 

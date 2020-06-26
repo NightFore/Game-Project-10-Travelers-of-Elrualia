@@ -20,7 +20,7 @@ class Game:
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.mixer.init()
         pygame.init()
-        pygame.key.set_repeat(300, 75)
+        pygame.key.set_repeat(125, 150)
         self.gameDisplay = ScaledGame(project_title, screen_size, FPS)
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick(FPS) / 1000
@@ -73,12 +73,16 @@ class Game:
             image_rect.center = (x, y)
         self.gameDisplay.blit(image, image_rect)
 
-    def update_sprite(self, sprite):
+    def update_sprite(self, sprite, move=False, keys=False):
         sprite.rect.x, sprite.rect.y = int(sprite.pos[0]), int(sprite.pos[1])
         if sprite.table:
             update_time_dependent(sprite)
         if sprite.bobbing:
             update_bobbing(sprite)
+        if move:
+            sprite.move()
+        if keys:
+            sprite.get_keys()
 
     def load_data(self):
         self.game_folder = path.dirname(__file__)
@@ -120,7 +124,7 @@ class Game:
         self.items = pygame.sprite.Group()
 
         self.player = Player(self, CHARACTER_DICT, GAME_DICT, "player")
-        self.enemy = Enemy(self, ENEMY_DICT, UI_DICT, "skeleton")
+        self.enemy = Enemy(self, CHARACTER_DICT, GAME_DICT, "skeleton")
 
     def run(self):
         self.playing = True
@@ -153,13 +157,13 @@ class Game:
                     self.debug_move = not self.debug_move
 
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    self.player.move(dx=-1)
+                    self.player.buffer_move(dx=-1)
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    self.player.move(dx=+1)
+                    self.player.buffer_move(dx=+1)
                 if event.key == pygame.K_UP or event.key == pygame.K_w:
-                    self.player.move(dy=-1)
+                    self.player.buffer_move(dy=-1)
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                    self.player.move(dy=+1)
+                    self.player.buffer_move(dy=+1)
 
                 if event.key == pygame.K_j:
                     self.enemy.move(dx=-1)
