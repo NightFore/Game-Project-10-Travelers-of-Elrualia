@@ -13,7 +13,7 @@ PLACEHOLDER = 32
     Others Functions
 """
 class Cursor(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, x_dt, y_dt, width=CURSOR_WIDTH, height=CURSOR_HEIGHT, color=CURSOR_COLOR, center=True):
+    def __init__(self, game, x, y, x_dt, y_dt, width, height, color, center=True):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites
@@ -51,25 +51,25 @@ class Cursor(pygame.sprite.Sprite):
 
 
 class Spell(pygame.sprite.Sprite):
-    def __init__(self, game, dict, game_dict=None, object=None, character=None):
+    def __init__(self, game, dict, object=None, character=None):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.spell
-        self._layer = dict["layer"]
+        self._layer = self.game.spell_dict["layer"]
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         # Initialization
         self.character = character
-        self.init_dict(dict, game_dict, object), self.init_settings(), self.init_vec(), self.init_image()
+        self.init_dict(dict, object), self.init_settings(), self.init_vec(), self.init_image()
         self.dt = game.dt
 
         # Settings
         self.spawn_time = pygame.time.get_ticks()
 
-    def init_dict(self, dict, game_dict, object):
+    def init_dict(self, dict, object):
         self.dict = dict
-        self.game_dict = game_dict
         self.object_dict = self.dict[object]
+        self.game_dict = self.game.game_dict
 
     def init_settings(self):
         self.grid_size = self.game_dict["grid_size"]
@@ -152,21 +152,21 @@ class Spell(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, game, dict, game_dict=None, object="player"):
+    def __init__(self, game, dict, object="player", character=None):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.characters
-        self._layer = dict["layer"]
+        self._layer = self.game.character_dict["layer"]
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         # Initialization
-        self.init_dict(dict, game_dict, object), self.init_settings(), self.init_vec(), self.init_image()
+        self.init_dict(dict, object), self.init_settings(), self.init_vec(), self.init_image()
         self.dt = game.dt
 
-    def init_dict(self, dict, game_dict, object):
+    def init_dict(self, dict, object):
         self.dict = dict
-        self.game_dict = game_dict
         self.object_dict = self.dict[object]
+        self.game_dict = self.game.game_dict
 
     def init_settings(self):
         # Status
@@ -261,7 +261,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_x] or keys[pygame.K_SPACE]:
             if pygame.time.get_ticks() - self.last_attack >= self.attack_rate:
-                Spell(self.game, SPELL_DICT, self.game_dict, "energy_ball", self)
+                Spell(self.game, self.game.spell_dict, "energy_ball", self)
                 self.last_attack = pygame.time.get_ticks()
 
     def draw_ui(self):
@@ -274,21 +274,21 @@ class Player(pygame.sprite.Sprite):
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, game, dict, game_dict=None, object="player"):
+    def __init__(self, game, dict, object="player", character=None):
         # Setup
         self.game = game
         self.groups = self.game.all_sprites, self.game.characters
-        self._layer = dict["layer"]
+        self._layer = self.game.character_dict["layer"]
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         # Initialization
-        self.init_dict(dict, game_dict, object), self.init_settings(), self.init_vec(), self.init_image()
+        self.init_dict(dict, object), self.init_settings(), self.init_vec(), self.init_image()
         self.dt = game.dt
 
-    def init_dict(self, dict, game_dict, object):
+    def init_dict(self, dict, object):
         self.dict = dict
-        self.game_dict = game_dict
         self.object_dict = self.dict[object]
+        self.game_dict = self.game.game_dict
 
     def init_settings(self):
         # Status

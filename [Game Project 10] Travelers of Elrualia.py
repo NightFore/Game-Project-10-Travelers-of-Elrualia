@@ -85,6 +85,7 @@ class Game:
             sprite.get_keys()
 
     def load_data(self):
+        # Directories
         self.game_folder = path.dirname(__file__)
         self.data_folder = path.join(self.game_folder, "data")
         self.graphics_folder = path.join(self.data_folder, "graphics")
@@ -93,15 +94,21 @@ class Game:
         self.music_folder = path.join(self.data_folder, "music")
         self.map_folder = path.join(self.data_folder, "map")
 
+        # Dict
+        self.game_dict = GAME_DICT
+        self.character_dict = CHARACTER_DICT
+        self.spell_dict = SPELL_DICT
+
+        # Graphics
+        self.background_color = self.game_dict["background_color"]
+        self.background_image = load_image(self.graphics_folder, self.game_dict["background_image"])
+
         # Font
         self.font = None
 
         # Pause Screen
         self.dim_screen = pygame.Surface(self.gameDisplay.get_size()).convert_alpha()
         self.dim_screen.fill((100, 100, 100, 120))
-
-        # Graphics
-        self.background_battle_img = load_image(self.graphics_folder, BACKGROUND_BATTLE_IMG)
 
         # Image Effects
         self.effect_images = {}
@@ -123,8 +130,8 @@ class Game:
         self.spell = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
 
-        self.player = Player(self, CHARACTER_DICT, GAME_DICT, "player")
-        self.enemy = Enemy(self, CHARACTER_DICT, GAME_DICT, "skeleton")
+        self.player = Player(self, self.character_dict, "player")
+        self.enemy = Enemy(self, self.character_dict, "skeleton")
 
     def run(self):
         self.playing = True
@@ -179,8 +186,8 @@ class Game:
 
     def draw(self):
         # Background
-        self.gameDisplay.fill(BACKGROUND_COLOR)
-        self.gameDisplay.blit(self.background_battle_img, (0, 0))
+        self.gameDisplay.fill(self.background_color)
+        self.gameDisplay.blit(self.background_image, (0, 0))
 
         if self.debug_move:
             self.player.draw_debug_move()
