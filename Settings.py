@@ -40,19 +40,19 @@ GAME_DICT = {"background_image": "background_battle.png", "background_color": LI
              "color": {"health": GREEN, "mana": LIGHTSKYBLUE, "spell": [RED, BLUE, GREEN]},
              "font": None}
 
-CHARACTER_DICT = {"layer": 2,
-                  "player": {"name": "Player", "pos": [208, 332], "grid_pos": [0, 0],
-                             "image": "character_oco_Knight_Idle_strip_noBKG_256x256.png", "side": 0, "center": True, "bobbing": False,
-                             "table": True, "size": [256, 256], "animation_time": 0.075, "speed": [625, 625],
+CHARACTER_DICT = {"layer": 3,
+                  "player": {"name": "Player", "pos": [220, 320], "grid_pos": [0, 0],
+                             "image": "character_SecretHideout_Gunner_Blue_Idle_960x192_192x192.png", "side": 0, "center": True, "bobbing": False, "flip": False,
+                             "table": True, "size": [192, 192], "animation_time": 0.150, "speed": [625, 625],
                              "level": 1, "max_health": 100, "health": 100, "max_mana": 5, "mana": 3.75,
                              "attack_rate": 225},
-                  "skeleton": {"name": "Skeleton", "pos": [700, 360], "grid_pos": [0, 0],
-                               "image": "character_pipoya_enemy_04_1.png", "side": 1, "center": True, "bobbing": False,
-                               "table": True, "size": [32, 32], "animation_time": 0.075, "speed": [625, 625],
-                               "level": 1, "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50,
-                               "move_frequency": 1000}}
+                  "enemy": {"name": "Enemy", "pos": [700, 320], "grid_pos": [0, 0],
+                            "image": "character_SecretHideout_Gunner_Red_Idle_960x192_192x192.png", "side": 0, "center": True, "bobbing": False, "flip": True,
+                            "table": True, "size": [192, 192], "animation_time": 0.150, "speed": [625, 625],
+                            "level": 1, "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50,
+                            "move_frequency": 1000}}
 
-SPELL_DICT = {"layer": 3, "offset": [0, -40], "cast_offset": [40, 0],
-              "energy_ball": {"image": "effect_pimen_EnergyBall.png", "side": 0, "center": True, "bobbing": False,
+SPELL_DICT = {"layer": 2, "offset": [0, -47], "cast_offset": [100, 0],
+              "energy_ball": {"image": "effect_pimen_EnergyBall.png", "side": 0, "center": True, "bobbing": False, "flip": False,
                               "table": True, "size": [128, 128], "animation_time": 0.100, "movespeed": [800, 800],
                               "damage": 10, "range": 8 * [[1, 0]]}}

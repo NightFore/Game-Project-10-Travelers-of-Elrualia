@@ -131,7 +131,7 @@ class Game:
         self.items = pygame.sprite.Group()
 
         self.player = Player(self, self.character_dict, "player")
-        self.enemy = Enemy(self, self.character_dict, "skeleton")
+        self.enemy = Enemy(self, self.character_dict, "enemy")
 
     def run(self):
         self.playing = True

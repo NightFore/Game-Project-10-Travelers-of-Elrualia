@@ -12,44 +12,6 @@ PLACEHOLDER = 32
 """
     Others Functions
 """
-class Cursor(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, x_dt, y_dt, width, height, color, center=True):
-        # Setup
-        self.game = game
-        self.groups = self.game.all_sprites
-        self._layer = LAYER_CURSOR
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        # Position
-        self.pos = [x, y]
-        self.pos_dt = [x_dt, y_dt]
-
-        # Surface
-        self.image = transparent_surface(width, height, color, 6)
-        self.rect = self.image.get_rect()
-        self.rect.x = self.pos[0]
-        self.rect.y = self.pos[1]
-
-        # Center
-        self.center = center
-        if self.center:
-            self.rect.center = self.pos
-
-    def move(self, dx=0, dy=0):
-        self.pos[0] += dx * self.pos_dt[0]
-        self.pos[1] += dy * self.pos_dt[1]
-        self.rect.x = self.pos[0]
-        self.rect.y = self.pos[1]
-
-    def update(self):
-        self.rect.x = self.pos[0]
-        self.rect.y = self.pos[1]
-
-        if self.center:
-            self.rect.center = self.pos
-
-
-
 class Spell(pygame.sprite.Sprite):
     def __init__(self, game, dict, object=None, character=None):
         # Setup
@@ -96,6 +58,7 @@ class Spell(pygame.sprite.Sprite):
         self.side = self.object_dict["side"]
         self.center = self.object_dict["center"]
         self.bobbing = self.object_dict["bobbing"]
+        self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
 
         # Image
@@ -118,6 +81,16 @@ class Spell(pygame.sprite.Sprite):
             self.tween = tween.linear
             self.step = 0
             self.dir = 1
+
+        # Flip
+        if self.flip:
+            if self.table:
+                for side in range(len(self.images_side)):
+                    for index in range(len(self.images_side[side])):
+                        self.images_side[side][index] = pygame.transform.flip(self.images_side[side][index], True, False)
+                        self.image = self.images[self.index]
+            else:
+                self.image = pygame.transform.flip(self.image, True, False)
 
     def move(self):
         if len(self.pos_buffer) > 0:
@@ -202,6 +175,7 @@ class Player(pygame.sprite.Sprite):
         self.side = self.object_dict["side"]
         self.center = self.object_dict["center"]
         self.bobbing = self.object_dict["bobbing"]
+        self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
 
         # Image
@@ -224,6 +198,16 @@ class Player(pygame.sprite.Sprite):
             self.tween = tween.linear
             self.step = 0
             self.dir = 1
+
+        # Flip
+        if self.flip:
+            if self.table:
+                for side in range(len(self.images_side)):
+                    for index in range(len(self.images_side[side])):
+                        self.images_side[side][index] = pygame.transform.flip(self.images_side[side][index], True, False)
+                        self.image = self.images[self.index]
+            else:
+                self.image = pygame.transform.flip(self.image, True, False)
 
     def move(self):
         if len(self.pos_buffer) > 0:
@@ -314,8 +298,7 @@ class Enemy(pygame.sprite.Sprite):
         self.vel = vec(0, 0)
         self.movespeed = vec(self.object_dict["speed"])
 
-        self.pos_reset = vec(self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0],
-                             self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1])
+        self.pos_reset = vec(self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0], self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1])
         self.pos_buffer = []
 
     def init_image(self):
@@ -325,6 +308,7 @@ class Enemy(pygame.sprite.Sprite):
         self.side = self.object_dict["side"]
         self.center = self.object_dict["center"]
         self.bobbing = self.object_dict["bobbing"]
+        self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
 
         # Image
@@ -348,6 +332,16 @@ class Enemy(pygame.sprite.Sprite):
             self.tween = tween.linear
             self.step = 0
             self.dir = 1
+
+        # Flip
+        if self.flip:
+            if self.table:
+                for side in range(len(self.images_side)):
+                    for index in range(len(self.images_side[side])):
+                        self.images_side[side][index] = pygame.transform.flip(self.images_side[side][index], True, False)
+                        self.image = self.images[self.index]
+            else:
+                self.image = pygame.transform.flip(self.image, True, False)
 
     def move(self):
         if len(self.pos_buffer) > 0:
