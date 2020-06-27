@@ -42,7 +42,7 @@ class Spell(pygame.sprite.Sprite):
         self.offset = self.character.object_dict["spell_offset"]
         self.cast_offset = self.character.object_dict["spell_cast_offset"]
         self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0] + self.cast_offset[0] + self.character.pos_dt[0],
-                       self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1] + self.cast_offset[1] + self.character.pos_dt[1])
+                       self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1] + self.cast_offset[1])
         self.pos_buffer = self.object_dict["range"][:]
         self.pos_dt = vec(0, 0)
         self.vel = vec(0, 0)
@@ -93,22 +93,19 @@ class Spell(pygame.sprite.Sprite):
         if len(self.pos_buffer) > 0:
             if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < 2 * self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < 2 * self.grid_size[1]:
                 if self.vel == (0, 0):
-                    self.pos_dt[0] = self.game_dict["pos"]["player"][0] + (self.grid_pos[0] + self.pos_buffer[0][0]) * self.grid_dt[0] - self.pos[0]
-                    self.pos_dt[1] = self.game_dict["pos"]["player"][1] + (self.grid_pos[1] + self.pos_buffer[0][1]) * self.grid_dt[1] - self.pos[1]
-                    self.vel.x = self.pos_buffer[0][0] * self.movespeed[0]
-                    self.vel.y = self.pos_buffer[0][1] * self.movespeed[1]
-
-                if self.pos_buffer[0][0] * self.pos_dt[0] > 0 or self.pos_buffer[0][1] * self.pos_dt[1] > 0:
+                    self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
+                    self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
+                elif abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
-                    self.pos_dt -= self.vel * self.game.dt
+                    self.pos_dt[0] += self.vel.x * self.game.dt
+                    self.pos_dt[1] += self.vel.y * self.game.dt
                 else:
                     self.grid_pos[0] += self.pos_buffer[0][0]
                     self.grid_pos[1] += self.pos_buffer[0][1]
-                    self.pos[0] = self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0]
-                    self.pos[1] = self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1]
-                    self.pos_dt = vec(0, 0)
+                    self.pos.x = self.pos.x - self.pos_dt[0] + self.grid_dt[0] * self.pos_buffer[0][0]
+                    self.pos.y = self.pos.y - self.pos_dt[1] + self.grid_dt[1] * self.pos_buffer[0][1]
+                    self.pos_dt = [0, 0]
                     self.vel = vec(0, 0)
-                    del self.pos_buffer[0]
             else:
                 self.kill()
         else:
@@ -210,18 +207,18 @@ class Player(pygame.sprite.Sprite):
         if len(self.pos_buffer) > 0:
             if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < self.grid_size[1]:
                 if self.vel == (0, 0):
-                    self.pos_dt = [0, 0]
                     self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
                     self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
-                elif self.pos_dt[0] + self.vel.x * self.pos_buffer[0][0] * self.game.dt <= self.grid_dt[0] and self.pos_dt[1] + self.vel.y * self.pos_buffer[0][1] * self.game.dt <= self.grid_dt[1]:
+                elif abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
-                    self.pos_dt[0] += self.vel.x * self.pos_buffer[0][0] * self.game.dt
-                    self.pos_dt[1] += self.vel.y * self.pos_buffer[0][1] * self.game.dt
+                    self.pos_dt[0] += self.vel.x * self.game.dt
+                    self.pos_dt[1] += self.vel.y * self.game.dt
                 else:
                     self.grid_pos[0] += self.pos_buffer[0][0]
                     self.grid_pos[1] += self.pos_buffer[0][1]
-                    self.pos.x = self.pos.x - (self.pos_dt[0] - self.grid_dt[0]) * self.pos_buffer[0][0]
-                    self.pos.y = self.pos.y - (self.pos_dt[1] - self.grid_dt[1]) * self.pos_buffer[0][1]
+                    self.pos.x = self.pos.x - self.pos_dt[0] + self.grid_dt[0] * self.pos_buffer[0][0]
+                    self.pos.y = self.pos.y - self.pos_dt[1] + self.grid_dt[1] * self.pos_buffer[0][1]
+                    self.pos_dt = [0, 0]
                     self.vel = vec(0, 0)
                     del self.pos_buffer[0]
             else:
@@ -344,18 +341,18 @@ class Enemy(pygame.sprite.Sprite):
         if len(self.pos_buffer) > 0:
             if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < self.grid_size[1]:
                 if self.vel == (0, 0):
-                    self.pos_dt = [0, 0]
                     self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
                     self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
-                elif self.pos_dt[0] + self.vel.x * self.pos_buffer[0][0] * self.game.dt <= self.grid_dt[0] and self.pos_dt[1] + self.vel.y * self.pos_buffer[0][1] * self.game.dt <= self.grid_dt[1]:
+                elif abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
-                    self.pos_dt[0] += self.vel.x * self.pos_buffer[0][0] * self.game.dt
-                    self.pos_dt[1] += self.vel.y * self.pos_buffer[0][1] * self.game.dt
+                    self.pos_dt[0] += self.vel.x * self.game.dt
+                    self.pos_dt[1] += self.vel.y * self.game.dt
                 else:
                     self.grid_pos[0] += self.pos_buffer[0][0]
                     self.grid_pos[1] += self.pos_buffer[0][1]
-                    self.pos.x = self.pos.x - (self.pos_dt[0] - self.grid_dt[0]) * self.pos_buffer[0][0]
-                    self.pos.y = self.pos.y - (self.pos_dt[1] - self.grid_dt[1]) * self.pos_buffer[0][1]
+                    self.pos.x = self.pos.x - self.pos_dt[0] + self.grid_dt[0] * self.pos_buffer[0][0]
+                    self.pos.y = self.pos.y - self.pos_dt[1] + self.grid_dt[1] * self.pos_buffer[0][1]
+                    self.pos_dt = [0, 0]
                     self.vel = vec(0, 0)
                     del self.pos_buffer[0]
             else:
