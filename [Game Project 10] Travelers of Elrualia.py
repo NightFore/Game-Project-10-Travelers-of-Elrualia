@@ -20,7 +20,7 @@ class Game:
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.mixer.init()
         pygame.init()
-        pygame.key.set_repeat(125, 150)
+        pygame.key.set_repeat(50, 200)
         self.gameDisplay = ScaledGame(project_title, screen_size, FPS)
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick(FPS) / 1000
@@ -191,16 +191,17 @@ class Game:
 
         if self.debug_move:
             self.player.draw_debug_move()
-
-        # Interface
-        for sprite in self.characters:
-            sprite.draw_ui()
+            self.enemy.draw_debug_move()
 
         # Sprite
         for sprite in self.all_sprites:
             self.gameDisplay.blit(sprite.image, sprite)
             if self.debug_move:
                 pygame.draw.rect(self.gameDisplay, CYAN, sprite.rect, 1)
+
+        # Interface
+        for sprite in self.characters:
+            sprite.draw_ui()
 
         # Pause
         if self.paused:

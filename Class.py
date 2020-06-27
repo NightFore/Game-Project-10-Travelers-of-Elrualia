@@ -39,13 +39,10 @@ class Spell(pygame.sprite.Sprite):
         self.grid_pos = self.character.grid_pos[:]
 
     def init_vec(self):
-        self.offset = self.dict["offset"]
-        self.cast_offset = self.dict["cast_offset"]
-        character_offset = 0
-        if self.character.pos_dt[0] != 0:
-            character_offset = self.grid_dt[0] * self.character.pos_buffer[0][0] - self.character.pos_dt[0]
-        self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0] + self.cast_offset[0] + character_offset,
-                       self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1] + self.cast_offset[1])
+        self.offset = self.character.object_dict["spell_offset"]
+        self.cast_offset = self.character.object_dict["spell_cast_offset"]
+        self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0] + self.cast_offset[0] + self.character.pos_dt[0],
+                       self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1] + self.cast_offset[1] + self.character.pos_dt[1])
         self.pos_buffer = self.object_dict["range"][:]
         self.pos_dt = vec(0, 0)
         self.vel = vec(0, 0)
@@ -161,9 +158,9 @@ class Player(pygame.sprite.Sprite):
 
     def init_vec(self):
         self.pos = vec(self.object_dict["pos"])
-        self.pos_dt = vec(0, 0)
+        self.pos_dt = [0, 0]
         self.vel = vec(0, 0)
-        self.movespeed = vec(self.object_dict["speed"])
+        self.movespeed = self.object_dict["speed"]
 
         self.pos_reset = vec(self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0], self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1])
         self.pos_buffer = []
@@ -213,33 +210,31 @@ class Player(pygame.sprite.Sprite):
         if len(self.pos_buffer) > 0:
             if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < self.grid_size[1]:
                 if self.vel == (0, 0):
-                    self.pos_dt[0] = self.pos_buffer[0][0] * self.grid_dt[0]
-                    self.pos_dt[1] = self.pos_buffer[0][1] * self.grid_dt[1]
-                    self.vel.x = self.pos_buffer[0][0] * self.movespeed[0]
-                    self.vel.y = self.pos_buffer[0][1] * self.movespeed[1]
-
-                if self.pos_buffer[0][0] * self.pos_dt[0] > 0 or self.pos_buffer[0][1] * self.pos_dt[1] > 0:
+                    self.pos_dt = [0, 0]
+                    self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
+                    self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
+                elif self.pos_dt[0] + self.vel.x * self.pos_buffer[0][0] * self.game.dt <= self.grid_dt[0] and self.pos_dt[1] + self.vel.y * self.pos_buffer[0][1] * self.game.dt <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
-                    self.pos_dt -= self.vel * self.game.dt
+                    self.pos_dt[0] += self.vel.x * self.pos_buffer[0][0] * self.game.dt
+                    self.pos_dt[1] += self.vel.y * self.pos_buffer[0][1] * self.game.dt
                 else:
                     self.grid_pos[0] += self.pos_buffer[0][0]
                     self.grid_pos[1] += self.pos_buffer[0][1]
-                    self.pos.x = self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0]
-                    self.pos.y = self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1]
-                    self.pos_dt = vec(0, 0)
+                    self.pos.x = self.pos.x - (self.pos_dt[0] - self.grid_dt[0]) * self.pos_buffer[0][0]
+                    self.pos.y = self.pos.y - (self.pos_dt[1] - self.grid_dt[1]) * self.pos_buffer[0][1]
                     self.vel = vec(0, 0)
                     del self.pos_buffer[0]
             else:
                 del self.pos_buffer[0]
 
     def buffer_move(self, dx=0, dy=0):
-        if len(self.pos_buffer) < 3:
+        if len(self.pos_buffer) < 2:
             self.pos_buffer.append([dx, dy])
 
     def draw_debug_move(self):
-        pos_x = 165 + self.grid_pos[0] * self.grid_dt[0]
-        pos_y = 330 + self.grid_pos[1] * self.grid_dt[1]
-        pygame.draw.rect(self.game.gameDisplay, RED, (pos_x, pos_y, 110, 60))
+        pos_x = self.object_dict["debug_pos"][0] + self.grid_pos[0] * self.grid_dt[0]
+        pos_y = self.object_dict["debug_pos"][1] + self.grid_pos[1] * self.grid_dt[1]
+        pygame.draw.rect(self.game.gameDisplay, self.object_dict["debug_color"], (pos_x, pos_y, self.object_dict["debug_dt"][0], self.object_dict["debug_dt"][1]))
 
     def get_keys(self):
         keys = pygame.key.get_pressed()
@@ -249,7 +244,9 @@ class Player(pygame.sprite.Sprite):
                 self.last_attack = pygame.time.get_ticks()
 
     def draw_ui(self):
-        pass
+        pos_x = int(self.pos[0]) + self.object_dict["hp_offset"][0]
+        pos_y = int(self.pos[1]) + self.object_dict["hp_offset"][1]
+        self.game.draw_text(str(self.health), self.game_dict["font"], self.game_dict["hp_size"], self.game_dict["hp_color"], pos_x, pos_y, align="center")
 
     def update(self):
         self.game.update_sprite(self, move=True, keys=True)
@@ -347,20 +344,18 @@ class Enemy(pygame.sprite.Sprite):
         if len(self.pos_buffer) > 0:
             if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < self.grid_size[1]:
                 if self.vel == (0, 0):
-                    self.pos_dt[0] = self.pos_buffer[0][0] * self.grid_dt[0]
-                    self.pos_dt[1] = self.pos_buffer[0][1] * self.grid_dt[1]
-                    self.vel.x = self.pos_buffer[0][0] * self.movespeed[0]
-                    self.vel.y = self.pos_buffer[0][1] * self.movespeed[1]
-
-                if self.pos_buffer[0][0] * self.pos_dt[0] > 0 or self.pos_buffer[0][1] * self.pos_dt[1] > 0:
+                    self.pos_dt = [0, 0]
+                    self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
+                    self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
+                elif self.pos_dt[0] + self.vel.x * self.pos_buffer[0][0] * self.game.dt <= self.grid_dt[0] and self.pos_dt[1] + self.vel.y * self.pos_buffer[0][1] * self.game.dt <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
-                    self.pos_dt -= self.vel * self.game.dt
+                    self.pos_dt[0] += self.vel.x * self.pos_buffer[0][0] * self.game.dt
+                    self.pos_dt[1] += self.vel.y * self.pos_buffer[0][1] * self.game.dt
                 else:
                     self.grid_pos[0] += self.pos_buffer[0][0]
                     self.grid_pos[1] += self.pos_buffer[0][1]
-                    self.pos.x = self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0]
-                    self.pos.y = self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1]
-                    self.pos_dt = vec(0, 0)
+                    self.pos.x = self.pos.x - (self.pos_dt[0] - self.grid_dt[0]) * self.pos_buffer[0][0]
+                    self.pos.y = self.pos.y - (self.pos_dt[1] - self.grid_dt[1]) * self.pos_buffer[0][1]
                     self.vel = vec(0, 0)
                     del self.pos_buffer[0]
             else:
@@ -376,9 +371,9 @@ class Enemy(pygame.sprite.Sprite):
             self.move()
 
     def draw_debug_move(self):
-        pos_x = 165 + self.grid_pos[0] * self.grid_dt[0]
-        pos_y = 330 + self.grid_pos[1] * self.grid_dt[1]
-        pygame.draw.rect(self.game.gameDisplay, RED, (pos_x, pos_y, 110, 60))
+        pos_x = self.object_dict["debug_pos"][0] + self.grid_pos[0] * self.grid_dt[0]
+        pos_y = self.object_dict["debug_pos"][1] + self.grid_pos[1] * self.grid_dt[1]
+        pygame.draw.rect(self.game.gameDisplay, self.object_dict["debug_color"], (pos_x, pos_y, self.object_dict["debug_dt"][0], self.object_dict["debug_dt"][1]))
 
     def draw_ui(self):
         pass
