@@ -149,6 +149,11 @@ class Player(pygame.sprite.Sprite):
         self.grid_dt = self.game_dict["grid_dt"]
         self.grid_pos = self.object_dict["grid_pos"][:]
 
+        self.hp_font = self.game_dict["hp_font"]
+        self.hp_size = self.game_dict["hp_size"]
+        self.hp_color = self.game_dict["hp_color"]
+        self.hp_offset = self.object_dict["hp_offset"][:]
+
         # Gameplay
         self.last_attack = pygame.time.get_ticks()
         self.attack_rate = self.object_dict["attack_rate"]
@@ -241,9 +246,7 @@ class Player(pygame.sprite.Sprite):
                 self.last_attack = pygame.time.get_ticks()
 
     def draw_ui(self):
-        pos_x = int(self.pos[0]) + self.object_dict["hp_offset"][0]
-        pos_y = int(self.pos[1]) + self.object_dict["hp_offset"][1]
-        self.game.draw_text(str(self.health), self.game_dict["font"], self.game_dict["hp_size"], self.game_dict["hp_color"], pos_x, pos_y, align="center")
+        self.game.draw_text(str(self.health), self.hp_font, self.hp_size, self.hp_color, int(self.pos[0] + self.hp_offset[0]), int(self.pos[1] + self.hp_offset[1]), align="center")
 
     def update(self):
         self.game.update_sprite(self, move=True, keys=True)
@@ -281,6 +284,11 @@ class Enemy(pygame.sprite.Sprite):
         self.grid_size = self.game_dict["grid_size"]
         self.grid_dt = self.game_dict["grid_dt"]
         self.grid_pos = self.object_dict["grid_pos"][:]
+
+        self.hp_font = self.game_dict["hp_font"]
+        self.hp_size = self.game_dict["hp_size"]
+        self.hp_color = self.game_dict["hp_color"]
+        self.hp_offset = self.object_dict["hp_offset"][:]
 
         # Gameplay
         self.move_time = pygame.time.get_ticks()
@@ -373,7 +381,7 @@ class Enemy(pygame.sprite.Sprite):
         pygame.draw.rect(self.game.gameDisplay, self.object_dict["debug_color"], (pos_x, pos_y, self.object_dict["debug_dt"][0], self.object_dict["debug_dt"][1]))
 
     def draw_ui(self):
-        pass
+        self.game.draw_text(str(self.health), self.hp_font, self.hp_size, self.hp_color, int(self.pos[0] + self.hp_offset[0]), int(self.pos[1] + self.hp_offset[1]), align="center")
 
     def update(self):
         self.game.update_sprite(self, move=True)

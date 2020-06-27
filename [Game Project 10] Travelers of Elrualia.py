@@ -74,15 +74,16 @@ class Game:
         self.gameDisplay.blit(image, image_rect)
 
     def update_sprite(self, sprite, move=False, keys=False):
-        sprite.rect.x, sprite.rect.y = int(sprite.pos[0]), int(sprite.pos[1])
-        if sprite.table:
-            update_time_dependent(sprite)
-        if sprite.bobbing:
-            update_bobbing(sprite)
         if move:
             sprite.move()
         if keys:
             sprite.get_keys()
+        if sprite.table:
+            update_time_dependent(sprite)
+        if sprite.center:
+            update_center(sprite)
+        if sprite.bobbing:
+            update_bobbing(sprite)
 
     def load_data(self):
         # Directories
@@ -189,15 +190,16 @@ class Game:
         self.gameDisplay.fill(self.background_color)
         self.gameDisplay.blit(self.background_image, (0, 0))
 
+        # Debug
         if self.debug_move:
             self.player.draw_debug_move()
             self.enemy.draw_debug_move()
+            for sprite in self.all_sprites:
+                pygame.draw.rect(self.gameDisplay, CYAN, sprite.rect, 1)
 
         # Sprite
         for sprite in self.all_sprites:
             self.gameDisplay.blit(sprite.image, sprite)
-            if self.debug_move:
-                pygame.draw.rect(self.gameDisplay, CYAN, sprite.rect, 1)
 
         # Interface
         for sprite in self.characters:

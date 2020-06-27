@@ -9,9 +9,12 @@ def update_time_dependent(sprite):
         sprite.current_time = 0
         sprite.index = (sprite.index + 1) % len(sprite.images)
         sprite.image = sprite.images[sprite.index]
+    sprite.image = pygame.transform.rotate(sprite.image, 0)
+
+
+def update_center(sprite):
     sprite.rect = sprite.image.get_rect()
     sprite.rect.center = sprite.pos
-    sprite.image = pygame.transform.rotate(sprite.image, 0)
 
 
 def update_bobbing(sprite):

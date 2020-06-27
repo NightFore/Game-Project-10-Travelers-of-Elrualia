@@ -31,7 +31,7 @@ ORANGE = 255, 120, 30
 """
 # Characters settings / 0: bottom, 1: left, 2: right, 3: top
 GAME_DICT = {"background_image": "background_battle.png", "background_color": LIGHTBLUE,
-             "hp_color": WHITE, "hp_size": 25,
+             "hp_font": None, "hp_color": WHITE, "hp_size": 25,
              "grid_size": [4, 4], "grid_dt": [120, 70],
              "pos": {"player": [220, 360], "enemy": [0, 0],
                      "player_name": [0, 0], "enemy_name": [0, 0], "enemy_name_dt": [0, 0],
@@ -43,13 +43,15 @@ GAME_DICT = {"background_image": "background_battle.png", "background_color": LI
 
 CHARACTER_DICT = {"layer": 3,
                   "player": {"name": "Player", "pos": [220, 320], "grid_pos": [0, 0],
-                             "hp_offset": [0, 55], "spell_offset": [0, -47], "spell_cast_offset": [100, 0],
+                             "hp_offset": [0, 55],
+                             "spell_offset": [0, -47], "spell_cast_offset": [100, 0],
                              "debug_color": BLUE, "debug_pos": [168, 333], "debug_dt": [104, 54],
                              "image": "character_SecretHideout_Gunner_Blue_Idle_960x192_192x192.png", "side": 0, "center": True, "bobbing": False, "flip": False,
                              "table": True, "size": [192, 192], "animation_time": 0.150,
                              "level": 1, "max_health": 100, "health": 100, "max_mana": 5, "mana": 3.75,
                              "speed": [625, 625], "attack_rate": 225},
                   "enemy": {"name": "Enemy", "pos": [700, 320], "grid_pos": [0, 0],
+                            "hp_offset": [0, 55],
                             "debug_color": RED, "debug_pos": [648, 333], "debug_dt": [104, 54],
                             "image": "character_SecretHideout_Gunner_Red_Idle_960x192_192x192.png", "side": 0, "center": True, "bobbing": False, "flip": True,
                             "table": True, "size": [192, 192], "animation_time": 0.150,
