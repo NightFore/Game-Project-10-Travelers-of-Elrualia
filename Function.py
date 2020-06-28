@@ -46,14 +46,6 @@ def load_image(image_path, image_directory):
         return pygame.image.load(path.join(image_path, image_directory)).convert_alpha()
 
 
-def load_rect(image_list):
-    rect_list = []
-    for image in image_list:
-        rect_list.append(image.get_rect())
-    return rect_list
-
-
-
 def load_tile_table(filename, width, height, colorkey=(0, 0, 0)):
     image = pygame.image.load(filename).convert_alpha()
     image.set_colorkey(colorkey)
@@ -74,33 +66,6 @@ def transparent_surface(width, height, color, border, colorkey=(0, 0, 0)):
     surface.fill(color)
     surface.fill(colorkey, surface.get_rect().inflate(-border, -border))
     return surface
-
-
-def collision(sprite_1, sprite_2, dx=0, dy=0):
-    sprite_1.pos[0] += dx
-    sprite_1.pos[1] += dy
-    sprite_1.rect.x = sprite_1.pos[0] * TILESIZE
-    sprite_1.rect.y = sprite_1.pos[1] * TILESIZE
-    collide = pygame.sprite.spritecollide(sprite_1, sprite_2, False)
-
-    sprite_1.pos[0] -= dx
-    sprite_1.pos[1] -= dy
-    sprite_1.rect.x = sprite_1.pos[0] * TILESIZE
-    sprite_1.rect.y = sprite_1.pos[1] * TILESIZE
-    return collide
-
-
-def reachable(list, i_loop, j_loop, rg):
-    for i in range(2 * i_loop + 1):
-        for j in range(2 * j_loop + 1):
-            if list[i][j]:
-                reach = False
-                for x in range(-rg, rg + 1):
-                    for y in range(-rg, rg + 1):
-                        if abs(x) + abs(y) == rg and 0 < i + x < 2 * i_loop + 1 and 0 < j + y < 2 * j_loop + 1:
-                            if list[i + x][j + y]:
-                                reach = True
-                list[i][j] = reach
 
 
 def sort_list(list, var, reverse=False):

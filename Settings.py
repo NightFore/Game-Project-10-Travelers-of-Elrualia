@@ -66,5 +66,5 @@ CHARACTER_DICT = {"layer": 3,
 SPELL_DICT = {"layer": 2,
               "energy_ball": {"image": "effect_pimen_EnergyBall.png", "side": 0, "center": True, "bobbing": False, "flip": False,
                               "table": True, "size": [128, 128], "animation_time": 0.025,
-                              "movespeed": [2 * GAME_DICT["platform_size"][0], 4 * GAME_DICT["platform_size"][1]],
+                              "movespeed": [2 * GAME_DICT["platform_size"][0], 4 * GAME_DICT["platform_size"][1]], "debug_movespeed": [250, 250],
                               "damage": 10, "range": 8 * [[1, 0]]}}

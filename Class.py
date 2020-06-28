@@ -38,6 +38,8 @@ class Spell(pygame.sprite.Sprite):
         self.grid_dt = self.game_dict["grid_dt"]
         self.grid_pos = self.character.grid_pos[:]
 
+        self.damage = self.object_dict["damage"]
+
     def init_vec(self):
         offset = [self.character.object_dict["spell_offset"][0] + self.character.object_dict["spell_cast_offset"][0] + self.character.pos_dt[0],
                   self.character.object_dict["spell_offset"][1] + self.character.object_dict["spell_cast_offset"][1]]
@@ -47,6 +49,7 @@ class Spell(pygame.sprite.Sprite):
         self.pos_dt = vec(offset[0], 0)
         self.vel = vec(0, 0)
         self.movespeed = vec(self.object_dict["movespeed"])
+        self.debug_movespeed = vec(self.object_dict["debug_movespeed"])
 
     def init_image(self):
         self.image = self.object_dict["image"]
@@ -93,8 +96,12 @@ class Spell(pygame.sprite.Sprite):
         if len(self.pos_buffer) > 0:
             if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < 2 * self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < 2 * self.grid_size[1]:
                 if self.vel == (0, 0):
-                    self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
-                    self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
+                    if not self.game.debug_mode:
+                        self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
+                        self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
+                    else:
+                        self.vel.x = self.debug_movespeed[0] * self.pos_buffer[0][0]
+                        self.vel.y = self.debug_movespeed[1] * self.pos_buffer[0][1]
                 if abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
                     self.pos_dt[0] += self.vel.x * self.game.dt
@@ -111,8 +118,16 @@ class Spell(pygame.sprite.Sprite):
         else:
             self.kill()
 
+    def collide_sprite(self):
+        for sprite in self.game.characters:
+            if self.character != sprite and (self.grid_pos[0] - self.grid_size[0] == sprite.grid_pos[0] and self.grid_pos[1] == sprite.grid_pos[1]):
+                sprite.health -= self.damage
+                self.kill()
+
     def update(self):
         self.game.update_sprite(self, move=True)
+
+        self.collide_sprite()
         if pygame.time.get_ticks() - self.spawn_time > 2500:
             self.kill()
 
