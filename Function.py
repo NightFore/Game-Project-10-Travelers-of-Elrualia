@@ -46,17 +46,26 @@ def load_image(image_path, image_directory):
         return pygame.image.load(path.join(image_path, image_directory)).convert_alpha()
 
 
-def load_tile_table(filename, width, height, colorkey=(0, 0, 0)):
+def load_tile_table(filename, width, height, reverse, colorkey=(0, 0, 0)):
     image = pygame.image.load(filename).convert_alpha()
     image.set_colorkey(colorkey)
     image_width, image_height = image.get_size()
     tile_table = []
-    for tile_y in range(int(image_height / height)):
-        line = []
-        tile_table.append(line)
+    if not reverse:
+        for tile_y in range(int(image_height / height)):
+            line = []
+            tile_table.append(line)
+            for tile_x in range(int(image_width / width)):
+                rect = (tile_x * width, tile_y * height, width, height)
+                line.append(image.subsurface(rect))
+    else:
+        print("ok")
         for tile_x in range(int(image_width / width)):
-            rect = (tile_x * width, tile_y * height, width, height)
-            line.append(image.subsurface(rect))
+            column = []
+            tile_table.append(column)
+            for tile_y in range(int(image_height / height)):
+                rect = (tile_x * width, tile_y * height, width, height)
+                column.append(image.subsurface(rect))
     return tile_table
 
 

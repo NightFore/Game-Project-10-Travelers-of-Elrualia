@@ -131,7 +131,7 @@ class Game:
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
         self.spell = pygame.sprite.Group()
-        self.items = pygame.sprite.Group()
+        self.impact = pygame.sprite.Group()
 
         self.player = Player(self, self.character_dict, "player")
         self.enemy = Enemy(self, self.character_dict, "enemy")

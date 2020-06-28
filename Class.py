@@ -25,19 +25,19 @@ class Spell(pygame.sprite.Sprite):
         self.init_dict(dict, object), self.init_settings(), self.init_vec(), self.init_image()
         self.dt = game.dt
 
-        # Settings
-        self.spawn_time = pygame.time.get_ticks()
-
     def init_dict(self, dict, object):
         self.dict = dict
         self.object_dict = self.dict[object]
         self.game_dict = self.game.game_dict
 
     def init_settings(self):
+        # Position
         self.grid_size = self.game_dict["grid_size"]
         self.grid_dt = self.game_dict["grid_dt"]
         self.grid_pos = self.character.grid_pos[:]
 
+        # Gameplay
+        self.spawn_time = pygame.time.get_ticks()
         self.damage = self.object_dict["damage"]
 
     def init_vec(self):
@@ -54,6 +54,7 @@ class Spell(pygame.sprite.Sprite):
     def init_image(self):
         self.image = self.object_dict["image"]
         self.table = self.object_dict["table"]
+        self.reverse = self.object_dict["reverse"]
         self.size = self.object_dict["size"]
         self.side = self.object_dict["side"]
         self.center = self.object_dict["center"]
@@ -64,7 +65,7 @@ class Spell(pygame.sprite.Sprite):
         # Image
         if self.table:
             self.index = 0
-            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1])
+            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1], self.reverse)
             self.images = self.images_side[self.side]
             self.image = self.images[self.index]
             self.current_time = 0
@@ -122,6 +123,7 @@ class Spell(pygame.sprite.Sprite):
         for sprite in self.game.characters:
             if self.character != sprite and (self.grid_pos[0] - self.grid_size[0] == sprite.grid_pos[0] and self.grid_pos[1] == sprite.grid_pos[1]):
                 sprite.health -= self.damage
+                Impact(self.game, self.object_dict, "impact", self)
                 self.kill()
 
     def update(self):
@@ -130,6 +132,81 @@ class Spell(pygame.sprite.Sprite):
         self.collide_sprite()
         if pygame.time.get_ticks() - self.spawn_time > 2500:
             self.kill()
+
+
+class Impact(pygame.sprite.Sprite):
+    def __init__(self, game, dict, object="player", character=None):
+        # Setup
+        self.game = game
+        self.groups = self.game.all_sprites, self.game.impact
+        self._layer = self.game.character_dict["layer"]
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        # Initialization
+        self.character = character
+        self.init_dict(dict, object), self.init_settings(), self.init_vec(), self.init_image()
+        self.dt = game.dt
+
+    def init_dict(self, dict, object):
+        self.dict = dict
+        self.object_dict = self.dict[object]
+        self.game_dict = self.game.game_dict
+
+    def init_settings(self):
+        # Position
+        self.grid_size = self.game_dict["grid_size"]
+        self.grid_dt = self.game_dict["grid_dt"]
+        self.grid_pos = self.character.grid_pos[:]
+
+        # Gameplay
+        self.spawn_time = pygame.time.get_ticks()
+
+    def init_vec(self):
+        self.pos = vec(self.character.pos)
+
+    def init_image(self):
+        self.image = self.object_dict["image"]
+        self.table = self.object_dict["table"]
+        self.reverse = self.object_dict["reverse"]
+        self.size = self.object_dict["size"]
+        self.side = self.object_dict["side"]
+        self.center = self.object_dict["center"]
+        self.bobbing = self.object_dict["bobbing"]
+        self.flip = self.object_dict["flip"]
+        self.animation_time = self.object_dict["animation_time"]
+
+        # Image
+        if self.table:
+            self.index = 0
+            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1], self.reverse)
+            self.images = self.images_side[self.side]
+            self.image = self.images[self.index]
+            self.current_time = 0
+        else:
+            self.image = load_image(self.game.graphics_folder, self.image)
+        self.rect = self.image.get_rect()
+        # Center
+        if self.center:
+            self.rect.center = self.pos
+
+        # Bobbing
+        if self.bobbing:
+            self.tween = tween.linear
+            self.step = 0
+            self.dir = 1
+
+        # Flip
+        if self.flip:
+            if self.table:
+                for side in range(len(self.images_side)):
+                    for index in range(len(self.images_side[side])):
+                        self.images_side[side][index] = pygame.transform.flip(self.images_side[side][index], True, False)
+                        self.image = self.images[self.index]
+            else:
+                self.image = pygame.transform.flip(self.image, True, False)
+
+    def update(self):
+        self.game.update_sprite(self)
 
 
 class Player(pygame.sprite.Sprite):
@@ -141,6 +218,7 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         # Initialization
+        self.character = character
         self.init_dict(dict, object), self.init_settings(), self.init_vec(), self.init_image()
         self.dt = game.dt
 
@@ -158,19 +236,21 @@ class Player(pygame.sprite.Sprite):
         self.max_mana = self.object_dict["max_mana"]
         self.mana = self.object_dict["mana"]
 
-        # Movement
+        # Position
         self.grid_size = self.game_dict["grid_size"]
         self.grid_dt = self.game_dict["grid_dt"]
         self.grid_pos = self.object_dict["grid_pos"][:]
 
-        self.debug_color = self.object_dict["debug_color"]
-        self.debug_pos = self.object_dict["debug_pos"]
-        self.debug_dt = self.object_dict["debug_dt"]
-
+        # Interface
         self.hp_font = self.game_dict["hp_font"]
         self.hp_size = self.game_dict["hp_size"]
         self.hp_color = self.game_dict["hp_color"]
         self.hp_offset = self.object_dict["hp_offset"][:]
+
+        # Debug
+        self.debug_color = self.object_dict["debug_color"]
+        self.debug_pos = self.object_dict["debug_pos"]
+        self.debug_dt = self.object_dict["debug_dt"]
 
         # Gameplay
         self.last_attack = pygame.time.get_ticks()
@@ -188,6 +268,7 @@ class Player(pygame.sprite.Sprite):
     def init_image(self):
         self.image = self.object_dict["image"]
         self.table = self.object_dict["table"]
+        self.reverse = self.object_dict["reverse"]
         self.size = self.object_dict["size"]
         self.side = self.object_dict["side"]
         self.center = self.object_dict["center"]
@@ -198,7 +279,7 @@ class Player(pygame.sprite.Sprite):
         # Image
         if self.table:
             self.index = 0
-            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1])
+            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1], self.reverse)
             self.images = self.images_side[self.side]
             self.image = self.images[self.index]
             self.current_time = 0
@@ -290,6 +371,7 @@ class Enemy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         # Initialization
+        self.character = character
         self.init_dict(dict, object), self.init_settings(), self.init_vec(), self.init_image()
         self.dt = game.dt
 
@@ -307,19 +389,21 @@ class Enemy(pygame.sprite.Sprite):
         self.max_mana = self.object_dict["max_mana"]
         self.mana = self.object_dict["mana"]
 
-        # Movement
+        # Position
         self.grid_size = self.game_dict["grid_size"]
         self.grid_dt = self.game_dict["grid_dt"]
         self.grid_pos = self.object_dict["grid_pos"][:]
 
-        self.debug_color = self.object_dict["debug_color"]
-        self.debug_pos = self.object_dict["debug_pos"]
-        self.debug_dt = self.object_dict["debug_dt"]
-
+        # Interface
         self.hp_font = self.game_dict["hp_font"]
         self.hp_size = self.game_dict["hp_size"]
         self.hp_color = self.game_dict["hp_color"]
         self.hp_offset = self.object_dict["hp_offset"][:]
+
+        # Debug
+        self.debug_color = self.object_dict["debug_color"]
+        self.debug_pos = self.object_dict["debug_pos"]
+        self.debug_dt = self.object_dict["debug_dt"]
 
         # Gameplay
         self.move_time = pygame.time.get_ticks()
@@ -337,6 +421,7 @@ class Enemy(pygame.sprite.Sprite):
     def init_image(self):
         self.image = self.object_dict["image"]
         self.table = self.object_dict["table"]
+        self.reverse = self.object_dict["reverse"]
         self.size = self.object_dict["size"]
         self.side = self.object_dict["side"]
         self.center = self.object_dict["center"]
@@ -347,8 +432,7 @@ class Enemy(pygame.sprite.Sprite):
         # Image
         if self.table:
             self.index = 0
-            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0],
-                                               self.size[1])
+            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1], self.reverse)
             self.images = self.images_side[self.side]
             self.image = self.images[self.index]
             self.current_time = 0
