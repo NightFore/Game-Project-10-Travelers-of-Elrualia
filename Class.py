@@ -39,12 +39,12 @@ class Spell(pygame.sprite.Sprite):
         self.grid_pos = self.character.grid_pos[:]
 
     def init_vec(self):
-        self.offset = self.character.object_dict["spell_offset"]
-        self.cast_offset = self.character.object_dict["spell_cast_offset"]
-        self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + self.offset[0] + self.cast_offset[0] + self.character.pos_dt[0],
-                       self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + self.offset[1] + self.cast_offset[1])
+        offset = [self.character.object_dict["spell_offset"][0] + self.character.object_dict["spell_cast_offset"][0] + self.character.pos_dt[0],
+                  self.character.object_dict["spell_offset"][1] + self.character.object_dict["spell_cast_offset"][1]]
+        self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + offset[0],
+                       self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + offset[1])
         self.pos_buffer = self.object_dict["range"][:]
-        self.pos_dt = vec(0, 0)
+        self.pos_dt = vec(offset[0], 0)
         self.vel = vec(0, 0)
         self.movespeed = vec(self.object_dict["movespeed"])
 
@@ -95,7 +95,7 @@ class Spell(pygame.sprite.Sprite):
                 if self.vel == (0, 0):
                     self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
                     self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
-                elif abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
+                if abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
                     self.pos_dt[0] += self.vel.x * self.game.dt
                     self.pos_dt[1] += self.vel.y * self.game.dt
@@ -112,8 +112,7 @@ class Spell(pygame.sprite.Sprite):
             self.kill()
 
     def update(self):
-        self.move()
-        self.game.update_sprite(self)
+        self.game.update_sprite(self, move=True)
         if pygame.time.get_ticks() - self.spawn_time > 2500:
             self.kill()
 
@@ -162,7 +161,7 @@ class Player(pygame.sprite.Sprite):
         self.pos = vec(self.object_dict["pos"])
         self.pos_dt = [0, 0]
         self.vel = vec(0, 0)
-        self.movespeed = self.object_dict["speed"]
+        self.movespeed = self.object_dict["movespeed"]
 
         self.pos_reset = vec(self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0], self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1])
         self.pos_buffer = []
@@ -214,7 +213,7 @@ class Player(pygame.sprite.Sprite):
                 if self.vel == (0, 0):
                     self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
                     self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
-                elif abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
+                if abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
                     self.pos_dt[0] += self.vel.x * self.game.dt
                     self.pos_dt[1] += self.vel.y * self.game.dt
@@ -298,7 +297,7 @@ class Enemy(pygame.sprite.Sprite):
         self.pos = vec(self.object_dict["pos"])
         self.pos_dt = vec(0, 0)
         self.vel = vec(0, 0)
-        self.movespeed = vec(self.object_dict["speed"])
+        self.movespeed = vec(self.object_dict["movespeed"])
 
         self.pos_reset = vec(self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0], self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1])
         self.pos_buffer = []
@@ -351,7 +350,7 @@ class Enemy(pygame.sprite.Sprite):
                 if self.vel == (0, 0):
                     self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
                     self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
-                elif abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
+                if abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
                     self.pos_dt[0] += self.vel.x * self.game.dt
                     self.pos_dt[1] += self.vel.y * self.game.dt

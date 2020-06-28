@@ -20,7 +20,7 @@ class Game:
         pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.mixer.init()
         pygame.init()
-        pygame.key.set_repeat(50, 200)
+        pygame.key.set_repeat(50, 150)
         self.gameDisplay = ScaledGame(project_title, screen_size, FPS)
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick(FPS) / 1000
