@@ -6,6 +6,8 @@ from os import path
 def update_time_dependent(sprite):
     sprite.current_time += sprite.dt
     if sprite.current_time >= sprite.animation_time:
+        if sprite.index == len(sprite.images)-1:
+            sprite.loop += 1
         sprite.current_time = 0
         sprite.index = (sprite.index + 1) % len(sprite.images)
         sprite.image = sprite.images[sprite.index]
@@ -59,7 +61,6 @@ def load_tile_table(filename, width, height, reverse, colorkey=(0, 0, 0)):
                 rect = (tile_x * width, tile_y * height, width, height)
                 line.append(image.subsurface(rect))
     else:
-        print("ok")
         for tile_x in range(int(image_width / width)):
             column = []
             tile_table.append(column)

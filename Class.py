@@ -61,6 +61,7 @@ class Spell(pygame.sprite.Sprite):
         self.bobbing = self.object_dict["bobbing"]
         self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
+        self.loop = 0
 
         # Image
         if self.table:
@@ -174,6 +175,7 @@ class Impact(pygame.sprite.Sprite):
         self.bobbing = self.object_dict["bobbing"]
         self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
+        self.loop = 0
 
         # Image
         if self.table:
@@ -207,6 +209,8 @@ class Impact(pygame.sprite.Sprite):
 
     def update(self):
         self.game.update_sprite(self)
+        if self.index == 0 and self.loop != 0:
+            self.kill()
 
 
 class Player(pygame.sprite.Sprite):
@@ -275,6 +279,7 @@ class Player(pygame.sprite.Sprite):
         self.bobbing = self.object_dict["bobbing"]
         self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
+        self.loop = 0
 
         # Image
         if self.table:
@@ -428,6 +433,7 @@ class Enemy(pygame.sprite.Sprite):
         self.bobbing = self.object_dict["bobbing"]
         self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
+        self.loop = 0
 
         # Image
         if self.table:
