@@ -27,7 +27,7 @@ class Game:
         self.load_data()
         self.new()
 
-    def draw_text(self, text, font_name, size, color, x, y, align="nw"):
+    def draw_text(self, text, font_name, size, color, x, y, align="nw", debug_mode=False):
         font = pygame.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
@@ -49,6 +49,8 @@ class Game:
             text_rect.midleft = (x, y)
         if align == "center":
             text_rect.center = (x, y)
+        if debug_mode:
+            pygame.draw.rect(self.gameDisplay, CYAN, text_rect, 1)
         self.gameDisplay.blit(text_surface, text_rect)
 
     def draw_image(self, image, x, y, align="center"):
@@ -125,7 +127,7 @@ class Game:
 
     def new(self):
         self.paused = False
-        self.debug_move = True
+        self.debug_mode = True
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
         self.spell = pygame.sprite.Group()
@@ -162,7 +164,7 @@ class Game:
                 if event.key == pygame.K_p:
                     self.paused = not self.paused
                 if event.key == pygame.K_h:
-                    self.debug_move = not self.debug_move
+                    self.debug_mode = not self.debug_mode
 
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     self.player.buffer_move(dx=-1)
@@ -190,20 +192,24 @@ class Game:
         self.gameDisplay.fill(self.background_color)
         self.gameDisplay.blit(self.background_image, (0, 0))
 
+        # Interface
+        for sprite in self.characters:
+            sprite.draw_ui()
+
         # Debug
-        if self.debug_move:
-            self.player.draw_debug_move()
-            self.enemy.draw_debug_move()
+        if self.debug_mode:
             for sprite in self.all_sprites:
                 pygame.draw.rect(self.gameDisplay, CYAN, sprite.rect, 1)
+            for sprite in self.characters:
+                sprite.draw_debug_mode()
 
         # Sprite
         for sprite in self.all_sprites:
             self.gameDisplay.blit(sprite.image, sprite)
 
-        # Interface
+        # Status
         for sprite in self.characters:
-            sprite.draw_ui()
+            sprite.draw_status()
 
         # Pause
         if self.paused:

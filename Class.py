@@ -148,6 +148,10 @@ class Player(pygame.sprite.Sprite):
         self.grid_dt = self.game_dict["grid_dt"]
         self.grid_pos = self.object_dict["grid_pos"][:]
 
+        self.debug_color = self.object_dict["debug_color"]
+        self.debug_pos = self.object_dict["debug_pos"]
+        self.debug_dt = self.object_dict["debug_dt"]
+
         self.hp_font = self.game_dict["hp_font"]
         self.hp_size = self.game_dict["hp_size"]
         self.hp_color = self.game_dict["hp_color"]
@@ -232,11 +236,6 @@ class Player(pygame.sprite.Sprite):
         if len(self.pos_buffer) < 2:
             self.pos_buffer.append([dx, dy])
 
-    def draw_debug_move(self):
-        pos_x = self.object_dict["debug_pos"][0] + self.grid_pos[0] * self.grid_dt[0]
-        pos_y = self.object_dict["debug_pos"][1] + self.grid_pos[1] * self.grid_dt[1]
-        pygame.draw.rect(self.game.gameDisplay, self.object_dict["debug_color"], (pos_x, pos_y, self.object_dict["debug_dt"][0], self.object_dict["debug_dt"][1]))
-
     def get_keys(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_x] or keys[pygame.K_SPACE]:
@@ -245,7 +244,21 @@ class Player(pygame.sprite.Sprite):
                 self.last_attack = pygame.time.get_ticks()
 
     def draw_ui(self):
-        self.game.draw_text(str(self.health), self.hp_font, self.hp_size, self.hp_color, int(self.pos[0] + self.hp_offset[0]), int(self.pos[1] + self.hp_offset[1]), align="center")
+        # Grid Pos
+        pygame.draw.rect(self.game.gameDisplay, self.debug_color, (self.debug_pos[0] + self.grid_pos[0] * self.grid_dt[0], self.debug_pos[1] + self.grid_pos[1] * self.grid_dt[1], self.debug_dt[0], self.debug_dt[1]))
+
+        # Cooldown
+        pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (100, 620, 40, max(-40, -40 * (pygame.time.get_ticks() - self.last_attack) / self.attack_rate)))
+        self.game.draw_text("X", None, 40, BLUE, 120, 600, "center", self.game.debug_mode)
+
+    def draw_debug_mode(self):
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (self.debug_pos[0] + self.grid_pos[0] * self.grid_dt[0], self.debug_pos[1] + self.grid_pos[1] * self.grid_dt[1], self.debug_dt[0], self.debug_dt[1]), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 620, 40, -40), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 620, 40, max(-40, -40 * (pygame.time.get_ticks() - self.last_attack) / self.attack_rate)), 1)
+
+    def draw_status(self):
+        # Health
+        self.game.draw_text(str(self.health), self.hp_font, self.hp_size, self.hp_color, int(self.pos[0] + self.hp_offset[0]), int(self.pos[1] + self.hp_offset[1]), "center", self.game.debug_mode)
 
     def update(self):
         self.game.update_sprite(self, move=True, keys=True)
@@ -283,6 +296,10 @@ class Enemy(pygame.sprite.Sprite):
         self.grid_size = self.game_dict["grid_size"]
         self.grid_dt = self.game_dict["grid_dt"]
         self.grid_pos = self.object_dict["grid_pos"][:]
+
+        self.debug_color = self.object_dict["debug_color"]
+        self.debug_pos = self.object_dict["debug_pos"]
+        self.debug_dt = self.object_dict["debug_dt"]
 
         self.hp_font = self.game_dict["hp_font"]
         self.hp_size = self.game_dict["hp_size"]
@@ -374,65 +391,16 @@ class Enemy(pygame.sprite.Sprite):
             self.move_time = pygame.time.get_ticks()
             self.move()
 
-    def draw_debug_move(self):
-        pos_x = self.object_dict["debug_pos"][0] + self.grid_pos[0] * self.grid_dt[0]
-        pos_y = self.object_dict["debug_pos"][1] + self.grid_pos[1] * self.grid_dt[1]
-        pygame.draw.rect(self.game.gameDisplay, self.object_dict["debug_color"], (pos_x, pos_y, self.object_dict["debug_dt"][0], self.object_dict["debug_dt"][1]))
-
     def draw_ui(self):
-        self.game.draw_text(str(self.health), self.hp_font, self.hp_size, self.hp_color, int(self.pos[0] + self.hp_offset[0]), int(self.pos[1] + self.hp_offset[1]), align="center")
+        # Grid Pos
+        pygame.draw.rect(self.game.gameDisplay, self.debug_color, (self.debug_pos[0] + self.grid_pos[0] * self.grid_dt[0], self.debug_pos[1] + self.grid_pos[1] * self.grid_dt[1], self.debug_dt[0], self.debug_dt[1]))
+
+    def draw_debug_mode(self):
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (self.debug_pos[0] + self.grid_pos[0] * self.grid_dt[0], self.debug_pos[1] + self.grid_pos[1] * self.grid_dt[1], self.debug_dt[0], self.debug_dt[1]), 1)
+
+    def draw_status(self):
+        # Health
+        self.game.draw_text(str(self.health), self.hp_font, self.hp_size, self.hp_color, int(self.pos[0] + self.hp_offset[0]), int(self.pos[1] + self.hp_offset[1]), "center", self.game.debug_mode)
 
     def update(self):
         self.game.update_sprite(self, move=True)
-
-
-
-
-class Item(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, dictionary, type, center=True, bobbing=False):
-        # Setup
-        self.game = game
-        self.groups = self.game.all_sprites, self.game.items
-        self._layer = LAYER_ITEMS
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        # Settings
-        self.dictionary = dictionary
-        self.type = type
-
-        # Position
-        self.pos = [x, y]
-
-        # Surface
-        self.index = 0
-        self.images = self.dictionary[self.type]
-        self.table = isinstance(self.images, list)
-
-        if self.table:
-            self.image = self.dictionary[self.type][self.index]
-        else:
-            self.image = self.dictionary[self.type]
-
-        # Rect
-        self.rect = self.image.get_rect()
-        self.rect.x = self.pos[0]
-        self.rect.y = self.pos[1]
-
-        # Center
-        self.center = center
-        if self.center:
-            self.rect.center = self.pos
-
-        # Time
-        self.dt = game.dt
-        self.current_time = 0
-        self.animation_time = 0.50
-
-        # Bobbing
-        self.bobbing = bobbing
-        self.tween = tween.linear
-        self.step = 0
-        self.dir = 1
-
-    def update(self):
-        self.game.update_sprite(self)
