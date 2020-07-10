@@ -80,12 +80,9 @@ class Game:
             sprite.update_move()
         if keys:
             sprite.get_keys()
-        if sprite.table:
-            update_time_dependent(sprite)
-        if sprite.center:
-            update_center(sprite)
-        if sprite.bobbing:
-            update_bobbing(sprite)
+        update_time_dependent(sprite)
+        update_center(sprite)
+        update_bobbing(sprite)
 
     def load_data(self):
         # Directories
@@ -130,7 +127,7 @@ class Game:
         self.debug_mode = True
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
-        self.spell = pygame.sprite.Group()
+        self.spells = pygame.sprite.Group()
         self.impact = pygame.sprite.Group()
 
         self.player = Player(self, self.character_dict, "player")

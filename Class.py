@@ -13,90 +13,26 @@ PLACEHOLDER = 32
     Others Functions
 """
 class Spell(pygame.sprite.Sprite):
-    def __init__(self, game, dict, object=None, character=None):
-        # Setup
-        self.game = game
-        self.groups = self.game.all_sprites, self.game.spell
-        self._layer = self.game.spell_dict["layer"]
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        # Initialization
-        self.character = character
-        self.init_dict(dict, object), self.init_settings(), self.init_vec(), self.init_image()
-        self.dt = game.dt
-
-    def init_dict(self, dict, object):
-        self.dict = dict
-        self.object_dict = self.dict[object]
-        self.game_dict = self.game.game_dict
+    def __init__(self, game, dict, object=None, group=None, parent=None):
+        init_sprite(self, game, dict, object, group, parent)
 
     def init_settings(self):
-        # Position
-        self.grid_size = self.game_dict["grid_size"]
-        self.grid_dt = self.game_dict["grid_dt"]
-        self.grid_pos = self.character.grid_pos[:]
-
         # Gameplay
         self.spawn_time = pygame.time.get_ticks()
-        self.move = self.object_dict["move"]
         self.damage = self.object_dict["damage"]
 
-    def init_vec(self):
-        offset = [self.character.object_dict["spell_offset"][0] + self.character.object_dict["spell_cast_offset"][0] + self.character.pos_dt[0],
-                  self.character.object_dict["spell_offset"][1] + self.character.object_dict["spell_cast_offset"][1]]
-        self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + offset[0],
-                       self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + offset[1])
-        self.range = self.object_dict["range"][:]
+        # Grid
+        self.grid_pos = self.parent.grid_pos[:]
+        self.grid_size = self.game_dict["grid_size"]
+        self.grid_dt = self.game_dict["grid_dt"]
 
+        # Position & vector
+        offset = [self.parent.object_dict["spell_offset"][0] + self.parent.object_dict["cast_offset"][0] + self.parent.pos_dt[0],
+                  self.parent.object_dict["spell_offset"][1] + self.parent.object_dict["cast_offset"][1]]
+        self.pos += self.grid_pos[0] * self.grid_dt[0] + offset[0], self.grid_pos[1] * self.grid_dt[1] + offset[1]
         if self.move:
-            self.move_speed = vec(self.object_dict["move_speed"])
-            self.debug_move_speed = vec(self.object_dict["debug_move_speed"])
             self.pos_dt = vec(offset[0], 0)
-            self.vel = vec(0, 0)
 
-    def init_image(self):
-        self.image = self.object_dict["image"]
-        self.table = self.object_dict["table"]
-        self.reverse = self.object_dict["reverse"]
-        self.size = self.object_dict["size"]
-        self.side = self.object_dict["side"]
-        self.center = self.object_dict["center"]
-        self.bobbing = self.object_dict["bobbing"]
-        self.flip = self.object_dict["flip"]
-        self.animation_time = self.object_dict["animation_time"]
-        self.animation_loop = self.object_dict["animation_loop"]
-        self.loop = 0
-
-        # Image
-        if self.table:
-            self.index = 0
-            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1], self.reverse)
-            self.images = self.images_side[self.side]
-            self.image = self.images[self.index]
-            self.current_time = 0
-        else:
-            self.image = load_image(self.game.graphics_folder, self.image)
-        self.rect = self.image.get_rect()
-
-        # Center
-        if self.center:
-            self.rect.center = self.pos
-
-        # Bobbing
-        if self.bobbing:
-            self.tween = tween.linear
-            self.step = 0
-            self.dir = 1
-
-        # Flip
-        if self.flip:
-            if self.table:
-                for side in range(len(self.images_side)):
-                    for index in range(len(self.images_side[side])):
-                        self.images_side[side][index] = pygame.transform.flip(self.images_side[side][index], True, False)
-                        self.image = self.images[self.index]
-            else:
-                self.image = pygame.transform.flip(self.image, True, False)
 
     def update_move(self):
         if len(self.range) > 0:
@@ -126,7 +62,7 @@ class Spell(pygame.sprite.Sprite):
 
     def collide_sprite(self):
         for sprite in self.game.characters:
-            if self.character != sprite and (self.grid_pos[0] - self.grid_size[0] == sprite.grid_pos[0] and self.grid_pos[1] == sprite.grid_pos[1]):
+            if self.parent != sprite and (self.grid_pos[0] - self.grid_size[0] == sprite.grid_pos[0] and self.grid_pos[1] == sprite.grid_pos[1]):
                 sprite.health -= self.damage
                 Impact(self.game, self.object_dict, "impact_dict", self)
                 self.kill()
@@ -345,11 +281,11 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_x] or keys[pygame.K_SPACE]:
             if pygame.time.get_ticks() - self.last_attack >= self.attack_rate:
-                Spell(self.game, self.game.spell_dict, "energy_ball", self)
+                Spell(self.game, self.game.spell_dict, "energy_ball", self.game.spells, self)
                 self.last_attack = pygame.time.get_ticks()
         if keys[pygame.K_c]:
             if pygame.time.get_ticks() - self.last_attack >= self.attack_rate:
-                Spell(self.game, self.game.spell_dict, "thunder", self)
+                Spell(self.game, self.game.spell_dict, "thunder", self.game.spells, self)
                 self.last_attack = pygame.time.get_ticks()
 
     def draw_ui(self):

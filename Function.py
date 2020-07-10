@@ -1,33 +1,110 @@
 import pygame
 import random
 from os import path
+vec = pygame.math.Vector2
+
+def init_sprite(sprite, game, dict, object, group, parent):
+    sprite.game = game
+    sprite.groups = sprite.game.all_sprites, group
+    sprite.parent = parent
+    sprite.dt = game.dt
+    init_dict(sprite, dict, object), init_vec(sprite), init_image(sprite), sprite.init_settings()
+    update_center(sprite)
+    pygame.sprite.Sprite.__init__(sprite, sprite.groups)
+
+def init_dict(sprite, dict, object):
+    sprite.dict = dict
+    sprite.object_dict = sprite.dict[object]
+    sprite.game_dict = sprite.game.game_dict
+
+def init_vec(sprite):
+    sprite.pos = vec(sprite.object_dict["pos"][:])
+    sprite.range = sprite.object_dict["range"][:]
+    sprite.move = sprite.object_dict["move"]
+    if sprite.move:
+        sprite.vel = vec(0, 0)
+        sprite.pos_dt = vec(0, 0)
+        sprite.move_speed = vec(sprite.object_dict["move_speed"])
+        sprite.debug_move_speed = vec(sprite.object_dict["debug_move_speed"])
+
+def init_image(sprite):
+    # Settings
+    sprite._layer = sprite.dict["layer"]
+    sprite.image = sprite.object_dict["image"]
+    sprite.center = sprite.object_dict["center"]
+    sprite.bobbing = sprite.object_dict["bobbing"]
+    sprite.flip = sprite.object_dict["flip"]
+
+    # Animation
+    sprite.table = sprite.object_dict["table"]
+    sprite.reverse = sprite.object_dict["reverse"]
+    sprite.size = sprite.object_dict["size"]
+    sprite.side = sprite.object_dict["side"]
+    sprite.animation_time = sprite.object_dict["animation_time"]
+    sprite.animation_loop = sprite.object_dict["animation_loop"]
+    sprite.loop = 0
+
+    # Image
+    if sprite.table:
+        sprite.index = 0
+        sprite.images_side = load_tile_table(path.join(sprite.game.graphics_folder, sprite.image), sprite.size[0], sprite.size[1], sprite.reverse)
+        sprite.images = sprite.images_side[sprite.side]
+        sprite.image = sprite.images[sprite.index]
+        sprite.current_time = 0
+    else:
+        sprite.image = load_image(sprite.game.graphics_folder, sprite.image)
+    sprite.rect = sprite.image.get_rect()
+
+    # Center
+    if sprite.center:
+        sprite.rect.center = sprite.pos
+
+    # Bobbing
+    if sprite.bobbing:
+        sprite.tween = tween.linear
+        sprite.step = 0
+        sprite.dir = 1
+
+    # Flip
+    if sprite.flip:
+        if sprite.table:
+            for side in range(len(sprite.images_side)):
+                for index in range(len(sprite.images_side[side])):
+                    sprite.images_side[side][index] = pygame.transform.flip(sprite.images_side[side][index], True, False)
+                    sprite.image = sprite.images[sprite.index]
+        else:
+            sprite.image = pygame.transform.flip(sprite.image, True, False)
+
 
 
 def update_time_dependent(sprite):
-    sprite.current_time += sprite.dt
-    if sprite.current_time >= sprite.animation_time:
-        if sprite.index == len(sprite.images)-1:
-            sprite.loop += 1
-        sprite.current_time = 0
-        sprite.index = (sprite.index + 1) % len(sprite.images)
-        sprite.image = sprite.images[sprite.index]
-    if sprite.animation_loop and sprite.index == 0 and sprite.loop != 0:
-        sprite.kill()
-    sprite.image = pygame.transform.rotate(sprite.image, 0)
+    if sprite.table:
+        sprite.current_time += sprite.dt
+        if sprite.current_time >= sprite.animation_time:
+            if sprite.index == len(sprite.images)-1:
+                sprite.loop += 1
+            sprite.current_time = 0
+            sprite.index = (sprite.index + 1) % len(sprite.images)
+            sprite.image = sprite.images[sprite.index]
+        if sprite.animation_loop and sprite.index == 0 and sprite.loop != 0:
+            sprite.kill()
+        sprite.image = pygame.transform.rotate(sprite.image, 0)
 
 
 def update_center(sprite):
-    sprite.rect = sprite.image.get_rect()
-    sprite.rect.center = sprite.pos
+    if sprite.center:
+        sprite.rect = sprite.image.get_rect()
+        sprite.rect.center = sprite.pos
 
 
 def update_bobbing(sprite):
-    offset = BOB_RANGE * (sprite.tween(sprite.step / BOB_RANGE) - 0.5)
-    sprite.rect.centery = sprite.pos.y + offset * sprite.dir
-    sprite.step += BOB_SPEED
-    if sprite.step > BOB_RANGE:
-        sprite.step = 0
-        sprite.dir *= -1
+    if sprite.bobbing:
+        offset = BOB_RANGE * (sprite.tween(sprite.step / BOB_RANGE) - 0.5)
+        sprite.rect.centery = sprite.pos.y + offset * sprite.dir
+        sprite.step += BOB_SPEED
+        if sprite.step > BOB_RANGE:
+            sprite.step = 0
+            sprite.dir *= -1
 
 
 def load_file(path, image=False):
