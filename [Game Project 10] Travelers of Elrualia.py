@@ -98,6 +98,7 @@ class Game:
         self.game_dict = GAME_DICT
         self.character_dict = CHARACTER_DICT
         self.spell_dict = SPELL_DICT
+        self.impact_dict = IMPACT_DICT
 
         # Graphics
         self.background_color = self.game_dict["background_color"]

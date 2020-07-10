@@ -6,9 +6,6 @@ from Settings import *
 from Function import *
 vec = pygame.math.Vector2
 
-
-PLACEHOLDER = 32
-
 """
     Others Functions
 """
@@ -17,40 +14,24 @@ class Spell(pygame.sprite.Sprite):
         init_sprite(self, game, dict, object, group, parent)
 
     def init_settings(self):
-        # Gameplay
-        self.spawn_time = pygame.time.get_ticks()
-        self.damage = self.object_dict["damage"]
-
-        # Grid
-        self.grid_pos = vec(self.parent.grid_pos[:])
+        # Position
         self.grid_size = self.game_dict["grid_size"]
+        self.grid_pos = vec(self.parent.grid_pos[:])
         self.grid_dt = vec(self.game_dict["grid_dt"])
-
-        # Position & vector
         offset = [self.parent.object_dict["spell_offset"][0] + self.parent.object_dict["cast_offset"][0] + self.parent.pos_dt[0],
                   self.parent.object_dict["spell_offset"][1] + self.parent.object_dict["cast_offset"][1]]
         self.pos += self.grid_pos[0] * self.grid_dt[0] + offset[0], self.grid_pos[1] * self.grid_dt[1] + offset[1]
         if self.move:
             self.pos_dt = vec(offset[0], 0)
 
+        # Gameplay
+        self.spawn_time = pygame.time.get_ticks()
+        self.damage = self.object_dict["damage"]
 
     def update_move(self):
         if len(self.range) > 0:
             if 0 <= self.grid_pos[0] + self.range[0][0] < 2 * self.grid_size[0] and 0 <= self.grid_pos[1] + self.range[0][1] < 2 * self.grid_size[1]:
-                if self.vel == (0, 0):
-                    if not self.game.debug_mode:
-                        self.vel = vec(self.move_speed.elementwise() * self.range[0])
-                    else:
-                        self.vel = vec(self.debug_move_speed.elementwise() * self.range[0])
-                if abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
-                    self.pos += self.vel * self.game.dt
-                    self.pos_dt += self.vel.x * self.game.dt, self.vel.y * self.game.dt
-                else:
-                    self.grid_pos += self.range[0]
-                    self.pos = vec(self.pos - self.pos_dt + self.grid_dt.elementwise() * self.range[0])
-                    self.pos_dt = vec(0, 0)
-                    self.vel = vec(0, 0)
-                    del self.range[0]
+                update_move(self)
             else:
                 self.kill()
         else:
@@ -58,91 +39,32 @@ class Spell(pygame.sprite.Sprite):
 
     def collide_sprite(self):
         for sprite in self.game.characters:
-            if self.parent != sprite and (self.grid_pos[0] - self.grid_size[0] == sprite.grid_pos[0] and self.grid_pos[1] == sprite.grid_pos[1]):
+            if sprite != self.parent and (self.grid_pos[0] - self.grid_size[0] == sprite.grid_pos[0] and self.grid_pos[1] == sprite.grid_pos[1]):
                 sprite.health -= self.damage
-                Impact(self.game, self.object_dict, "impact_dict", self)
+                if self.impact:
+                    Impact(self.game, self.game.impact_dict, self.object, self.game.impact, self)
                 self.kill()
 
     def update(self):
         self.game.update_sprite(self, move=self.move)
-
         self.collide_sprite()
-        if pygame.time.get_ticks() - self.spawn_time > 2500:
+        if pygame.time.get_ticks() - self.spawn_time > 5000:
             self.kill()
 
 
 class Impact(pygame.sprite.Sprite):
-    def __init__(self, game, dict, object="player", character=None):
-        # Setup
-        self.game = game
-        self.groups = self.game.all_sprites, self.game.impact
-        self._layer = self.game.character_dict["layer"]
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        # Initialization
-        self.character = character
-        self.init_dict(dict, object), self.init_settings(), self.init_vec(), self.init_image()
-        self.dt = game.dt
-
-    def init_dict(self, dict, object):
-        self.dict = dict
-        self.object_dict = self.dict[object]
-        self.game_dict = self.game.game_dict
+    def __init__(self, game, dict, object=None, group=None, parent=None):
+        init_sprite(self, game, dict, object, group, parent)
 
     def init_settings(self):
         # Position
         self.grid_size = self.game_dict["grid_size"]
-        self.grid_dt = self.game_dict["grid_dt"]
-        self.grid_pos = self.character.grid_pos[:]
+        self.grid_pos = vec(self.parent.grid_pos[:])
+        self.grid_dt = vec(self.game_dict["grid_dt"])
+        self.pos = self.parent.pos
 
         # Gameplay
         self.spawn_time = pygame.time.get_ticks()
-
-    def init_vec(self):
-        self.pos = vec(self.character.pos)
-
-    def init_image(self):
-        self.image = self.object_dict["image"]
-        self.table = self.object_dict["table"]
-        self.reverse = self.object_dict["reverse"]
-        self.size = self.object_dict["size"]
-        self.side = self.object_dict["side"]
-        self.center = self.object_dict["center"]
-        self.bobbing = self.object_dict["bobbing"]
-        self.flip = self.object_dict["flip"]
-        self.animation_time = self.object_dict["animation_time"]
-        self.animation_loop = self.object_dict["animation_loop"]
-        self.loop = 0
-
-        # Image
-        if self.table:
-            self.index = 0
-            self.images_side = load_tile_table(path.join(self.game.graphics_folder, self.image), self.size[0], self.size[1], self.reverse)
-            self.images = self.images_side[self.side]
-            self.image = self.images[self.index]
-            self.current_time = 0
-        else:
-            self.image = load_image(self.game.graphics_folder, self.image)
-        self.rect = self.image.get_rect()
-        # Center
-        if self.center:
-            self.rect.center = self.pos
-
-        # Bobbing
-        if self.bobbing:
-            self.tween = tween.linear
-            self.step = 0
-            self.dir = 1
-
-        # Flip
-        if self.flip:
-            if self.table:
-                for side in range(len(self.images_side)):
-                    for index in range(len(self.images_side[side])):
-                        self.images_side[side][index] = pygame.transform.flip(self.images_side[side][index], True, False)
-                        self.image = self.images[self.index]
-            else:
-                self.image = pygame.transform.flip(self.image, True, False)
 
     def update(self):
         self.game.update_sprite(self)

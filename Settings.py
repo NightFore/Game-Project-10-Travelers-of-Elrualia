@@ -64,17 +64,19 @@ CHARACTER_DICT = {"layer": 3,
                             "move_frequency": 1000}}
 
 SPELL_DICT = {"layer": 2,
-              "energy_ball": {"name": None, "pos": [220, 360], "grid_pos": [0, 0],
+              "energy_ball": {"name": None, "pos": [220, 360], "grid_pos": [0, 0], "move": True, "range": 8 * [[1, 0]],
                               "image": "effect_pimen_EnergyBall_128x128.png", "side": 0, "center": True, "bobbing": False, "flip": False,
                               "table": True, "reverse": False, "size": [128, 128], "animation_time": 0.025, "animation_loop": False, "impact": True,
-                              "impact_dict": {"image": "effect_pimen_EnergyBall_Impact_128x128.png", "side": 0, "center": True, "bobbing": False, "flip": False,
-                                              "table": True, "reverse": True, "size": [128, 128], "animation_time": 0.025, "animation_loop": True, "impact": False},
-                              "move": True, "range": 8 * [[1, 0]],
                               "move_speed": [2 * GAME_DICT["platform_size"][0], 4 * GAME_DICT["platform_size"][1]], "debug_move_speed": [250, 250],
                               "damage": 10},
-              "thunder": {"name": None, "pos": [220, 360], "grid_pos": [0, 0],
+              "thunder": {"name": None, "pos": [220, 360], "grid_pos": [0, 0], "move": False, "range": [3, 0],
                           "image": "effect_pimen_Thunder_64x256.png", "center": True, "bobbing": False, "flip": False,
                           "table": True, "reverse": False, "size": [64, 256], "side": 0, "animation_time": 0.025, "animation_loop": True, "impact": False,
-                          "move": False, "range": [3, 0],
                           "damage": 50}
               }
+
+IMPACT_DICT = {"layer": 2,
+               "energy_ball": {"pos": [0, 0], "move": False, "range": [0, 0],
+                               "image": "effect_pimen_EnergyBall_Impact_128x128.png", "side": 0, "center": True, "bobbing": False, "flip": False,
+                               "table": True, "reverse": True, "size": [128, 128], "animation_time": 0.025, "animation_loop": True, "impact": False}
+               }

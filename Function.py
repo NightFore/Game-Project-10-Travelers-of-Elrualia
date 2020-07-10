@@ -6,6 +6,7 @@ vec = pygame.math.Vector2
 def init_sprite(sprite, game, dict, object, group, parent):
     sprite.game = game
     sprite.groups = sprite.game.all_sprites, group
+    sprite.object = object
     sprite.parent = parent
     sprite.dt = game.dt
     init_dict(sprite, dict, object), init_vec(sprite), init_image(sprite), sprite.init_settings()
@@ -42,6 +43,7 @@ def init_image(sprite):
     sprite.side = sprite.object_dict["side"]
     sprite.animation_time = sprite.object_dict["animation_time"]
     sprite.animation_loop = sprite.object_dict["animation_loop"]
+    sprite.impact = sprite.object_dict["impact"]
     sprite.loop = 0
 
     # Image
@@ -105,6 +107,23 @@ def update_bobbing(sprite):
         if sprite.step > BOB_RANGE:
             sprite.step = 0
             sprite.dir *= -1
+
+def update_move(sprite):
+    if sprite.vel == (0, 0):
+        if not sprite.game.debug_mode:
+            sprite.vel = vec(sprite.move_speed.elementwise() * sprite.range[0])
+        else:
+            sprite.vel = vec(sprite.debug_move_speed.elementwise() * sprite.range[0])
+    if abs(sprite.pos_dt[0] + sprite.vel.x * sprite.game.dt) <= sprite.grid_dt[0] and abs(
+            sprite.pos_dt[1] + sprite.vel.y * sprite.game.dt) <= sprite.grid_dt[1]:
+        sprite.pos += sprite.vel * sprite.game.dt
+        sprite.pos_dt += sprite.vel.x * sprite.game.dt, sprite.vel.y * sprite.game.dt
+    else:
+        sprite.grid_pos += sprite.range[0]
+        sprite.pos = vec(sprite.pos - sprite.pos_dt + sprite.grid_dt.elementwise() * sprite.range[0])
+        sprite.pos_dt = vec(0, 0)
+        sprite.vel = vec(0, 0)
+        del sprite.range[0]
 
 
 def load_file(path, image=False):
