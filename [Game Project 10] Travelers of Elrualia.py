@@ -77,7 +77,7 @@ class Game:
 
     def update_sprite(self, sprite, move=False, keys=False):
         if move:
-            sprite.move()
+            sprite.update_move()
         if keys:
             sprite.get_keys()
         if sprite.table:

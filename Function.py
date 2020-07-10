@@ -11,6 +11,8 @@ def update_time_dependent(sprite):
         sprite.current_time = 0
         sprite.index = (sprite.index + 1) % len(sprite.images)
         sprite.image = sprite.images[sprite.index]
+    if sprite.animation_loop and sprite.index == 0 and sprite.loop != 0:
+        sprite.kill()
     sprite.image = pygame.transform.rotate(sprite.image, 0)
 
 

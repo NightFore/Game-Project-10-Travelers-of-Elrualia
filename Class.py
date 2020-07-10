@@ -38,6 +38,7 @@ class Spell(pygame.sprite.Sprite):
 
         # Gameplay
         self.spawn_time = pygame.time.get_ticks()
+        self.move = self.object_dict["move"]
         self.damage = self.object_dict["damage"]
 
     def init_vec(self):
@@ -45,11 +46,13 @@ class Spell(pygame.sprite.Sprite):
                   self.character.object_dict["spell_offset"][1] + self.character.object_dict["spell_cast_offset"][1]]
         self.pos = vec(self.game_dict["pos"]["player"][0] + self.grid_pos[0] * self.grid_dt[0] + offset[0],
                        self.game_dict["pos"]["player"][1] + self.grid_pos[1] * self.grid_dt[1] + offset[1])
-        self.pos_buffer = self.object_dict["range"][:]
-        self.pos_dt = vec(offset[0], 0)
-        self.vel = vec(0, 0)
-        self.movespeed = vec(self.object_dict["movespeed"])
-        self.debug_movespeed = vec(self.object_dict["debug_movespeed"])
+        self.range = self.object_dict["range"][:]
+
+        if self.move:
+            self.move_speed = vec(self.object_dict["move_speed"])
+            self.debug_move_speed = vec(self.object_dict["debug_move_speed"])
+            self.pos_dt = vec(offset[0], 0)
+            self.vel = vec(0, 0)
 
     def init_image(self):
         self.image = self.object_dict["image"]
@@ -61,6 +64,7 @@ class Spell(pygame.sprite.Sprite):
         self.bobbing = self.object_dict["bobbing"]
         self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
+        self.animation_loop = self.object_dict["animation_loop"]
         self.loop = 0
 
         # Image
@@ -94,25 +98,25 @@ class Spell(pygame.sprite.Sprite):
             else:
                 self.image = pygame.transform.flip(self.image, True, False)
 
-    def move(self):
-        if len(self.pos_buffer) > 0:
-            if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < 2 * self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < 2 * self.grid_size[1]:
+    def update_move(self):
+        if len(self.range) > 0:
+            if 0 <= self.grid_pos[0] + self.range[0][0] < 2 * self.grid_size[0] and 0 <= self.grid_pos[1] + self.range[0][1] < 2 * self.grid_size[1]:
                 if self.vel == (0, 0):
                     if not self.game.debug_mode:
-                        self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
-                        self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
+                        self.vel.x = self.move_speed[0] * self.range[0][0]
+                        self.vel.y = self.move_speed[1] * self.range[0][1]
                     else:
-                        self.vel.x = self.debug_movespeed[0] * self.pos_buffer[0][0]
-                        self.vel.y = self.debug_movespeed[1] * self.pos_buffer[0][1]
+                        self.vel.x = self.debug_move_speed[0] * self.range[0][0]
+                        self.vel.y = self.debug_move_speed[1] * self.range[0][1]
                 if abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
                     self.pos_dt[0] += self.vel.x * self.game.dt
                     self.pos_dt[1] += self.vel.y * self.game.dt
                 else:
-                    self.grid_pos[0] += self.pos_buffer[0][0]
-                    self.grid_pos[1] += self.pos_buffer[0][1]
-                    self.pos.x = self.pos.x - self.pos_dt[0] + self.grid_dt[0] * self.pos_buffer[0][0]
-                    self.pos.y = self.pos.y - self.pos_dt[1] + self.grid_dt[1] * self.pos_buffer[0][1]
+                    self.grid_pos[0] += self.range[0][0]
+                    self.grid_pos[1] += self.range[0][1]
+                    self.pos.x = self.pos.x - self.pos_dt[0] + self.grid_dt[0] * self.range[0][0]
+                    self.pos.y = self.pos.y - self.pos_dt[1] + self.grid_dt[1] * self.range[0][1]
                     self.pos_dt = [0, 0]
                     self.vel = vec(0, 0)
             else:
@@ -124,11 +128,11 @@ class Spell(pygame.sprite.Sprite):
         for sprite in self.game.characters:
             if self.character != sprite and (self.grid_pos[0] - self.grid_size[0] == sprite.grid_pos[0] and self.grid_pos[1] == sprite.grid_pos[1]):
                 sprite.health -= self.damage
-                Impact(self.game, self.object_dict, "impact", self)
+                Impact(self.game, self.object_dict, "impact_dict", self)
                 self.kill()
 
     def update(self):
-        self.game.update_sprite(self, move=True)
+        self.game.update_sprite(self, move=self.move)
 
         self.collide_sprite()
         if pygame.time.get_ticks() - self.spawn_time > 2500:
@@ -175,6 +179,7 @@ class Impact(pygame.sprite.Sprite):
         self.bobbing = self.object_dict["bobbing"]
         self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
+        self.animation_loop = self.object_dict["animation_loop"]
         self.loop = 0
 
         # Image
@@ -209,8 +214,6 @@ class Impact(pygame.sprite.Sprite):
 
     def update(self):
         self.game.update_sprite(self)
-        if self.index == 0 and self.loop != 0:
-            self.kill()
 
 
 class Player(pygame.sprite.Sprite):
@@ -264,10 +267,10 @@ class Player(pygame.sprite.Sprite):
         self.pos = vec(self.object_dict["pos"])
         self.pos_dt = [0, 0]
         self.vel = vec(0, 0)
-        self.movespeed = self.object_dict["movespeed"]
+        self.move_speed = self.object_dict["move_speed"]
 
         self.pos_reset = vec(self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0], self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1])
-        self.pos_buffer = []
+        self.range = []
 
     def init_image(self):
         self.image = self.object_dict["image"]
@@ -279,6 +282,7 @@ class Player(pygame.sprite.Sprite):
         self.bobbing = self.object_dict["bobbing"]
         self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
+        self.animation_loop = self.object_dict["animation_loop"]
         self.loop = 0
 
         # Image
@@ -312,36 +316,40 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.image = pygame.transform.flip(self.image, True, False)
 
-    def move(self):
-        if len(self.pos_buffer) > 0:
-            if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < self.grid_size[1]:
+    def update_move(self):
+        if len(self.range) > 0:
+            if 0 <= self.grid_pos[0] + self.range[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.range[0][1] < self.grid_size[1]:
                 if self.vel == (0, 0):
-                    self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
-                    self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
+                    self.vel.x = self.move_speed[0] * self.range[0][0]
+                    self.vel.y = self.move_speed[1] * self.range[0][1]
                 if abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
                     self.pos_dt[0] += self.vel.x * self.game.dt
                     self.pos_dt[1] += self.vel.y * self.game.dt
                 else:
-                    self.grid_pos[0] += self.pos_buffer[0][0]
-                    self.grid_pos[1] += self.pos_buffer[0][1]
-                    self.pos.x = self.pos.x - self.pos_dt[0] + self.grid_dt[0] * self.pos_buffer[0][0]
-                    self.pos.y = self.pos.y - self.pos_dt[1] + self.grid_dt[1] * self.pos_buffer[0][1]
+                    self.grid_pos[0] += self.range[0][0]
+                    self.grid_pos[1] += self.range[0][1]
+                    self.pos.x = self.pos.x - self.pos_dt[0] + self.grid_dt[0] * self.range[0][0]
+                    self.pos.y = self.pos.y - self.pos_dt[1] + self.grid_dt[1] * self.range[0][1]
                     self.pos_dt = [0, 0]
                     self.vel = vec(0, 0)
-                    del self.pos_buffer[0]
+                    del self.range[0]
             else:
-                del self.pos_buffer[0]
+                del self.range[0]
 
     def buffer_move(self, dx=0, dy=0):
-        if len(self.pos_buffer) < 2:
-            self.pos_buffer.append([dx, dy])
+        if len(self.range) < 2:
+            self.range.append([dx, dy])
 
     def get_keys(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_x] or keys[pygame.K_SPACE]:
             if pygame.time.get_ticks() - self.last_attack >= self.attack_rate:
                 Spell(self.game, self.game.spell_dict, "energy_ball", self)
+                self.last_attack = pygame.time.get_ticks()
+        if keys[pygame.K_c]:
+            if pygame.time.get_ticks() - self.last_attack >= self.attack_rate:
+                Spell(self.game, self.game.spell_dict, "thunder", self)
                 self.last_attack = pygame.time.get_ticks()
 
     def draw_ui(self):
@@ -418,10 +426,10 @@ class Enemy(pygame.sprite.Sprite):
         self.pos = vec(self.object_dict["pos"])
         self.pos_dt = vec(0, 0)
         self.vel = vec(0, 0)
-        self.movespeed = vec(self.object_dict["movespeed"])
+        self.move_speed = vec(self.object_dict["move_speed"])
 
         self.pos_reset = vec(self.object_dict["pos"][0] + self.grid_pos[0] * self.grid_dt[0], self.object_dict["pos"][1] + self.grid_pos[1] * self.grid_dt[1])
-        self.pos_buffer = []
+        self.range = []
 
     def init_image(self):
         self.image = self.object_dict["image"]
@@ -433,6 +441,7 @@ class Enemy(pygame.sprite.Sprite):
         self.bobbing = self.object_dict["bobbing"]
         self.flip = self.object_dict["flip"]
         self.animation_time = self.object_dict["animation_time"]
+        self.animation_loop = self.object_dict["animation_loop"]
         self.loop = 0
 
         # Image
@@ -466,35 +475,35 @@ class Enemy(pygame.sprite.Sprite):
             else:
                 self.image = pygame.transform.flip(self.image, True, False)
 
-    def move(self):
-        if len(self.pos_buffer) > 0:
-            if 0 <= self.grid_pos[0] + self.pos_buffer[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.pos_buffer[0][1] < self.grid_size[1]:
+    def update_move(self):
+        if len(self.range) > 0:
+            if 0 <= self.grid_pos[0] + self.range[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.range[0][1] < self.grid_size[1]:
                 if self.vel == (0, 0):
-                    self.vel.x = self.movespeed[0] * self.pos_buffer[0][0]
-                    self.vel.y = self.movespeed[1] * self.pos_buffer[0][1]
+                    self.vel.x = self.move_speed[0] * self.range[0][0]
+                    self.vel.y = self.move_speed[1] * self.range[0][1]
                 if abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
                     self.pos_dt[0] += self.vel.x * self.game.dt
                     self.pos_dt[1] += self.vel.y * self.game.dt
                 else:
-                    self.grid_pos[0] += self.pos_buffer[0][0]
-                    self.grid_pos[1] += self.pos_buffer[0][1]
-                    self.pos.x = self.pos.x - self.pos_dt[0] + self.grid_dt[0] * self.pos_buffer[0][0]
-                    self.pos.y = self.pos.y - self.pos_dt[1] + self.grid_dt[1] * self.pos_buffer[0][1]
+                    self.grid_pos[0] += self.range[0][0]
+                    self.grid_pos[1] += self.range[0][1]
+                    self.pos.x = self.pos.x - self.pos_dt[0] + self.grid_dt[0] * self.range[0][0]
+                    self.pos.y = self.pos.y - self.pos_dt[1] + self.grid_dt[1] * self.range[0][1]
                     self.pos_dt = [0, 0]
                     self.vel = vec(0, 0)
-                    del self.pos_buffer[0]
+                    del self.range[0]
             else:
-                del self.pos_buffer[0]
+                del self.range[0]
 
         elif pygame.time.get_ticks() - self.move_time > self.move_frequency:
             dx = dy = 0
             while (dx == dy == 0 or dx != 0 and dy != 0) or not (0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]):
                 dx = random.randint(-1, 1)
                 dy = random.randint(-1, 1)
-            self.pos_buffer.append([dx, dy])
+            self.range.append([dx, dy])
             self.move_time = pygame.time.get_ticks()
-            self.move()
+            self.update_move()
 
     def draw_ui(self):
         # Grid Pos
