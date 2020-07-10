@@ -22,8 +22,8 @@ def init_vec(sprite):
     sprite.range = sprite.object_dict["range"][:]
     sprite.move = sprite.object_dict["move"]
     if sprite.move:
-        sprite.vel = vec(0, 0)
         sprite.pos_dt = vec(0, 0)
+        sprite.vel = vec(0, 0)
         sprite.move_speed = vec(sprite.object_dict["move_speed"])
         sprite.debug_move_speed = vec(sprite.object_dict["debug_move_speed"])
 

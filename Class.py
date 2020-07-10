@@ -22,9 +22,9 @@ class Spell(pygame.sprite.Sprite):
         self.damage = self.object_dict["damage"]
 
         # Grid
-        self.grid_pos = self.parent.grid_pos[:]
+        self.grid_pos = vec(self.parent.grid_pos[:])
         self.grid_size = self.game_dict["grid_size"]
-        self.grid_dt = self.game_dict["grid_dt"]
+        self.grid_dt = vec(self.game_dict["grid_dt"])
 
         # Position & vector
         offset = [self.parent.object_dict["spell_offset"][0] + self.parent.object_dict["cast_offset"][0] + self.parent.pos_dt[0],
@@ -39,22 +39,18 @@ class Spell(pygame.sprite.Sprite):
             if 0 <= self.grid_pos[0] + self.range[0][0] < 2 * self.grid_size[0] and 0 <= self.grid_pos[1] + self.range[0][1] < 2 * self.grid_size[1]:
                 if self.vel == (0, 0):
                     if not self.game.debug_mode:
-                        self.vel.x = self.move_speed[0] * self.range[0][0]
-                        self.vel.y = self.move_speed[1] * self.range[0][1]
+                        self.vel = vec(self.move_speed.elementwise() * self.range[0])
                     else:
-                        self.vel.x = self.debug_move_speed[0] * self.range[0][0]
-                        self.vel.y = self.debug_move_speed[1] * self.range[0][1]
+                        self.vel = vec(self.debug_move_speed.elementwise() * self.range[0])
                 if abs(self.pos_dt[0] + self.vel.x * self.game.dt) <= self.grid_dt[0] and abs(self.pos_dt[1] + self.vel.y * self.game.dt) <= self.grid_dt[1]:
                     self.pos += self.vel * self.game.dt
-                    self.pos_dt[0] += self.vel.x * self.game.dt
-                    self.pos_dt[1] += self.vel.y * self.game.dt
+                    self.pos_dt += self.vel.x * self.game.dt, self.vel.y * self.game.dt
                 else:
-                    self.grid_pos[0] += self.range[0][0]
-                    self.grid_pos[1] += self.range[0][1]
-                    self.pos.x = self.pos.x - self.pos_dt[0] + self.grid_dt[0] * self.range[0][0]
-                    self.pos.y = self.pos.y - self.pos_dt[1] + self.grid_dt[1] * self.range[0][1]
-                    self.pos_dt = [0, 0]
+                    self.grid_pos += self.range[0]
+                    self.pos = vec(self.pos - self.pos_dt + self.grid_dt.elementwise() * self.range[0])
+                    self.pos_dt = vec(0, 0)
                     self.vel = vec(0, 0)
+                    del self.range[0]
             else:
                 self.kill()
         else:

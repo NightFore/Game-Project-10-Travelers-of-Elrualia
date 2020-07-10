@@ -27,6 +27,15 @@ class Game:
         self.load_data()
         self.new()
 
+    def update_sprite(self, sprite, move=False, keys=False):
+        if move:
+            sprite.update_move()
+        if keys:
+            sprite.get_keys()
+        update_time_dependent(sprite)
+        update_center(sprite)
+        update_bobbing(sprite)
+
     def draw_text(self, text, font_name, size, color, x, y, align="nw", debug_mode=False):
         font = pygame.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
@@ -74,15 +83,6 @@ class Game:
         if align == "center":
             image_rect.center = (x, y)
         self.gameDisplay.blit(image, image_rect)
-
-    def update_sprite(self, sprite, move=False, keys=False):
-        if move:
-            sprite.update_move()
-        if keys:
-            sprite.get_keys()
-        update_time_dependent(sprite)
-        update_center(sprite)
-        update_bobbing(sprite)
 
     def load_data(self):
         # Directories
