@@ -45,7 +45,7 @@ GAME_DICT = {"background_image": "background_battle.png", "background_color": LI
 
 
 CHARACTER_DICT = {"layer": 3,
-                  "player": {"name": "Player", "pos": [220, 320], "grid_pos": [0, 0], "move": True, "range": [],
+                  "player": {"name": "Player", "pos": [220, 320], "grid_pos": [0, 0], "range": [], "move": True,
                              "image": "character_SecretHideout_Gunner_Blue_Idle_960x192_192x192.png", "side": 0, "center": True, "bobbing": False, "flip": False,
                              "table": True, "reverse": False, "size": [192, 192], "animation_time": 0.150, "animation_loop": False, "impact": False,
                              "hp_offset": [0, 55],
@@ -54,12 +54,12 @@ CHARACTER_DICT = {"layer": 3,
                              "move_speed": [1.25 * GAME_DICT["platform_size"][0], 2.5 * GAME_DICT["platform_size"][1]],
                              "level": 1, "max_health": 100, "health": 100, "max_mana": 5, "mana": 3.75,
                              "attack_rate": 225},
-                  "enemy": {"name": "Enemy", "pos": [700, 320], "grid_pos": [0, 0],
+                  "enemy": {"name": "Enemy", "pos": [700, 320], "grid_pos": [0, 0], "range": [], "move": True,
                             "hp_offset": [0, 55],
                             "debug_color": RED, "debug_pos": [648, 333], "debug_dt": [104, 54],
                             "image": "character_SecretHideout_Gunner_Red_Idle_960x192_192x192.png", "side": 0, "center": True, "bobbing": False, "flip": True,
                             "table": True, "reverse": False, "size": [192, 192], "animation_time": 0.150, "animation_loop": False, "impact": False,
-                            "move": True, "move_speed": [1.25 * GAME_DICT["platform_size"][0], 2.5 * GAME_DICT["platform_size"][1]],
+                            "move_speed": [1.25 * GAME_DICT["platform_size"][0], 2.5 * GAME_DICT["platform_size"][1]],
                             "level": 1, "max_health": 100, "health": 100, "max_mana": 6, "mana": 4.50,
                             "move_frequency": 1000}}
 

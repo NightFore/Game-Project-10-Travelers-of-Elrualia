@@ -98,7 +98,6 @@ class Game:
         self.game_dict = GAME_DICT
         self.character_dict = CHARACTER_DICT
         self.spell_dict = SPELL_DICT
-        self.impact_dict = IMPACT_DICT
 
         # Graphics
         self.background_color = self.game_dict["background_color"]
@@ -132,7 +131,7 @@ class Game:
         self.impact = pygame.sprite.Group()
 
         self.player = Player(self, self.character_dict, "player", self.characters)
-        self.enemy = Enemy(self, self.character_dict, "enemy")
+        self.enemy = Enemy(self, self.character_dict, "enemy", self.characters)
 
     def run(self):
         self.playing = True
