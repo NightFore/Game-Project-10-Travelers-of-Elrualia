@@ -7,6 +7,7 @@ def init_sprite(sprite, game, dict, object, group, parent):
     sprite.game = game
     sprite.groups = sprite.game.all_sprites, group
     sprite.object = object
+    sprite.group = group
     sprite.parent = parent
     sprite.dt = game.dt
     init_dict(sprite, dict, object), init_vec(sprite), init_image(sprite), sprite.init_settings()
@@ -26,7 +27,10 @@ def init_vec(sprite):
         sprite.pos_dt = vec(0, 0)
         sprite.vel = vec(0, 0)
         sprite.move_speed = vec(sprite.object_dict["move_speed"])
-        sprite.debug_move_speed = vec(sprite.object_dict["debug_move_speed"])
+        if "debug_move_speed" in sprite.object_dict:
+            sprite.debug_move_speed = vec(sprite.object_dict["debug_move_speed"])
+        else:
+            sprite.debug_move_speed = sprite.move_speed
 
 def init_image(sprite):
     # Settings
@@ -35,24 +39,22 @@ def init_image(sprite):
     sprite.center = sprite.object_dict["center"]
     sprite.bobbing = sprite.object_dict["bobbing"]
     sprite.flip = sprite.object_dict["flip"]
-
-    # Animation
-    sprite.table = sprite.object_dict["table"]
-    sprite.reverse = sprite.object_dict["reverse"]
-    sprite.size = sprite.object_dict["size"]
-    sprite.side = sprite.object_dict["side"]
-    sprite.animation_time = sprite.object_dict["animation_time"]
-    sprite.animation_loop = sprite.object_dict["animation_loop"]
     sprite.impact = sprite.object_dict["impact"]
-    sprite.loop = 0
 
     # Image
+    sprite.table = sprite.object_dict["table"]
     if sprite.table:
+        sprite.reverse = sprite.object_dict["reverse"]
+        sprite.size = sprite.object_dict["size"]
+        sprite.side = sprite.object_dict["side"]
+        sprite.animation_time = sprite.object_dict["animation_time"]
+        sprite.animation_loop = sprite.object_dict["animation_loop"]
+        sprite.loop = 0
         sprite.index = 0
+        sprite.current_time = 0
         sprite.images_side = load_tile_table(path.join(sprite.game.graphics_folder, sprite.image), sprite.size[0], sprite.size[1], sprite.reverse)
         sprite.images = sprite.images_side[sprite.side]
         sprite.image = sprite.images[sprite.index]
-        sprite.current_time = 0
     else:
         sprite.image = load_image(sprite.game.graphics_folder, sprite.image)
     sprite.rect = sprite.image.get_rect()

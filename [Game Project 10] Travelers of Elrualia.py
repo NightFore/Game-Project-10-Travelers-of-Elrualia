@@ -131,7 +131,7 @@ class Game:
         self.spells = pygame.sprite.Group()
         self.impact = pygame.sprite.Group()
 
-        self.player = Player(self, self.character_dict, "player")
+        self.player = Player(self, self.character_dict, "player", self.characters)
         self.enemy = Enemy(self, self.character_dict, "enemy")
 
     def run(self):
