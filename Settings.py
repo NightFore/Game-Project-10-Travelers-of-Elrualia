@@ -36,17 +36,13 @@ GAME_DICT = {"background_image": "background_battle.png", "background_color": LI
              "status_font": None, "status_color": WHITE, "status_size": 25,
              "mana_pos": [250, 650], "energy_pos": [400, 650],
              "grid_size": [4, 4], "grid_dt": [120, 70],
-             "pos": {"player": [220, 360], "enemy": [700, 360],
-                     "player_name": [0, 0], "enemy_name": [0, 0], "enemy_name_dt": [0, 0],
-                     "player_level": [0, 0], "player_exp": [0, 0], "player_mana": [0, 0],
-                     "next_spell": [0, 0], "current_spell": [0, 0], "current_attack": [0, 0],
-                     "stage": [0, 0], "time": [0, 0], "option": [0, 0], "fps": [0, 0]},
-             "color": {"debug": CYAN, "health": GREEN, "mana": LIGHTSKYBLUE, "spell": [RED, BLUE, GREEN]},
+             "pos": {"player": [220, 360], "enemy": [700, 360],},
+             "color": {"cursor": [120, 160, 240], "debug": CYAN, "health": GREEN, "mana": LIGHTSKYBLUE, "spell": [RED, BLUE, GREEN]},
              "font": None}
 
 
 
-CHARACTER_DICT = {"layer": 3,
+CHARACTER_DICT = {"layer": 2,
                   "player": {
                       "name": "Player", "pos": [220, 320], "grid_pos": [0, 0], "range": [], "move": True,
                       "image": "character_SecretHideout_Gunner_Blue_Idle_960x192_192x192.png", "side": 0, "center": True, "bobbing": False, "flip": False,
@@ -67,7 +63,7 @@ CHARACTER_DICT = {"layer": 3,
                       "level": 1, "max_health": 100, "health_regen": 0.25, "max_mana": 3, "mana_regen": 0.10, "max_energy": 1, "energy_regen": 0.25,
                       "move_frequency": 1000}}
 
-SPELL_DICT = {"layer": 2,
+SPELL_DICT = {"layer": 3,
               "energy_ball": {
                   "pos": [220, 360], "range": 8 * [[1, 0]], "move": True,
                   "image": "effect_pimen_EnergyBall_128x128.png", "center": True, "bobbing": False, "flip": False, "impact": True,
@@ -79,7 +75,7 @@ SPELL_DICT = {"layer": 2,
                   "image": "effect_pimen_EnergyBall_Impact_128x128.png", "center": True, "bobbing": False, "flip": False, "impact": False,
                   "table": True, "reverse": True, "size": [128, 128], "side": 0, "animation_time": 0.025, "animation_loop": True},
               "thunder": {
-                  "pos": [220, 360], "range": [3, 0], "move": False,
+                  "pos": [220, 260], "range": [4, 0], "move": False,
                   "image": "effect_pimen_Thunder_64x256.png", "center": True, "bobbing": False, "flip": False, "impact": False,
                   "table": True, "reverse": False, "size": [64, 256], "side": 0, "animation_time": 0.025, "animation_loop": True,
                   "damage": 50, "mana_cost": 2, "energy_cost": 0}

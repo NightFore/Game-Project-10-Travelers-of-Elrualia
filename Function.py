@@ -181,9 +181,11 @@ def draw_interface(game):
 
     # Interface
     for sprite in game.characters:
-        sprite.draw_ui()
         # Grid Pos
         pygame.draw.rect(game.gameDisplay, sprite.debug_color, (sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0], sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1], sprite.debug_dt[0], sprite.debug_dt[1]))
+        sprite.draw_ui()
+
+    pygame.draw.rect(game.gameDisplay, game.game_dict["color"]["cursor"], (game.player.debug_pos[0] + (game.player.grid_pos[0]+4) * game.player.grid_dt[0], game.player.debug_pos[1] + game.player.grid_pos[1] * game.player.grid_dt[1], game.player.debug_dt[0], game.player.debug_dt[1]))
 
 
 def draw_debug(game):

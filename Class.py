@@ -18,14 +18,17 @@ class Spell(pygame.sprite.Sprite):
         self.grid_size = self.game_dict["grid_size"]
         self.grid_pos = vec(self.parent.grid_pos[:])
         self.grid_dt = vec(self.game_dict["grid_dt"])
-        offset = [self.parent.object_dict["spell_offset"][0] + self.parent.object_dict["cast_offset"][0] + self.parent.pos_dt[0],
-                  self.parent.object_dict["spell_offset"][1] + self.parent.object_dict["cast_offset"][1]]
-        self.pos += self.grid_pos[0] * self.grid_dt[0] + offset[0], self.grid_pos[1] * self.grid_dt[1] + offset[1]
         if self.move:
+            offset = [self.parent.object_dict["spell_offset"][0] + self.parent.object_dict["cast_offset"][0] + self.parent.pos_dt[0], self.parent.object_dict["spell_offset"][1] + self.parent.object_dict["cast_offset"][1]]
+            self.pos += self.grid_pos[0] * self.grid_dt[0] + offset[0], self.grid_pos[1] * self.grid_dt[1] + offset[1]
             self.pos_dt = vec(offset[0], 0)
+        else:
+            self.grid_pos += self.range
+            self.pos += self.grid_pos[0] * self.grid_dt[0], self.grid_pos[1] * self.grid_dt[1]
 
         # Gameplay
         self.spawn_time = pygame.time.get_ticks()
+        self.hit = False
         self.damage = self.object_dict["damage"]
         self.mana_cost = self.object_dict["mana_cost"]
         self.energy_cost = self.object_dict["energy_cost"]
@@ -40,12 +43,15 @@ class Spell(pygame.sprite.Sprite):
             self.kill()
 
     def collide_sprite(self):
-        for sprite in self.game.characters:
-            if sprite != self.parent and (self.grid_pos[0] - self.grid_size[0] == sprite.grid_pos[0] and self.grid_pos[1] == sprite.grid_pos[1]):
-                sprite.health -= self.damage
-                if self.impact:
-                    Impact(self.game, self.dict, self.object + "_impact", self.group, self)
-                self.kill()
+        if not self.hit:
+            for sprite in self.game.characters:
+                if sprite != self.parent and (self.grid_pos[0] - self.grid_size[0] == sprite.grid_pos[0] and self.grid_pos[1] == sprite.grid_pos[1]):
+                    sprite.health -= self.damage
+                    if self.move:
+                        self.kill()
+                    if self.impact:
+                        Impact(self.game, self.dict, self.object + "_impact", self.group, self)
+                    self.hit = True
 
     def update(self):
         self.game.update_sprite(self, move=self.move)
@@ -95,7 +101,7 @@ class Player(pygame.sprite.Sprite):
                 del self.range[0]
 
     def buffer_move(self, dx=0, dy=0):
-        if len(self.range) < 2 and self.energy - 1 >= 0.10:
+        if len(self.range) < 2 and self.energy - 1 >= 0:
             self.energy = max(self.energy - 1, 0)
             self.range.append([dx, dy])
 
