@@ -113,7 +113,7 @@ def update_bobbing(sprite):
 
 
 
-# Gameplay
+# Gameplay / Interface
 def init_character(sprite):
     # Position
     sprite.grid_size = sprite.game_dict["grid_size"]
@@ -162,6 +162,16 @@ def update_move(sprite):
         sprite.vel = vec(0, 0)
         del sprite.range[0]
 
+def draw_status(sprite):
+    # Health
+    sprite.game.draw_text(sprite.health, sprite.hp_font, sprite.hp_size, sprite.hp_color, sprite.pos + sprite.hp_offset, "center", sprite.game.debug_mode)
+
+def draw_debug(sprite):
+    pygame.draw.rect(sprite.game.gameDisplay, sprite.debug_color, (sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0], sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1], sprite.debug_dt[0], sprite.debug_dt[1]), 1)
+
+def draw_interface(sprite):
+    # Grid Pos
+    pygame.draw.rect(sprite.game.gameDisplay, sprite.debug_color, (sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0], sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1], sprite.debug_dt[0], sprite.debug_dt[1]))
 
 
 # Miscellaneous

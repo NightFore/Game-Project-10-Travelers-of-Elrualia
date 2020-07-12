@@ -36,7 +36,10 @@ class Game:
         update_center(sprite)
         update_bobbing(sprite)
 
-    def draw_text(self, text, font_name, size, color, x, y, align="nw", debug_mode=False):
+    def draw_text(self, text, font_name, size, color, pos, align="nw", debug_mode=False):
+        if not isinstance(text, str):
+            text = str(text)
+        x, y = int(pos[0]), int(pos[1])
         font = pygame.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
@@ -191,6 +194,7 @@ class Game:
 
         # Interface
         for sprite in self.characters:
+            draw_status(sprite)
             sprite.draw_ui()
 
         # Debug
@@ -198,7 +202,8 @@ class Game:
             for sprite in self.all_sprites:
                 pygame.draw.rect(self.gameDisplay, CYAN, sprite.rect, 1)
             for sprite in self.characters:
-                sprite.draw_debug_mode()
+                draw_debug(sprite)
+                sprite.draw_debug()
 
         # Sprite
         for sprite in self.all_sprites:
@@ -206,6 +211,7 @@ class Game:
 
         # Status
         for sprite in self.characters:
+            draw_status(sprite)
             sprite.draw_status()
 
         # Pause
