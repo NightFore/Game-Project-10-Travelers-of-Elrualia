@@ -1,5 +1,6 @@
 import pygame
 import random
+from Settings import *
 from os import path
 vec = pygame.math.Vector2
 
@@ -154,10 +155,10 @@ def update_move(sprite):
             sprite.vel = vec(sprite.move_speed.elementwise() * sprite.range[0])
         else:
             sprite.vel = vec(sprite.debug_move_speed.elementwise() * sprite.range[0])
-    if abs(sprite.pos_dt[0] + sprite.vel.x * sprite.game.dt) <= sprite.grid_dt[0] and abs(
-            sprite.pos_dt[1] + sprite.vel.y * sprite.game.dt) <= sprite.grid_dt[1]:
-        sprite.pos += sprite.vel * sprite.game.dt
-        sprite.pos_dt += sprite.vel.x * sprite.game.dt, sprite.vel.y * sprite.game.dt
+    if abs(sprite.pos_dt[0] + sprite.vel.x * sprite.dt) <= sprite.grid_dt[0] and abs(
+            sprite.pos_dt[1] + sprite.vel.y * sprite.dt) <= sprite.grid_dt[1]:
+        sprite.pos += sprite.vel * sprite.dt
+        sprite.pos_dt += sprite.vel.x * sprite.dt, sprite.vel.y * sprite.dt
     else:
         sprite.grid_pos += sprite.range[0]
         sprite.pos = vec(sprite.pos - sprite.pos_dt + sprite.grid_dt.elementwise() * sprite.range[0])
@@ -165,7 +166,12 @@ def update_move(sprite):
         sprite.vel = vec(0, 0)
         del sprite.range[0]
 
-
+def init_spell(spell, game, dict, object=None, group=None, parent=None):
+    if parent.mana - game.spell_dict[object]["mana_cost"] >= 0 and parent.energy - game.spell_dict[object]["energy_cost"] >= 0:
+        parent.mana -= game.spell_dict[object]["mana_cost"]
+        parent.energy -= game.spell_dict[object]["energy_cost"]
+        parent.last_attack = pygame.time.get_ticks()
+        spell(game, dict, object, group, parent)
 
 # Draw
 def draw_interface(game):
@@ -194,8 +200,6 @@ def draw_sprite(game):
         game.gameDisplay.blit(sprite.image, sprite)
 
 def draw_status(game):
-    game.draw_text(game.player.energy, game.ui_font, game.ui_size, game.ui_color, game.game_dict["energy_pos"], "center", game.debug_mode)
-
     for sprite in game.characters:
         sprite.draw_status()
         game.draw_text(sprite.health, sprite.status_font, sprite.status_size, sprite.status_color, sprite.pos + sprite.hp_offset, "center", game.debug_mode)

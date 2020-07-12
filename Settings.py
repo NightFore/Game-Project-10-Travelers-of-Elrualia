@@ -34,7 +34,7 @@ GAME_DICT = {"background_image": "background_battle.png", "background_color": LI
              "platform_size": [950, 270],
              "ui_font": None, "ui_color": WHITE, "ui_size": 40,
              "status_font": None, "status_color": WHITE, "status_size": 25,
-             "energy_pos": [400, 650],
+             "mana_pos": [250, 650], "energy_pos": [400, 650],
              "grid_size": [4, 4], "grid_dt": [120, 70],
              "pos": {"player": [220, 360], "enemy": [700, 360],
                      "player_name": [0, 0], "enemy_name": [0, 0], "enemy_name_dt": [0, 0],
@@ -55,7 +55,7 @@ CHARACTER_DICT = {"layer": 3,
                       "spell_offset": [0, -48], "cast_offset": [102, 0],
                       "debug_color": BLUE, "debug_pos": [168, 333], "debug_dt": [104, 54],
                       "move_speed": [1.25 * GAME_DICT["platform_size"][0], 2.5 * GAME_DICT["platform_size"][1]],
-                      "level": 1, "max_health": 100, "health_regen": 1, "max_mana": 5, "mana_regen": 0.10, "max_energy": 3, "energy_regen": 0.25,
+                      "level": 1, "max_health": 100, "health_regen": 1, "max_mana": 5, "mana_regen": 2, "max_energy": 1000, "energy_regen": -10,
                       "attack_rate": 225},
                   "enemy": {
                       "name": "Enemy", "pos": [700, 320], "grid_pos": [0, 0], "range": [], "move": True,
@@ -73,7 +73,7 @@ SPELL_DICT = {"layer": 2,
                   "image": "effect_pimen_EnergyBall_128x128.png", "center": True, "bobbing": False, "flip": False, "impact": True,
                   "table": True, "reverse": False, "size": [128, 128], "side": 0, "animation_time": 0.025, "animation_loop": False,
                   "move_speed": [2 * GAME_DICT["platform_size"][0], 4 * GAME_DICT["platform_size"][1]], "debug_move_speed": [250, 250],
-                  "damage": 10},
+                  "damage": 10, "mana_cost": 1, "energy_cost": 0},
               "energy_ball_impact": {
                   "pos": [0, 0], "range": [0, 0], "move": False,
                   "image": "effect_pimen_EnergyBall_Impact_128x128.png", "center": True, "bobbing": False, "flip": False, "impact": False,
@@ -82,5 +82,5 @@ SPELL_DICT = {"layer": 2,
                   "pos": [220, 360], "range": [3, 0], "move": False,
                   "image": "effect_pimen_Thunder_64x256.png", "center": True, "bobbing": False, "flip": False, "impact": False,
                   "table": True, "reverse": False, "size": [64, 256], "side": 0, "animation_time": 0.025, "animation_loop": True,
-                  "damage": 50}
+                  "damage": 50, "mana_cost": 2, "energy_cost": 0}
               }
