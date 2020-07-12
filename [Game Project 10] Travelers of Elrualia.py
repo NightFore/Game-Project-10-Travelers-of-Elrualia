@@ -125,9 +125,13 @@ class Game:
         # Music
         self.music = None
 
+        # Miscellaneous
+        self.debug_color = self.game_dict["color"]["debug"]
+        self.ui_font = self.game_dict["ui_font"]
+        self.ui_size = self.game_dict["ui_size"]
+        self.ui_color = self.game_dict["ui_color"]
+
     def new(self):
-        self.paused = False
-        self.debug_mode = True
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
         self.spells = pygame.sprite.Group()
@@ -135,6 +139,9 @@ class Game:
 
         self.player = Player(self, self.character_dict, "player", self.characters)
         self.enemy = Enemy(self, self.character_dict, "enemy", self.characters)
+
+        self.paused = False
+        self.debug_mode = True
 
     def run(self):
         self.playing = True
@@ -188,31 +195,10 @@ class Game:
         self.all_sprites.update()
 
     def draw(self):
-        # Background
-        self.gameDisplay.fill(self.background_color)
-        self.gameDisplay.blit(self.background_image, (0, 0))
-
-        # Interface
-        for sprite in self.characters:
-            draw_status(sprite)
-            sprite.draw_ui()
-
-        # Debug
-        if self.debug_mode:
-            for sprite in self.all_sprites:
-                pygame.draw.rect(self.gameDisplay, CYAN, sprite.rect, 1)
-            for sprite in self.characters:
-                draw_debug(sprite)
-                sprite.draw_debug()
-
-        # Sprite
-        for sprite in self.all_sprites:
-            self.gameDisplay.blit(sprite.image, sprite)
-
-        # Status
-        for sprite in self.characters:
-            draw_status(sprite)
-            sprite.draw_status()
+        draw_interface(self)
+        draw_debug(self)
+        draw_sprite(self)
+        draw_status(self)
 
         # Pause
         if self.paused:

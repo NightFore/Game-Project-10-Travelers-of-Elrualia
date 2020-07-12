@@ -135,9 +135,12 @@ def init_character(sprite):
 
 def init_interface(sprite):
     # Interface
-    sprite.hp_font = sprite.game_dict["hp_font"]
-    sprite.hp_size = sprite.game_dict["hp_size"]
-    sprite.hp_color = sprite.game_dict["hp_color"]
+    sprite.ui_font = sprite.game_dict["ui_font"]
+    sprite.ui_size = sprite.game_dict["ui_size"]
+    sprite.ui_color = sprite.game_dict["ui_color"]
+    sprite.status_font = sprite.game_dict["status_font"]
+    sprite.status_size = sprite.game_dict["status_size"]
+    sprite.status_color = sprite.game_dict["status_color"]
     sprite.hp_offset = sprite.object_dict["hp_offset"][:]
 
     # Debug
@@ -162,16 +165,40 @@ def update_move(sprite):
         sprite.vel = vec(0, 0)
         del sprite.range[0]
 
-def draw_status(sprite):
-    # Health
-    sprite.game.draw_text(sprite.health, sprite.hp_font, sprite.hp_size, sprite.hp_color, sprite.pos + sprite.hp_offset, "center", sprite.game.debug_mode)
 
-def draw_debug(sprite):
-    pygame.draw.rect(sprite.game.gameDisplay, sprite.debug_color, (sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0], sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1], sprite.debug_dt[0], sprite.debug_dt[1]), 1)
 
-def draw_interface(sprite):
-    # Grid Pos
-    pygame.draw.rect(sprite.game.gameDisplay, sprite.debug_color, (sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0], sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1], sprite.debug_dt[0], sprite.debug_dt[1]))
+# Draw
+def draw_interface(game):
+    # Background
+    game.gameDisplay.fill(game.background_color)
+    game.gameDisplay.blit(game.background_image, (0, 0))
+
+    # Interface
+    for sprite in game.characters:
+        sprite.draw_ui()
+        # Grid Pos
+        pygame.draw.rect(game.gameDisplay, sprite.debug_color, (sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0], sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1], sprite.debug_dt[0], sprite.debug_dt[1]))
+
+
+def draw_debug(game):
+    # Debug
+    if game.debug_mode:
+        for sprite in game.all_sprites:
+            pygame.draw.rect(game.gameDisplay, game.debug_color, sprite.rect, 1)
+        for sprite in game.characters:
+            sprite.draw_debug()
+            pygame.draw.rect(game.gameDisplay, sprite.debug_color, (sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0], sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1], sprite.debug_dt[0], sprite.debug_dt[1]), 1)
+
+def draw_sprite(game):
+    for sprite in game.all_sprites:
+        game.gameDisplay.blit(sprite.image, sprite)
+
+def draw_status(game):
+    game.draw_text(game.player.energy, game.ui_font, game.ui_size, game.ui_color, game.game_dict["energy_pos"], "center", game.debug_mode)
+
+    for sprite in game.characters:
+        sprite.draw_status()
+        game.draw_text(sprite.health, sprite.status_font, sprite.status_size, sprite.status_color, sprite.pos + sprite.hp_offset, "center", game.debug_mode)
 
 
 # Miscellaneous
