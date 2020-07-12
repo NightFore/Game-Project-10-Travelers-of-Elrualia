@@ -71,38 +71,17 @@ class Impact(pygame.sprite.Sprite):
         self.game.update_sprite(self)
 
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, dict, object=None, group=None, parent=None):
         init_sprite(self, game, dict, object, group, parent)
 
     def init_settings(self):
-        # Position
-        self.grid_size = self.game_dict["grid_size"]
-        self.grid_pos = vec(self.object_dict["grid_pos"][:])
-        self.grid_dt = vec(self.game_dict["grid_dt"])
-
-        # Interface
-        self.hp_font = self.game_dict["hp_font"]
-        self.hp_size = self.game_dict["hp_size"]
-        self.hp_color = self.game_dict["hp_color"]
-        self.hp_offset = self.object_dict["hp_offset"][:]
+        init_character(self), init_interface(self)
 
         # Gameplay
         self.last_attack = pygame.time.get_ticks()
         self.attack_rate = self.object_dict["attack_rate"]
-
-        # Status
-        self.name = self.object_dict["name"]
-        self.level = self.object_dict["level"]
-        self.max_health = self.object_dict["max_health"]
-        self.health = self.object_dict["health"]
-        self.max_mana = self.object_dict["max_mana"]
-        self.mana = self.object_dict["mana"]
-
-        # Debug
-        self.debug_color = self.object_dict["debug_color"]
-        self.debug_pos = self.object_dict["debug_pos"]
-        self.debug_dt = self.object_dict["debug_dt"]
 
     def update_move(self):
         if len(self.range) > 0:
@@ -146,39 +125,16 @@ class Player(pygame.sprite.Sprite):
 
 
 
-
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, game, dict, object=None, group=None, parent=None):
         init_sprite(self, game, dict, object, group, parent)
 
     def init_settings(self):
-        # Position
-        self.grid_size = self.game_dict["grid_size"]
-        self.grid_pos = vec(self.object_dict["grid_pos"][:])
-        self.grid_dt = vec(self.game_dict["grid_dt"])
-
-        # Interface
-        self.hp_font = self.game_dict["hp_font"]
-        self.hp_size = self.game_dict["hp_size"]
-        self.hp_color = self.game_dict["hp_color"]
-        self.hp_offset = self.object_dict["hp_offset"][:]
+        init_character(self), init_interface(self)
 
         # Gameplay
         self.last_move = pygame.time.get_ticks()
         self.move_frequency = self.object_dict["move_frequency"]
-
-        # Status
-        self.name = self.object_dict["name"]
-        self.level = self.object_dict["level"]
-        self.max_health = self.object_dict["max_health"]
-        self.health = self.object_dict["health"]
-        self.max_mana = self.object_dict["max_mana"]
-        self.mana = self.object_dict["mana"]
-
-        # Debug
-        self.debug_color = self.object_dict["debug_color"]
-        self.debug_pos = self.object_dict["debug_pos"]
-        self.debug_dt = self.object_dict["debug_dt"]
 
     def update_move(self):
         if len(self.range) == 0 and pygame.time.get_ticks() - self.last_move > self.move_frequency:

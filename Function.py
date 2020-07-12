@@ -3,6 +3,7 @@ import random
 from os import path
 vec = pygame.math.Vector2
 
+# Class
 def init_sprite(sprite, game, dict, object, group, parent):
     sprite.game = game
     sprite.groups = sprite.game.all_sprites, group
@@ -110,6 +111,40 @@ def update_bobbing(sprite):
             sprite.step = 0
             sprite.dir *= -1
 
+
+
+# Gameplay
+def init_character(sprite):
+    # Position
+    sprite.grid_size = sprite.game_dict["grid_size"]
+    sprite.grid_pos = vec(sprite.object_dict["grid_pos"][:])
+    sprite.grid_dt = vec(sprite.game_dict["grid_dt"])
+
+    # Status
+    sprite.name = sprite.object_dict["name"]
+    sprite.level = sprite.object_dict["level"]
+    sprite.max_health = sprite.object_dict["max_health"]
+    sprite.health_regen = sprite.object_dict["health_regen"]
+    sprite.health = sprite.max_health
+    sprite.max_mana = sprite.object_dict["max_mana"]
+    sprite.mana_regen = sprite.object_dict["mana_regen"]
+    sprite.mana = sprite.max_mana
+    sprite.max_energy = sprite.object_dict["max_energy"]
+    sprite.energy_regen = sprite.object_dict["energy_regen"]
+    sprite.energy = sprite.max_energy
+
+def init_interface(sprite):
+    # Interface
+    sprite.hp_font = sprite.game_dict["hp_font"]
+    sprite.hp_size = sprite.game_dict["hp_size"]
+    sprite.hp_color = sprite.game_dict["hp_color"]
+    sprite.hp_offset = sprite.object_dict["hp_offset"][:]
+
+    # Debug
+    sprite.debug_color = sprite.object_dict["debug_color"]
+    sprite.debug_pos = sprite.object_dict["debug_pos"]
+    sprite.debug_dt = sprite.object_dict["debug_dt"]
+
 def update_move(sprite):
     if sprite.vel == (0, 0):
         if not sprite.game.debug_mode:
@@ -128,6 +163,8 @@ def update_move(sprite):
         del sprite.range[0]
 
 
+
+# Miscellaneous
 def load_file(path, image=False):
     file = []
     for file_name in os.listdir(path):
