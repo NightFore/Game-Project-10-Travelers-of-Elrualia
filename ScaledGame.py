@@ -57,6 +57,7 @@ class ScaledGame(pygame.Surface):
             game_scaled = (new_w, ss[1])
         else:
             game_scaled = self.screen.get_size()
+        game_scaled = int(game_scaled[0]), int(game_scaled[1])
         return game_scaled
 
     def fullscreen(self):
@@ -79,7 +80,7 @@ class ScaledGame(pygame.Surface):
         for event in events:
             if event.type == VIDEORESIZE:
                 ss = [event.w, event.h]
-                self.resize = True
+                self.resize = not (self.zoom and (ss[0] == self.screen_info.current_w or ss[0] == self.game_scaled[0]))
                 win_size_done = True
 
 
@@ -92,9 +93,17 @@ class ScaledGame(pygame.Surface):
             # Sizes not gotten by resize event
             if not win_size_done:
                 ss = [self.screen.get_width(), self.screen.get_height()]
-
             self.game_scaled = self.get_resolution(ss, self.game_size)
-            self.game_scaled = int(self.game_scaled[0]), int(self.game_scaled[1])
+
+            # Zoom
+            if ss[0] == self.screen_info.current_w:
+                self.game_gap = int((self.screen_info.current_w - self.game_scaled[0]) / 2), self.game_gap[1]
+                self.game_scaled = self.game_scaled[0] + self.game_gap[0], self.game_scaled[1]
+                self.zoom = True
+            elif self.zoom:
+                self.game_gap = 0, 0
+                self.game_scaled = self.game_size
+                self.zoom = False
 
             # Scale game to screen resolution, keeping aspect ratio
             self.screen = pygame.display.set_mode(self.game_scaled, RESIZABLE)
