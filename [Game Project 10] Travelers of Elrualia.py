@@ -173,13 +173,13 @@ class Game:
                 if event.key == pygame.K_h:
                     self.debug_mode = not self.debug_mode
 
-                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                if event.key == pygame.K_LEFT:
                     self.player.buffer_move(dx=-1)
-                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                if event.key == pygame.K_RIGHT:
                     self.player.buffer_move(dx=+1)
-                if event.key == pygame.K_UP or event.key == pygame.K_w:
+                if event.key == pygame.K_UP:
                     self.player.buffer_move(dy=-1)
-                if event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                if event.key == pygame.K_DOWN:
                     self.player.buffer_move(dy=+1)
 
                 if event.key == pygame.K_j:

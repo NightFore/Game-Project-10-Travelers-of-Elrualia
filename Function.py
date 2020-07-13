@@ -166,8 +166,9 @@ def update_move(sprite):
         sprite.vel = vec(0, 0)
         del sprite.range[0]
 
-def init_spell(spell, game, dict, object=None, group=None, parent=None):
-    if parent.mana - game.spell_dict[object]["mana_cost"] >= 0 and parent.energy - game.spell_dict[object]["energy_cost"] >= 0:
+def init_spell(spell, key, game, dict, object=None, group=None, parent=None):
+    if parent.cooldown[key] <= 0 and parent.mana - game.spell_dict[object]["mana_cost"] >= 0 and parent.energy - game.spell_dict[object]["energy_cost"] >= 0:
+        parent.cooldown[key] += game.spell_dict[object]["cooldown"]
         parent.mana -= game.spell_dict[object]["mana_cost"]
         parent.energy -= game.spell_dict[object]["energy_cost"]
         parent.last_attack = pygame.time.get_ticks()

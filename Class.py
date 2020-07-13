@@ -87,6 +87,7 @@ class Player(pygame.sprite.Sprite):
         init_character(self), init_interface(self)
 
         # Gameplay
+        self.cooldown = {"q": 0, "w": 0, "e": 0}
         self.last_attack = pygame.time.get_ticks()
         self.attack_rate = self.object_dict["attack_rate"]
 
@@ -107,17 +108,21 @@ class Player(pygame.sprite.Sprite):
 
     def get_keys(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_x] or keys[pygame.K_SPACE]:
-            if pygame.time.get_ticks() - self.last_attack >= self.attack_rate:
-                init_spell(Spell, self.game, self.game.spell_dict, "energy_ball", self.game.spells, self)
-        if keys[pygame.K_c]:
-            if pygame.time.get_ticks() - self.last_attack >= self.attack_rate:
-                init_spell(Spell, self.game, self.game.spell_dict, "thunder", self.game.spells, self)
+        if keys[pygame.K_q]:
+            init_spell(Spell, "q", self.game, self.game.spell_dict, "energy_ball", self.game.spells, self)
+        if keys[pygame.K_w]:
+            init_spell(Spell, "w", self.game, self.game.spell_dict, "thunder", self.game.spells, self)
+        if keys[pygame.K_e]:
+            init_spell(Spell, "e", self.game, self.game.spell_dict, "projectile", self.game.spells, self)
 
     def draw_ui(self):
         # Cooldown
-        pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (100, 620, 40, max(-40, -40 * (pygame.time.get_ticks() - self.last_attack) / self.attack_rate)))
-        self.game.draw_text("X", None, 40, BLUE, (120, 600), "center", self.game.debug_mode)
+        pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (50, 670, 40, -40 * self.cooldown["q"] / self.game.spell_dict["energy_ball"]["cooldown"]))
+        self.game.draw_text("Q", None, 40, BLUE, (70, 650), "center", self.game.debug_mode)
+        pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (100, 670, 40, -40 * self.cooldown["w"] / self.game.spell_dict["thunder"]["cooldown"]))
+        self.game.draw_text("W", None, 40, BLUE, (120, 650), "center", self.game.debug_mode)
+        pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (150, 670, 40, -40 * self.cooldown["e"] / self.game.spell_dict["projectile"]["cooldown"]))
+        self.game.draw_text("E", None, 40, BLUE, (170, 650), "center", self.game.debug_mode)
 
         pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (270, 630, 100 * self.mana / self.max_mana, 40))
         self.game.draw_text(int(self.mana), self.ui_font, self.ui_size, self.ui_color, self.mana_pos, "center", self.game.debug_mode)
@@ -128,8 +133,12 @@ class Player(pygame.sprite.Sprite):
         self.game.draw_text("Energy", self.ui_font, self.ui_size, self.ui_color, (420, 635), "nw", self.game.debug_mode)
 
     def draw_debug(self):
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 620, 40, -40), 1)
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 620, 40, max(-40, -40 * (pygame.time.get_ticks() - self.last_attack) / self.attack_rate)), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (50, 670, 40, -40), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (50, 670, 40, -40 * self.cooldown["q"] / self.game.spell_dict["energy_ball"]["cooldown"]), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 670, 40, -40), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 670, 40, -40 * self.cooldown["w"] / self.game.spell_dict["thunder"]["cooldown"]), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (150, 670, 40, -40), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (150, 670, 40, -40 * self.cooldown["e"] / self.game.spell_dict["projectile"]["cooldown"]), 1)
 
     def draw_status(self):
         pass
@@ -137,6 +146,9 @@ class Player(pygame.sprite.Sprite):
     def update_status(self):
         self.mana = min(self.max_mana, self.mana + self.mana_regen * self.dt)
         self.energy = max(0, self.energy + self.energy_regen * self.dt)
+
+        for index in self.cooldown:
+            self.cooldown[index] = max(self.cooldown[index] - self.dt, 0)
 
     def update(self):
         self.game.update_sprite(self, move=True, keys=True)
