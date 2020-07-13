@@ -118,19 +118,19 @@ class Player(pygame.sprite.Sprite):
     def draw_ui(self):
         # Cooldown
         pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (50, 670, 40, -40 * self.cooldown["q"] / self.game.spell_dict["energy_ball"]["cooldown"]))
-        self.game.draw_text("Q", None, 40, BLUE, (70, 650), "center", self.game.debug_mode)
+        self.game.draw_text("Q", self.game.ui_font, BLUE, (70, 650), "center", self.game.debug_mode)
         pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (100, 670, 40, -40 * self.cooldown["w"] / self.game.spell_dict["thunder"]["cooldown"]))
-        self.game.draw_text("W", None, 40, BLUE, (120, 650), "center", self.game.debug_mode)
+        self.game.draw_text("W", self.game.ui_font, BLUE, (120, 650), "center", self.game.debug_mode)
         pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (150, 670, 40, -40 * self.cooldown["e"] / self.game.spell_dict["projectile"]["cooldown"]))
-        self.game.draw_text("E", None, 40, BLUE, (170, 650), "center", self.game.debug_mode)
+        self.game.draw_text("E", self.game.ui_font, BLUE, (170, 650), "center", self.game.debug_mode)
 
         pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (270, 630, 100 * self.mana / self.max_mana, 40))
-        self.game.draw_text(int(self.mana), self.ui_font, self.ui_size, self.ui_color, self.mana_pos, "center", self.game.debug_mode)
-        self.game.draw_text("Mana", self.ui_font, self.ui_size, self.ui_color, (280, 635), "nw", self.game.debug_mode)
+        self.game.draw_text(int(self.mana), self.game.ui_font, self.ui_color, self.mana_pos, "center", self.game.debug_mode)
+        self.game.draw_text("Mana", self.game.ui_font, self.ui_color, (280, 635), "nw", self.game.debug_mode)
 
         pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (420, 630, 100 * self.energy / self.max_energy, 40))
-        self.game.draw_text(int(self.energy), self.ui_font, self.ui_size, self.ui_color, self.energy_pos, "center", self.game.debug_mode)
-        self.game.draw_text("Energy", self.ui_font, self.ui_size, self.ui_color, (420, 635), "nw", self.game.debug_mode)
+        self.game.draw_text(int(self.energy), self.game.ui_font, self.ui_color, self.energy_pos, "center", self.game.debug_mode)
+        self.game.draw_text("Energy", self.game.ui_font, self.ui_color, (420, 635), "nw", self.game.debug_mode)
 
     def draw_debug(self):
         pygame.draw.rect(self.game.gameDisplay, CYAN, (50, 670, 40, -40), 1)

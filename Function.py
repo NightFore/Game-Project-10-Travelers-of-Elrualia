@@ -205,7 +205,7 @@ def draw_sprite(game):
 def draw_status(game):
     for sprite in game.characters:
         sprite.draw_status()
-        game.draw_text(sprite.health, sprite.status_font, sprite.status_size, sprite.status_color, sprite.pos + sprite.hp_offset, "center", game.debug_mode)
+        game.draw_text(sprite.health, game.status_font, sprite.status_color, sprite.pos + sprite.hp_offset, "center", game.debug_mode)
 
 
 # Miscellaneous

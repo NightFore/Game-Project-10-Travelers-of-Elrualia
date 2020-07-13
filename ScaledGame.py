@@ -12,7 +12,6 @@ class ScaledGame(pygame.Surface):
     game_gap = None
     game_scaled = None
     title = None
-    fps = True
     set_fullscreen = False
     factor_w = 1
     factor_h = 1
@@ -72,8 +71,7 @@ class ScaledGame(pygame.Surface):
 
     def update(self, events):
         # Display FPS in window title
-        if self.fps:
-            pygame.display.set_caption(self.title + " - " + str(int(self.clock.get_fps())) + "fps")
+        pygame.display.set_caption(self.title + " - " + str(int(self.clock.get_fps())) + "fps")
 
         # Updates screen properly
         win_size_done = False  # Changes to True if the window size is got by the VIDEORESIZE event below
@@ -117,4 +115,3 @@ class ScaledGame(pygame.Surface):
         self.screen.blit(pygame.transform.scale(self, self.game_scaled), self.game_gap)
 
         pygame.display.flip()
-        self.clock.tick(self.FPS)

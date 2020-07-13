@@ -22,8 +22,7 @@ class Game:
         pygame.init()
         pygame.key.set_repeat(50, 150)
         self.gameDisplay = ScaledGame(project_title, screen_size, FPS)
-        self.clock = pygame.time.Clock()
-        self.dt = self.clock.tick(FPS) / 1000
+        self.dt = self.gameDisplay.clock.tick(FPS) / 1000
         self.load_data()
         self.new()
 
@@ -36,11 +35,10 @@ class Game:
         update_center(sprite)
         update_bobbing(sprite)
 
-    def draw_text(self, text, font_name, size, color, pos, align="nw", debug_mode=False):
+    def draw_text(self, text, font, color, pos, align="nw", debug_mode=False):
         if not isinstance(text, str):
             text = str(text)
         x, y = int(pos[0]), int(pos[1])
-        font = pygame.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
         if align == "nw":
@@ -107,7 +105,8 @@ class Game:
         self.background_image = load_image(self.graphics_folder, self.game_dict["background_image"])
 
         # Font
-        self.font = None
+        self.ui_font = pygame.font.Font(self.game_dict["ui_font"], self.game_dict["ui_size"])
+        self.status_font = pygame.font.Font(self.game_dict["status_font"], self.game_dict["status_size"])
 
         # Pause Screen
         self.dim_screen = pygame.Surface(self.gameDisplay.get_size()).convert_alpha()
@@ -127,9 +126,6 @@ class Game:
 
         # Miscellaneous
         self.debug_color = self.game_dict["color"]["debug"]
-        self.ui_font = self.game_dict["ui_font"]
-        self.ui_size = self.game_dict["ui_size"]
-        self.ui_color = self.game_dict["ui_color"]
 
     def new(self):
         self.all_sprites = pygame.sprite.LayeredUpdates()
@@ -149,7 +145,7 @@ class Game:
             pygame.mixer.music.load(path.join(music_folder, self.music))
             pygame.mixer.music.play(-1)
         while self.playing:
-            self.dt = self.clock.tick(FPS) / 1000
+            self.dt = self.gameDisplay.clock.tick(FPS) / 1000
             self.events()
             if not self.paused:
                 self.update()
