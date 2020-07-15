@@ -133,6 +133,7 @@ def init_character(sprite):
     sprite.max_energy = sprite.object_dict["max_energy"]
     sprite.energy_regen = sprite.object_dict["energy_regen"]
     sprite.energy = sprite.max_energy
+    sprite.move_cost = sprite.object_dict["move_cost"]
 
 def init_interface(sprite):
     # Interface

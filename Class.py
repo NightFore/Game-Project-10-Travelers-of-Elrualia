@@ -103,7 +103,7 @@ class Player(pygame.sprite.Sprite):
 
     def buffer_move(self, dx=0, dy=0):
         if len(self.range) < 2 and self.energy - 1 >= 0:
-            self.energy = max(self.energy - 1, 0)
+            self.energy = max(self.energy - self.move_cost, 0)
             self.range.append([dx, dy])
 
     def get_keys(self):
@@ -145,7 +145,7 @@ class Player(pygame.sprite.Sprite):
 
     def update_status(self):
         self.mana = min(self.max_mana, self.mana + self.mana_regen * self.dt)
-        self.energy = max(0, self.energy + self.energy_regen * self.dt)
+        self.energy = min(self.max_energy, self.energy + self.energy_regen * self.dt)
 
         for index in self.cooldown:
             self.cooldown[index] = max(self.cooldown[index] - self.dt, 0)
