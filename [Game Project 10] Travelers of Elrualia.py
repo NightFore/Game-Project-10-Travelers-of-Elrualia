@@ -194,10 +194,35 @@ class Game:
         self.all_sprites.update()
 
     def draw(self):
-        draw_interface(self)
-        draw_debug(self)
-        draw_sprite(self)
-        draw_status(self)
+        # Background ----------------- #
+        self.gameDisplay.fill(self.background_color)
+        self.gameDisplay.blit(self.background_image, (0, 0))
+
+        # Battle ------------------ #
+        if self.game_status == "battle":
+            # Interface ------------------ #
+            self.gameDisplay.blit(self.interface_image, (0, 0))
+            for sprite in self.characters:
+                pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]))
+                sprite.draw_ui()
+            pygame.draw.rect(self.gameDisplay, self.game_dict["color"]["cursor"], (int(self.player.debug_pos[0] + (self.player.grid_pos[0]+4) * self.player.grid_dt[0]), int(self.player.debug_pos[1] + self.player.grid_pos[1] * self.player.grid_dt[1]), self.player.debug_dt[0], self.player.debug_dt[1]))
+
+            # Debug ---------------------- #
+            if self.debug_mode:
+                for sprite in self.all_sprites:
+                    pygame.draw.rect(self.gameDisplay, self.debug_color, sprite.rect, 1)
+                for sprite in self.characters:
+                    sprite.draw_debug()
+                    pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]), 1)
+
+            # Sprite --------------------- #
+            for sprite in self.all_sprites:
+                self.gameDisplay.blit(sprite.image, sprite)
+
+            # Status --------------------- #
+            for sprite in self.characters:
+                sprite.draw_status()
+                self.draw_text(sprite.health, self.status_font, sprite.status_color, sprite.pos + sprite.hp_offset, "center", self.debug_mode)
 
         # Pause
         if self.paused:
@@ -209,6 +234,7 @@ class Game:
     # Gameplay ----------------------- #
     def update_stage(self, stage="main_menu"):
         self.stage = self.stage_dict[stage]
+        self.game_status = self.stage["game_status"]
         self.background_image = load_image(self.graphics_folder, self.stage["background"])
         self.music = path.join(self.music_folder, self.stage["music"])
         self.update_music()

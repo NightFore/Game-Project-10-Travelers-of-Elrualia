@@ -175,41 +175,6 @@ def init_spell(spell, key, game, dict, object=None, group=None, parent=None):
         parent.last_attack = pygame.time.get_ticks()
         spell(game, dict, object, group, parent)
 
-# Draw
-def draw_interface(game):
-    # Background
-    game.gameDisplay.fill(game.background_color)
-    game.gameDisplay.blit(game.background_image, (0, 0))
-    game.gameDisplay.blit(game.interface_image, (0, 0))
-
-    # Interface
-    for sprite in game.characters:
-        # Grid Pos
-        pygame.draw.rect(game.gameDisplay, sprite.debug_color, (sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0], sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1], sprite.debug_dt[0], sprite.debug_dt[1]))
-        sprite.draw_ui()
-
-    pygame.draw.rect(game.gameDisplay, game.game_dict["color"]["cursor"], (game.player.debug_pos[0] + (game.player.grid_pos[0]+4) * game.player.grid_dt[0], game.player.debug_pos[1] + game.player.grid_pos[1] * game.player.grid_dt[1], game.player.debug_dt[0], game.player.debug_dt[1]))
-
-
-def draw_debug(game):
-    # Debug
-    if game.debug_mode:
-        for sprite in game.all_sprites:
-            pygame.draw.rect(game.gameDisplay, game.debug_color, sprite.rect, 1)
-        for sprite in game.characters:
-            sprite.draw_debug()
-            pygame.draw.rect(game.gameDisplay, sprite.debug_color, (sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0], sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1], sprite.debug_dt[0], sprite.debug_dt[1]), 1)
-
-def draw_sprite(game):
-    for sprite in game.all_sprites:
-        game.gameDisplay.blit(sprite.image, sprite)
-
-def draw_status(game):
-    for sprite in game.characters:
-        sprite.draw_status()
-        game.draw_text(sprite.health, game.status_font, sprite.status_color, sprite.pos + sprite.hp_offset, "center", game.debug_mode)
-
-
 # Miscellaneous
 def load_file(path, image=False):
     file = []

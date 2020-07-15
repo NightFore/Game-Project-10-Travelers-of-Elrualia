@@ -43,15 +43,19 @@ GAME_DICT = {"background_color": LIGHTBLUE, "background_image": "rizaldarmawansy
 
 STAGE_DICT = {
     "main_menu": {
-        "background": "rizaldarmawansyah_Mountain.png",
-        "music": "PerituneMaterial_Whisper_loop.ogg",},
+        "game_status": "main_menu",
+        "background": "craftpix_background_1_1280x720.png",
+        "music": "PerituneMaterial_Whisper_loop.ogg"},
     "dialogue_1": {
+        "game_status": "battle",
         "background": "craftpix_Battleground3_bright.png",
         "music": "PerituneMaterial_Prairie_loop.ogg"},
     "battle_1": {
+        "game_status": "battle",
         "background": "craftpix_Battleground3_bright.png",
         "music": "PerituneMaterial_Prairie4_loop.ogg"},
     "boss_1": {
+        "game_status": "battle",
         "background": "craftpix_Battleground3_pale.png",
         "music": "PerituneMaterial_Rapid4_loop.ogg"}
 }
