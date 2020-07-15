@@ -193,3 +193,88 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self):
         self.game.update_sprite(self, move=True)
+
+
+class Button(pygame.sprite.Sprite):
+    def __init__(self, game, dict, object=None, group=None, text=None, font=None, color=None, variable=None, action=None):
+        # Initialization ------------- #
+        self.game = game
+        self.groups = self.game.all_sprites, group
+        pygame.sprite.Sprite.__init__(self, self.groups)
+        self.object = object
+        self.text = text
+        self.font = font
+        self.color = color
+        self.variable = variable
+        self.action = action
+
+        # Dict ----------------------- #
+        self.dict = dict
+        self.object_dict = self.dict[object]
+        self.game_dict = self.game.game_dict
+
+        # Button --------------------- #
+        if isinstance(self.object_dict["inactive"], tuple):
+            self.instance = "color"
+            self.pos = self.object_dict["pos"]
+            self.width = self.object_dict["width"]
+            self.height = self.object_dict["height"]
+            self.border_size = self.object_dict["border_size"]
+            self.border_color = self.object_dict["border_color"]
+
+            # Surface (Inactive) ----------------- #
+            self.inactive_color = self.object_dict["inactive"]
+            self.inactive = pygame.Surface((self.width, self.height))
+            self.inactive.fill(self.border_color)
+            pygame.draw.rect(self.inactive, self.inactive_color, (self.border_size, self.border_size, self.width - self.border_size*2, self.height - self.border_size*2))
+
+            # Surface (Active) ------------------- #
+            self.active_color = self.object_dict["active"]
+            self.active = pygame.Surface((self.width, self.height))
+            self.active.fill(self.border_color)
+            pygame.draw.rect(self.active, self.active_color, (self.border_size, self.border_size, self.width - self.border_size*2, self.height - self.border_size*2))
+
+        if isinstance(self.object_dict["inactive"], str):
+            # Surface (Image) ------------------ #
+            self.instance = "image"
+            self.pos = self.object_dict["pos"]
+            self.inactive = load_image(self.game.graphics_folder, self.object_dict["inactive"])
+            self.active = load_image(self.game.graphics_folder, self.object_dict["active"])
+
+        # Rect --------------------- #
+        self.image = self.inactive
+        self.rect = self.image.get_rect()
+        self.center = self.object_dict["center"]
+        if self.center:
+            self.rect.center = self.pos
+
+        # Sound ---------------------- #
+        self.sound = False
+        self.sound_active = self.object_dict["sound_active"]
+        self.sound_action = self.object_dict["sound_action"]
+
+    def draw_text(self):
+        # Text ----------------------- #
+        if self.text is not None and self.font is not None:
+            text_pos = self.rect[0] + self.rect[2] / 2, self.rect[1] + self.rect[3] / 2
+            self.game.draw_text(self.text, self.font, self.color, text_pos, "center", self.game.debug_mode)
+
+    def update(self):
+        # Event
+        for event in self.game.event:
+            mouse = pygame.mouse.get_pos()
+            if self.rect.collidepoint(mouse):
+                self.image = self.active
+                self.sound = True
+                if self.sound_active is not None and not self.sound:
+                    pygame.mixer.Sound.play(self.sound_active)
+            else:
+                self.image = self.inactive
+                self.sound = False
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.action is not None:
+                    if self.sound_action is not None:
+                        pygame.mixer.Sound.play(self.sound_action)
+                    if self.variable is not None:
+                        self.action(self.variable)
+                    else:
+                        self.action()

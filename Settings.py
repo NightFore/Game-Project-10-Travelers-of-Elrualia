@@ -32,14 +32,23 @@ ORANGE = 255, 120, 30
 # Characters settings / 0: bottom, 1: left, 2: right, 3: top
 GAME_DICT = {"background_color": LIGHTBLUE, "background_image": "rizaldarmawansyah_Mountain.png", "interface_image": "background_battle.png",
              "platform_size": [950, 270],
-             "ui_font": None, "ui_color": WHITE, "ui_size": 40,
-             "status_font": None, "status_color": WHITE, "status_size": 25,
+             "main_menu_font": None, "main_menu_size": 100, "main_menu_color": WHITE,
+             "button_font": None, "button_size": 40, "button_color": ORANGE,
+             "ui_font": None, "ui_size": 40, "ui_color": WHITE,
+             "status_font": None, "status_size": 25, "status_color": WHITE,
              "mana_pos": [250, 650], "energy_pos": [400, 650],
              "grid_size": [4, 4], "grid_dt": [120, 70],
              "pos": {"player": [220, 360], "enemy": [700, 360],},
              "color": {"cursor": [120, 160, 240], "debug": CYAN, "health": GREEN, "mana": LIGHTSKYBLUE, "spell": [RED, BLUE, GREEN]},
              "font": None}
 
+BUTTON_DICT = {
+    "start": {
+        "pos": [640, 360], "width": 100, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
+        "inactive": GREEN, "active": RED,
+        "sound_active": None, "sound_action": None
+    }
+}
 
 STAGE_DICT = {
     "main_menu": {

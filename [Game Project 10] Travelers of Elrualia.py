@@ -25,7 +25,7 @@ class Game:
         self.dt = self.gameDisplay.clock.tick(FPS) / 1000
         self.load_data()
         self.new()
-        pygame.mixer.music.set_volume(0.10)
+        pygame.mixer.music.set_volume(0.075)
         self.update_stage()
 
     def update_sprite(self, sprite, move=False, keys=False):
@@ -99,6 +99,7 @@ class Game:
 
         # Dict
         self.game_dict = GAME_DICT
+        self.button_dict = BUTTON_DICT
         self.character_dict = CHARACTER_DICT
         self.spell_dict = SPELL_DICT
         self.stage_dict = STAGE_DICT
@@ -109,8 +110,15 @@ class Game:
 
         # Font
         self.font = pygame.font.Font(None, 100)
+        self.main_menu_font = pygame.font.Font(self.game_dict["main_menu_font"], self.game_dict["main_menu_size"])
+        self.button_font = pygame.font.Font(self.game_dict["button_font"], self.game_dict["button_size"])
         self.ui_font = pygame.font.Font(self.game_dict["ui_font"], self.game_dict["ui_size"])
         self.status_font = pygame.font.Font(self.game_dict["status_font"], self.game_dict["status_size"])
+
+        # Color
+        self.main_menu_color = self.game_dict["main_menu_color"]
+        self.button_color = self.game_dict["button_color"]
+        self.ui_color = self.game_dict["ui_color"]
 
         # Pause Screen
         self.dim_screen = pygame.Surface(self.gameDisplay.get_size()).convert_alpha()
@@ -129,6 +137,7 @@ class Game:
         self.music = None
 
         # Miscellaneous
+        self.project_title = project_title
         self.debug_color = self.game_dict["color"]["debug"]
 
     def new(self):
@@ -136,9 +145,7 @@ class Game:
         self.characters = pygame.sprite.Group()
         self.spells = pygame.sprite.Group()
         self.impact = pygame.sprite.Group()
-
-        self.player = Player(self, self.character_dict, "player", self.characters)
-        self.enemy = Enemy(self, self.character_dict, "enemy", self.characters)
+        self.buttons = pygame.sprite.Group()
 
         self.paused = False
 
@@ -181,14 +188,15 @@ class Game:
                     self.debug_stage_index = (self.debug_stage_index + 1) % len(self.debug_stage)
                     self.update_stage(self.debug_stage[self.debug_stage_index])
 
-                if event.key == pygame.K_LEFT:
-                    self.player.buffer_move(dx=-1)
-                if event.key == pygame.K_RIGHT:
-                    self.player.buffer_move(dx=+1)
-                if event.key == pygame.K_UP:
-                    self.player.buffer_move(dy=-1)
-                if event.key == pygame.K_DOWN:
-                    self.player.buffer_move(dy=+1)
+                if self.game_status == "battle":
+                    if event.key == pygame.K_LEFT:
+                        self.player.buffer_move(dx=-1)
+                    if event.key == pygame.K_RIGHT:
+                        self.player.buffer_move(dx=+1)
+                    if event.key == pygame.K_UP:
+                        self.player.buffer_move(dy=-1)
+                    if event.key == pygame.K_DOWN:
+                        self.player.buffer_move(dy=+1)
 
     def update(self):
         self.all_sprites.update()
@@ -198,16 +206,27 @@ class Game:
         self.gameDisplay.fill(self.background_color)
         self.gameDisplay.blit(self.background_image, (0, 0))
 
-        # Battle ------------------ #
+        # Main Menu ------------------ #
+        if self.game_status == "main_menu":
+            self.draw_text(self.project_title, self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center", self.debug_mode)
+
+            # Sprite
+            for sprite in self.all_sprites:
+                self.gameDisplay.blit(sprite.image, sprite)
+
+            for button in self.buttons:
+                button.draw_text()
+
+        # Battle --------------------- #
         if self.game_status == "battle":
-            # Interface ------------------ #
+            # Interface
             self.gameDisplay.blit(self.interface_image, (0, 0))
             for sprite in self.characters:
                 pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]))
                 sprite.draw_ui()
             pygame.draw.rect(self.gameDisplay, self.game_dict["color"]["cursor"], (int(self.player.debug_pos[0] + (self.player.grid_pos[0]+4) * self.player.grid_dt[0]), int(self.player.debug_pos[1] + self.player.grid_pos[1] * self.player.grid_dt[1]), self.player.debug_dt[0], self.player.debug_dt[1]))
 
-            # Debug ---------------------- #
+            # Debug
             if self.debug_mode:
                 for sprite in self.all_sprites:
                     pygame.draw.rect(self.gameDisplay, self.debug_color, sprite.rect, 1)
@@ -215,11 +234,11 @@ class Game:
                     sprite.draw_debug()
                     pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]), 1)
 
-            # Sprite --------------------- #
+            # Sprite
             for sprite in self.all_sprites:
                 self.gameDisplay.blit(sprite.image, sprite)
 
-            # Status --------------------- #
+            # Status
             for sprite in self.characters:
                 sprite.draw_status()
                 self.draw_text(sprite.health, self.status_font, sprite.status_color, sprite.pos + sprite.hp_offset, "center", self.debug_mode)
@@ -238,6 +257,12 @@ class Game:
         self.background_image = load_image(self.graphics_folder, self.stage["background"])
         self.music = path.join(self.music_folder, self.stage["music"])
         self.update_music()
+
+        if self.game_status == "main_menu":
+            Button(self, self.button_dict, "start", self.buttons, "Start", self.button_font, self.button_color)
+        elif self.game_status == "battle":
+            self.player = Player(self, self.character_dict, "player", self.characters)
+            self.enemy = Enemy(self, self.character_dict, "enemy", self.characters)
 
     def update_music(self):
         pygame.mixer.music.load(self.music)
