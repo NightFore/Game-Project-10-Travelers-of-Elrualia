@@ -30,7 +30,7 @@ ORANGE = 255, 120, 30
     Game Settings
 """
 # Characters settings / 0: bottom, 1: left, 2: right, 3: top
-GAME_DICT = {"background_image": "background_battle.png", "background_color": LIGHTBLUE,
+GAME_DICT = {"background_color": LIGHTBLUE, "background_image": "rizaldarmawansyah_Mountain.png", "interface_image": "background_battle.png",
              "platform_size": [950, 270],
              "ui_font": None, "ui_color": WHITE, "ui_size": 40,
              "status_font": None, "status_color": WHITE, "status_size": 25,
@@ -40,6 +40,21 @@ GAME_DICT = {"background_image": "background_battle.png", "background_color": LI
              "color": {"cursor": [120, 160, 240], "debug": CYAN, "health": GREEN, "mana": LIGHTSKYBLUE, "spell": [RED, BLUE, GREEN]},
              "font": None}
 
+
+STAGE_DICT = {
+    "main_menu": {
+        "background": "rizaldarmawansyah_Mountain.png",
+        "music": "PerituneMaterial_Whisper_loop.ogg",},
+    "dialogue_1": {
+        "background": "craftpix_Battleground3_bright.png",
+        "music": "PerituneMaterial_Prairie_loop.ogg"},
+    "battle_1": {
+        "background": "craftpix_Battleground3_bright.png",
+        "music": "PerituneMaterial_Prairie4_loop.ogg"},
+    "boss_1": {
+        "background": "craftpix_Battleground3_pale.png",
+        "music": "PerituneMaterial_Rapid4_loop.ogg"}
+}
 
 
 CHARACTER_DICT = {"layer": 2,

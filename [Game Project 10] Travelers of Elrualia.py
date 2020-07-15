@@ -25,6 +25,8 @@ class Game:
         self.dt = self.gameDisplay.clock.tick(FPS) / 1000
         self.load_data()
         self.new()
+        pygame.mixer.music.set_volume(0.10)
+        self.update_stage()
 
     def update_sprite(self, sprite, move=False, keys=False):
         if move:
@@ -99,12 +101,14 @@ class Game:
         self.game_dict = GAME_DICT
         self.character_dict = CHARACTER_DICT
         self.spell_dict = SPELL_DICT
+        self.stage_dict = STAGE_DICT
 
         # Graphics
         self.background_color = self.game_dict["background_color"]
-        self.background_image = load_image(self.graphics_folder, self.game_dict["background_image"])
+        self.interface_image = load_image(self.graphics_folder, self.game_dict["interface_image"])
 
         # Font
+        self.font = pygame.font.Font(None, 100)
         self.ui_font = pygame.font.Font(self.game_dict["ui_font"], self.game_dict["ui_size"])
         self.status_font = pygame.font.Font(self.game_dict["status_font"], self.game_dict["status_size"])
 
@@ -137,19 +141,24 @@ class Game:
         self.enemy = Enemy(self, self.character_dict, "enemy", self.characters)
 
         self.paused = False
-        self.debug_mode = True
 
+        # Debug ---------------------- #
+        self.debug_mode = True
+        self.debug_stage = []
+        self.debug_stage_index = 0
+        for stage in self.stage_dict:
+            self.debug_stage.append(stage)
+
+    # Game Loop ---------------------- #
     def run(self):
         self.playing = True
-        if self.music is not None:
-            pygame.mixer.music.load(path.join(music_folder, self.music))
-            pygame.mixer.music.play(-1)
         while self.playing:
             self.dt = self.gameDisplay.clock.tick(FPS) / 1000
             self.events()
             if not self.paused:
                 self.update()
             self.draw()
+        self.quit_game()
 
     def quit_game(self):
         pygame.quit()
@@ -168,6 +177,9 @@ class Game:
                     self.paused = not self.paused
                 if event.key == pygame.K_h:
                     self.debug_mode = not self.debug_mode
+                if event.key == pygame.K_j:
+                    self.debug_stage_index = (self.debug_stage_index + 1) % len(self.debug_stage)
+                    self.update_stage(self.debug_stage[self.debug_stage_index])
 
                 if event.key == pygame.K_LEFT:
                     self.player.buffer_move(dx=-1)
@@ -177,15 +189,6 @@ class Game:
                     self.player.buffer_move(dy=-1)
                 if event.key == pygame.K_DOWN:
                     self.player.buffer_move(dy=+1)
-
-                if event.key == pygame.K_j:
-                    self.enemy.move(dx=-1)
-                if event.key == pygame.K_l:
-                    self.enemy.move(dx=+1)
-                if event.key == pygame.K_i:
-                    self.enemy.move(dy=-1)
-                if event.key == pygame.K_k:
-                    self.enemy.move(dy=+1)
 
     def update(self):
         self.all_sprites.update()
@@ -199,10 +202,21 @@ class Game:
         # Pause
         if self.paused:
             self.gameDisplay.blit(self.dim_screen, (0, 0))
-            self.draw_text("Paused", self.font, 105, RED, WIDTH / 2, HEIGHT / 2, align="center")
-
+            self.draw_text("Paused", self.font, RED, (WIDTH / 2, HEIGHT / 2), align="center")
 
         self.gameDisplay.update(self.event)
+
+    # Gameplay ----------------------- #
+    def update_stage(self, stage="main_menu"):
+        self.stage = self.stage_dict[stage]
+        self.background_image = load_image(self.graphics_folder, self.stage["background"])
+        self.music = path.join(self.music_folder, self.stage["music"])
+        self.update_music()
+
+    def update_music(self):
+        pygame.mixer.music.load(self.music)
+        pygame.mixer.music.play(-1)
+
 
 g = Game()
 while True:

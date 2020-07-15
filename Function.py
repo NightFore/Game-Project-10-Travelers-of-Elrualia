@@ -180,6 +180,7 @@ def draw_interface(game):
     # Background
     game.gameDisplay.fill(game.background_color)
     game.gameDisplay.blit(game.background_image, (0, 0))
+    game.gameDisplay.blit(game.interface_image, (0, 0))
 
     # Interface
     for sprite in game.characters:
