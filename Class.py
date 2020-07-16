@@ -196,7 +196,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, game, dict, object=None, group=None, text=None, font=None, color=None, variable=None, action=None):
+    def __init__(self, game, dict, object=None, group=None, text=None, font=None, color=None, action=None, variable=None):
         # Initialization ------------- #
         self.game = game
         self.groups = self.game.all_sprites, group

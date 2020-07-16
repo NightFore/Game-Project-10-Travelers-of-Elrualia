@@ -25,7 +25,7 @@ class Game:
         self.dt = self.gameDisplay.clock.tick(FPS) / 1000
         self.load_data()
         self.new()
-        pygame.mixer.music.set_volume(default_volume)
+        pygame.mixer.music.set_volume(default_volume/100)
         self.update_stage()
 
     def update_sprite(self, sprite, move=False, keys=False):
@@ -140,6 +140,7 @@ class Game:
         # Miscellaneous
         self.project_title = project_title
         self.default_volume = default_volume
+        self.volume = self.default_volume
         self.game_status = None
         self.previous_status = None
         self.debug_color = self.game_dict["color"]["debug"]
@@ -208,7 +209,8 @@ class Game:
     def draw(self):
         # Background ----------------- #
         self.gameDisplay.fill(self.background_color)
-        self.gameDisplay.blit(self.background_image, (0, 0))
+        if self.background_image is not None:
+            self.gameDisplay.blit(self.background_image, (0, 0))
 
         # Main Menu ------------------ #
         if self.game_status == "main_menu":
@@ -220,6 +222,8 @@ class Game:
 
         # Options Menu ------------------ #
         if self.game_status == "options_menu":
+            self.draw_text("Options Menu", self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center", self.debug_mode)
+            self.draw_text("Volume: %i" % self.volume, self.main_menu_font, self.main_menu_color, (150, 300), "w", self.debug_mode)
             for sprite in self.all_sprites:
                 self.gameDisplay.blit(sprite.image, sprite)
             for button in self.buttons:
@@ -274,13 +278,13 @@ class Game:
                     sprite.kill()
 
                 if self.game_status == "main_menu":
-                    Button(self, self.button_dict, "start", self.buttons, "Start", self.button_font, self.button_color)
-                    Button(self, self.button_dict, "options", self.buttons, "Options", self.button_font, self.button_color, variable="options_menu", action=self.update_stage)
+                    Button(self, self.button_dict, "start", self.buttons, "Start", self.button_font, self.button_color, action=self.update_stage, variable="battle_1")
+                    Button(self, self.button_dict, "options", self.buttons, "Options", self.button_font, self.button_color, action=self.update_stage, variable="options_menu")
                     Button(self, self.button_dict, "exit", self.buttons, "Exit", self.button_font, self.button_color, action=self.quit_game)
                 elif self.game_status == "options_menu":
-                    print("ok")
-                    Button(self, self.button_dict, "volume_down", self.buttons, "-", self.button_font, self.button_color)
-                    Button(self, self.button_dict, "volume_up", self.buttons, "+", self.button_font, self.button_color)
+                    Button(self, self.button_dict, "volume_down", self.buttons, "-", self.button_font, self.button_color, action=self.update_volume, variable=-1)
+                    Button(self, self.button_dict, "volume_up", self.buttons, "+", self.button_font, self.button_color, action=self.update_volume, variable=+1)
+                    Button(self, self.button_dict, "return", self.buttons, "Return", self.button_font, self.button_color, action=self.update_stage, variable=self.previous_status)
                 elif self.game_status == "battle":
                     self.player = Player(self, self.character_dict, "player", self.characters)
                     self.enemy = Enemy(self, self.character_dict, "enemy", self.characters)
@@ -288,8 +292,8 @@ class Game:
     def update_background(self, background):
         if background is not None:
             background = load_image(self.graphics_folder, background)
-            if self.background_image != background:
-                self.background_image = background
+        if self.background_image != background:
+            self.background_image = background
 
     def update_music(self, music):
         if music is not None:
@@ -298,6 +302,13 @@ class Game:
                 self.music = music
                 pygame.mixer.music.load(self.music)
                 pygame.mixer.music.play(-1)
+
+    def update_volume(self, dv=0):
+        print(self.volume)
+        if 0 <= self.volume + 5*dv < 100:
+            self.volume = self.volume + 5*dv
+            pygame.mixer.music.set_volume(self.volume/100)
+
 
 
 g = Game()
