@@ -268,9 +268,6 @@ class Button(pygame.sprite.Sprite):
                 self.sound = True
                 if self.sound_active is not None and not self.sound:
                     pygame.mixer.Sound.play(self.sound_active)
-            else:
-                self.image = self.inactive
-                self.sound = False
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.action is not None:
                     if self.sound_action is not None:
                         pygame.mixer.Sound.play(self.sound_action)
@@ -278,3 +275,6 @@ class Button(pygame.sprite.Sprite):
                         self.action(self.variable)
                     else:
                         self.action()
+            else:
+                self.image = self.inactive
+                self.sound = False

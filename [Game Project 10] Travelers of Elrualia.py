@@ -105,6 +105,7 @@ class Game:
         self.stage_dict = STAGE_DICT
 
         # Graphics
+        self.background_image = None
         self.background_color = self.game_dict["background_color"]
         self.interface_image = load_image(self.graphics_folder, self.game_dict["interface_image"])
 
@@ -243,7 +244,7 @@ class Game:
                 sprite.draw_status()
                 self.draw_text(sprite.health, self.status_font, sprite.status_color, sprite.pos + sprite.hp_offset, "center", self.debug_mode)
 
-        # Pause
+        # Pause ---------------------- #
         if self.paused:
             self.gameDisplay.blit(self.dim_screen, (0, 0))
             self.draw_text("Paused", self.font, RED, (WIDTH / 2, HEIGHT / 2), align="center")
@@ -254,19 +255,32 @@ class Game:
     def update_stage(self, stage="main_menu"):
         self.stage = self.stage_dict[stage]
         self.game_status = self.stage["game_status"]
-        self.background_image = load_image(self.graphics_folder, self.stage["background"])
-        self.music = path.join(self.music_folder, self.stage["music"])
-        self.update_music()
+        self.update_background(self.stage["background"])
+        self.update_music(self.stage["music"])
 
         if self.game_status == "main_menu":
             Button(self, self.button_dict, "start", self.buttons, "Start", self.button_font, self.button_color)
+            Button(self, self.button_dict, "options", self.buttons, "Options", self.button_font, self.button_color, variable="options_menu", action=self.update_stage)
+            Button(self, self.button_dict, "exit", self.buttons, "Exit", self.button_font, self.button_color, action=self.quit_game)
+        elif self.game_status == "options_menu":
+            pass
         elif self.game_status == "battle":
             self.player = Player(self, self.character_dict, "player", self.characters)
             self.enemy = Enemy(self, self.character_dict, "enemy", self.characters)
 
-    def update_music(self):
-        pygame.mixer.music.load(self.music)
-        pygame.mixer.music.play(-1)
+    def update_background(self, background):
+        if background is not None:
+            background = load_image(self.graphics_folder, background)
+            if self.background_image != background:
+                self.background_image = background
+
+    def update_music(self, music):
+        if music is not None:
+            music = path.join(self.music_folder, music)
+            if self.music != music:
+                self.music = music
+                pygame.mixer.music.load(self.music)
+                pygame.mixer.music.play(-1)
 
 
 g = Game()

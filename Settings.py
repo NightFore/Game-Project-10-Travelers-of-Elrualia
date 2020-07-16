@@ -33,7 +33,7 @@ ORANGE = 255, 120, 30
 GAME_DICT = {"background_color": LIGHTBLUE, "background_image": "rizaldarmawansyah_Mountain.png", "interface_image": "background_battle.png",
              "platform_size": [950, 270],
              "main_menu_font": None, "main_menu_size": 100, "main_menu_color": WHITE,
-             "button_font": None, "button_size": 40, "button_color": ORANGE,
+             "button_font": None, "button_size": 40, "button_color": BLACK,
              "ui_font": None, "ui_size": 40, "ui_color": WHITE,
              "status_font": None, "status_size": 25, "status_color": WHITE,
              "mana_pos": [250, 650], "energy_pos": [400, 650],
@@ -44,7 +44,17 @@ GAME_DICT = {"background_color": LIGHTBLUE, "background_image": "rizaldarmawansy
 
 BUTTON_DICT = {
     "start": {
-        "pos": [640, 360], "width": 100, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
+        "pos": [640, 360], "width": 180, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
+        "inactive": GREEN, "active": RED,
+        "sound_active": None, "sound_action": None
+    },
+    "options": {
+        "pos": [640, 450], "width": 180, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
+        "inactive": GREEN, "active": RED,
+        "sound_active": None, "sound_action": None
+    },
+    "exit": {
+        "pos": [640, 540], "width": 180, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
         "inactive": GREEN, "active": RED,
         "sound_active": None, "sound_action": None
     }
@@ -54,6 +64,10 @@ STAGE_DICT = {
     "main_menu": {
         "game_status": "main_menu",
         "background": "craftpix_background_1_1280x720.png",
+        "music": "PerituneMaterial_Whisper_loop.ogg"},
+    "options_menu": {
+        "game_status": "options_menu",
+        "background": None,
         "music": "PerituneMaterial_Whisper_loop.ogg"},
     "dialogue_1": {
         "game_status": "battle",
