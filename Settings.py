@@ -82,15 +82,18 @@ STAGE_DICT = {
     "dialogue_1": {
         "game_status": "battle",
         "background": "craftpix_Battleground3_bright.png",
-        "music": "PerituneMaterial_Prairie_loop.ogg"},
+        "music": "PerituneMaterial_Prairie_loop.ogg",
+        "enemy": ["enemy"]},
     "battle_1": {
         "game_status": "battle",
         "background": "craftpix_Battleground3_bright.png",
-        "music": "PerituneMaterial_Prairie4_loop.ogg"},
+        "music": "PerituneMaterial_Prairie4_loop.ogg",
+        "enemy": ["enemy", "enemy"]},
     "boss_1": {
         "game_status": "battle",
         "background": "craftpix_Battleground3_pale.png",
-        "music": "PerituneMaterial_Rapid4_loop.ogg"}
+        "music": "PerituneMaterial_Rapid4_loop.ogg",
+        "enemy": ["enemy", "enemy"]}
 }
 
 

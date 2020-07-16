@@ -118,20 +118,6 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_e]:
             init_spell(Spell, "E", self.game, self.game.spell_dict, "projectile", self.game.spells, self)
 
-    def draw_ui(self):
-        pass
-
-    def draw_debug(self):
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (50, 670, 40, -40), 1)
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (50, 670, 40, -40 * self.cooldown["Q"] / self.game.spell_dict["energy_ball"]["cooldown"]), 1)
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 670, 40, -40), 1)
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 670, 40, -40 * self.cooldown["W"] / self.game.spell_dict["thunder"]["cooldown"]), 1)
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (150, 670, 40, -40), 1)
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (150, 670, 40, -40 * self.cooldown["E"] / self.game.spell_dict["projectile"]["cooldown"]), 1)
-
-    def draw_status(self):
-        pass
-
     def update_status(self):
         self.mana = min(self.max_mana, self.mana + self.mana_regen * self.dt)
         self.energy = min(self.max_energy, self.energy + self.energy_regen * self.dt)
@@ -170,15 +156,6 @@ class Enemy(pygame.sprite.Sprite):
                 update_move(self)
             else:
                 del self.range[0]
-
-    def draw_ui(self):
-        pass
-
-    def draw_debug(self):
-        pass
-
-    def draw_status(self):
-        pass
 
     def update(self):
         self.game.update_sprite(self, move=True)
@@ -242,14 +219,7 @@ class Button(pygame.sprite.Sprite):
         self.sound_active = self.object_dict["sound_active"]
         self.sound_action = self.object_dict["sound_action"]
 
-    def draw_text(self):
-        # Text ----------------------- #
-        if self.text is not None and self.font is not None:
-            text_pos = self.rect[0] + self.rect[2] / 2, self.rect[1] + self.rect[3] / 2
-            self.game.draw_text(self.text, self.font, self.color, text_pos, "center", self.game.debug_mode)
-
     def update(self):
-        # Event
         for event in self.game.event:
             mouse = pygame.mouse.get_pos()
             if self.rect.collidepoint(mouse):
@@ -270,4 +240,6 @@ class Button(pygame.sprite.Sprite):
 
     def draw(self):
         self.game.gameDisplay.blit(self.image, self)
-        self.draw_text()
+        if self.text is not None and self.font is not None:
+            text_pos = self.rect[0] + self.rect[2] / 2, self.rect[1] + self.rect[3] / 2
+            self.game.draw_text(self.text, self.font, self.color, text_pos, "center")

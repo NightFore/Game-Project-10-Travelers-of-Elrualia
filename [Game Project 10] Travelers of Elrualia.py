@@ -37,7 +37,7 @@ class Game:
         update_center(sprite)
         update_bobbing(sprite)
 
-    def draw_text(self, text, font, color, pos, align="nw", debug_mode=False):
+    def draw_text(self, text, font, color, pos, align="nw"):
         if not isinstance(text, str):
             text = str(text)
         x, y = int(pos[0]), int(pos[1])
@@ -61,7 +61,7 @@ class Game:
             text_rect.midleft = (x, y)
         if align == "center":
             text_rect.center = (x, y)
-        if debug_mode:
+        if self.debug_mode:
             pygame.draw.rect(self.gameDisplay, CYAN, text_rect, 1)
         self.gameDisplay.blit(text_surface, text_rect)
 
@@ -148,9 +148,13 @@ class Game:
     def new(self):
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
+        self.player_sprites = pygame.sprite.Group()
+        self.enemy_sprites = pygame.sprite.Group()
         self.spells = pygame.sprite.Group()
         self.impact = pygame.sprite.Group()
         self.buttons = pygame.sprite.Group()
+
+        self.player = Player(self, self.character_dict, "player", self.player_sprites)
 
         self.paused = False
 
@@ -204,14 +208,12 @@ class Game:
                         self.player.buffer_move(dy=+1)
 
     def update(self):
-        self.all_sprites.update()
-
-    def main_menu(self):
-        self.draw_text(self.project_title, self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center", self.debug_mode)
-        for button in self.buttons:
-            self.gameDisplay.blit(button.image, button)
-            button.draw_text()
-
+        if self.game_status == "main_menu":
+            self.buttons.update()
+        if self.game_status == "options_menu":
+            self.buttons.update()
+        if self.game_status == "battle":
+            self.all_sprites.update()
 
     def draw(self):
         # Background ----------------- #
@@ -221,48 +223,52 @@ class Game:
 
         # Main Menu ------------------ #
         if self.game_status == "main_menu":
-            self.main_menu()
+            self.draw_text(self.project_title, self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center")
+            for button in self.buttons:
+                button.draw()
 
         # Options Menu ------------------ #
         if self.game_status == "options_menu":
-            self.draw_text("Options Menu", self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center", self.debug_mode)
-            self.draw_text("Volume: %i" % self.volume, self.main_menu_font, self.main_menu_color, (150, 300), "w", self.debug_mode)
-            for sprite in self.all_sprites:
-                self.gameDisplay.blit(sprite.image, sprite)
+            self.draw_text("Options Menu", self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center")
+            self.draw_text("Volume: %i" % self.volume, self.main_menu_font, self.main_menu_color, (150, 300), "w")
             for button in self.buttons:
-                button.draw_text()
+                button.draw()
 
         # Battle --------------------- #
         if self.game_status == "battle":
-            # Interface ------------------------ #
             self.gameDisplay.blit(self.interface_image, (0, 0))
             for sprite in self.characters:
                 pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]))
-                sprite.draw_ui()
             pygame.draw.rect(self.gameDisplay, self.game_dict["color"]["cursor"], (int(self.player.debug_pos[0] + (self.player.grid_pos[0]+4) * self.player.grid_dt[0]), int(self.player.debug_pos[1] + self.player.grid_pos[1] * self.player.grid_dt[1]), self.player.debug_dt[0], self.player.debug_dt[1]))
 
             # Player --------------------------- #
             index = 0
             for cooldown in self.player.cooldown:
                 pygame.draw.rect(self.gameDisplay, LIGHTGREY, (50+50*index, 670, 40, int(-40 * self.player.cooldown[cooldown] / self.player.spell_cooldown[cooldown])))
-                self.draw_text(cooldown, self.ui_font, BLUE, (70+50*index, 650), "center", self.debug_mode)
+                self.draw_text(cooldown, self.ui_font, BLUE, (70+50*index, 650), "center")
                 index += 1
 
             pygame.draw.rect(self.gameDisplay, LIGHTGREY, (270, 630, int(100 * self.player.mana / self.player.max_mana), 40))
-            self.draw_text(int(self.player.mana), self.ui_font, self.ui_color, self.player.mana_pos, "center", self.debug_mode)
-            self.draw_text("Mana", self.ui_font, self.ui_color, (280, 635), "nw", self.debug_mode)
+            self.draw_text(int(self.player.mana), self.ui_font, self.ui_color, self.player.mana_pos, "center")
+            self.draw_text("Mana", self.ui_font, self.ui_color, (280, 635), "nw")
 
             pygame.draw.rect(self.gameDisplay, LIGHTGREY, (420, 630, int(100 * self.player.energy / self.player.max_energy), 40))
-            self.draw_text(int(self.player.energy), self.ui_font, self.ui_color, self.player.energy_pos, "center", self.debug_mode)
-            self.draw_text("Energy", self.ui_font, self.ui_color, (420, 635), "nw", self.debug_mode)
+            self.draw_text(int(self.player.energy), self.ui_font, self.ui_color, self.player.energy_pos, "center")
+            self.draw_text("Energy", self.ui_font, self.ui_color, (420, 635), "nw")
 
             # Debug
             if self.debug_mode:
                 for sprite in self.all_sprites:
                     pygame.draw.rect(self.gameDisplay, self.debug_color, sprite.rect, 1)
                 for sprite in self.characters:
-                    sprite.draw_debug()
                     pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]), 1)
+
+                pygame.draw.rect(self.gameDisplay, CYAN, (50, 670, 40, -40), 1)
+                pygame.draw.rect(self.gameDisplay, CYAN, (50, 670, 40, -40 * self.player.cooldown["Q"] / self.spell_dict["energy_ball"]["cooldown"]), 1)
+                pygame.draw.rect(self.gameDisplay, CYAN, (100, 670, 40, -40), 1)
+                pygame.draw.rect(self.gameDisplay, CYAN, (100, 670, 40, -40 * self.player.cooldown["W"] / self.spell_dict["thunder"]["cooldown"]), 1)
+                pygame.draw.rect(self.gameDisplay, CYAN, (150, 670, 40, -40), 1)
+                pygame.draw.rect(self.gameDisplay, CYAN, (150, 670, 40, -40 * self.player.cooldown["E"] / self.spell_dict["projectile"]["cooldown"]), 1)
 
             # Sprite
             for sprite in self.all_sprites:
@@ -270,8 +276,7 @@ class Game:
 
             # Status
             for sprite in self.characters:
-                sprite.draw_status()
-                self.draw_text(sprite.health, self.status_font, sprite.status_color, sprite.pos + sprite.hp_offset, "center", self.debug_mode)
+                self.draw_text(sprite.health, self.status_font, sprite.status_color, sprite.pos + sprite.hp_offset, "center")
 
         # Pause ---------------------- #
         if self.paused:
@@ -292,8 +297,9 @@ class Game:
             if self.game_status != status:
                 self.previous_status = self.game_status
                 self.game_status = status
-                for sprite in self.all_sprites:
-                    sprite.kill()
+
+                for button in self.buttons:
+                    button.kill()
 
                 if self.game_status == "main_menu":
                     Button(self, self.button_dict, "start", self.buttons, "Start", self.button_font, self.button_color, action=self.update_stage, variable="battle_1")
@@ -304,8 +310,10 @@ class Game:
                     Button(self, self.button_dict, "volume_up", self.buttons, "+", self.button_font, self.button_color, action=self.update_volume, variable=+1)
                     Button(self, self.button_dict, "return", self.buttons, "Return", self.button_font, self.button_color, action=self.update_stage, variable=self.previous_status)
                 elif self.game_status == "battle":
-                    self.player = Player(self, self.character_dict, "player", self.characters)
-                    self.enemy = Enemy(self, self.character_dict, "enemy", self.characters)
+                    for enemy in self.enemy_sprites:
+                        enemy.kill()
+                    for enemy in self.stage["enemy"]:
+                        self.enemy = Enemy(self, self.character_dict, enemy, self.enemy_sprites)
 
     def update_background(self, background):
         if background is not None:
@@ -322,7 +330,6 @@ class Game:
                 pygame.mixer.music.play(-1)
 
     def update_volume(self, dv=0):
-        print(self.volume)
         if 0 <= self.volume + 5*dv < 100:
             self.volume = self.volume + 5*dv
             pygame.mixer.music.set_volume(self.volume/100)
