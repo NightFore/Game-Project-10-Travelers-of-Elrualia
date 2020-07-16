@@ -87,7 +87,10 @@ class Player(pygame.sprite.Sprite):
         init_character(self), init_interface(self)
 
         # Gameplay
-        self.cooldown = {"q": 0, "w": 0, "e": 0}
+        self.cooldown = {"Q": 0, "W": 0, "E": 0}
+        self.spell_cooldown = {"Q": self.game.spell_dict["energy_ball"]["cooldown"],
+                               "W": self.game.spell_dict["thunder"]["cooldown"],
+                               "E": self.game.spell_dict["projectile"]["cooldown"]}
         self.last_attack = pygame.time.get_ticks()
         self.attack_rate = self.object_dict["attack_rate"]
 
@@ -109,36 +112,22 @@ class Player(pygame.sprite.Sprite):
     def get_keys(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_q]:
-            init_spell(Spell, "q", self.game, self.game.spell_dict, "energy_ball", self.game.spells, self)
+            init_spell(Spell, "Q", self.game, self.game.spell_dict, "energy_ball", self.game.spells, self)
         if keys[pygame.K_w]:
-            init_spell(Spell, "w", self.game, self.game.spell_dict, "thunder", self.game.spells, self)
+            init_spell(Spell, "W", self.game, self.game.spell_dict, "thunder", self.game.spells, self)
         if keys[pygame.K_e]:
-            init_spell(Spell, "e", self.game, self.game.spell_dict, "projectile", self.game.spells, self)
+            init_spell(Spell, "E", self.game, self.game.spell_dict, "projectile", self.game.spells, self)
 
     def draw_ui(self):
-        # Cooldown
-        pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (50, 670, 40, -40 * self.cooldown["q"] / self.game.spell_dict["energy_ball"]["cooldown"]))
-        self.game.draw_text("Q", self.game.ui_font, BLUE, (70, 650), "center", self.game.debug_mode)
-        pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (100, 670, 40, -40 * self.cooldown["w"] / self.game.spell_dict["thunder"]["cooldown"]))
-        self.game.draw_text("W", self.game.ui_font, BLUE, (120, 650), "center", self.game.debug_mode)
-        pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (150, 670, 40, -40 * self.cooldown["e"] / self.game.spell_dict["projectile"]["cooldown"]))
-        self.game.draw_text("E", self.game.ui_font, BLUE, (170, 650), "center", self.game.debug_mode)
-
-        pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (270, 630, 100 * self.mana / self.max_mana, 40))
-        self.game.draw_text(int(self.mana), self.game.ui_font, self.ui_color, self.mana_pos, "center", self.game.debug_mode)
-        self.game.draw_text("Mana", self.game.ui_font, self.ui_color, (280, 635), "nw", self.game.debug_mode)
-
-        pygame.draw.rect(self.game.gameDisplay, LIGHTGREY, (420, 630, 100 * self.energy / self.max_energy, 40))
-        self.game.draw_text(int(self.energy), self.game.ui_font, self.ui_color, self.energy_pos, "center", self.game.debug_mode)
-        self.game.draw_text("Energy", self.game.ui_font, self.ui_color, (420, 635), "nw", self.game.debug_mode)
+        pass
 
     def draw_debug(self):
         pygame.draw.rect(self.game.gameDisplay, CYAN, (50, 670, 40, -40), 1)
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (50, 670, 40, -40 * self.cooldown["q"] / self.game.spell_dict["energy_ball"]["cooldown"]), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (50, 670, 40, -40 * self.cooldown["Q"] / self.game.spell_dict["energy_ball"]["cooldown"]), 1)
         pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 670, 40, -40), 1)
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 670, 40, -40 * self.cooldown["w"] / self.game.spell_dict["thunder"]["cooldown"]), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (100, 670, 40, -40 * self.cooldown["W"] / self.game.spell_dict["thunder"]["cooldown"]), 1)
         pygame.draw.rect(self.game.gameDisplay, CYAN, (150, 670, 40, -40), 1)
-        pygame.draw.rect(self.game.gameDisplay, CYAN, (150, 670, 40, -40 * self.cooldown["e"] / self.game.spell_dict["projectile"]["cooldown"]), 1)
+        pygame.draw.rect(self.game.gameDisplay, CYAN, (150, 670, 40, -40 * self.cooldown["E"] / self.game.spell_dict["projectile"]["cooldown"]), 1)
 
     def draw_status(self):
         pass
@@ -199,7 +188,7 @@ class Button(pygame.sprite.Sprite):
     def __init__(self, game, dict, object=None, group=None, text=None, font=None, color=None, action=None, variable=None):
         # Initialization ------------- #
         self.game = game
-        self.groups = self.game.all_sprites, group
+        self.groups = group
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.object = object
         self.text = text
@@ -278,3 +267,7 @@ class Button(pygame.sprite.Sprite):
             else:
                 self.image = self.inactive
                 self.sound = False
+
+    def draw(self):
+        self.game.gameDisplay.blit(self.image, self)
+        self.draw_text()

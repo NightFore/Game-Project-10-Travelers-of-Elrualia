@@ -206,6 +206,13 @@ class Game:
     def update(self):
         self.all_sprites.update()
 
+    def main_menu(self):
+        self.draw_text(self.project_title, self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center", self.debug_mode)
+        for button in self.buttons:
+            self.gameDisplay.blit(button.image, button)
+            button.draw_text()
+
+
     def draw(self):
         # Background ----------------- #
         self.gameDisplay.fill(self.background_color)
@@ -214,11 +221,7 @@ class Game:
 
         # Main Menu ------------------ #
         if self.game_status == "main_menu":
-            self.draw_text(self.project_title, self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center", self.debug_mode)
-            for sprite in self.all_sprites:
-                self.gameDisplay.blit(sprite.image, sprite)
-            for button in self.buttons:
-                button.draw_text()
+            self.main_menu()
 
         # Options Menu ------------------ #
         if self.game_status == "options_menu":
@@ -231,12 +234,27 @@ class Game:
 
         # Battle --------------------- #
         if self.game_status == "battle":
-            # Interface
+            # Interface ------------------------ #
             self.gameDisplay.blit(self.interface_image, (0, 0))
             for sprite in self.characters:
                 pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]))
                 sprite.draw_ui()
             pygame.draw.rect(self.gameDisplay, self.game_dict["color"]["cursor"], (int(self.player.debug_pos[0] + (self.player.grid_pos[0]+4) * self.player.grid_dt[0]), int(self.player.debug_pos[1] + self.player.grid_pos[1] * self.player.grid_dt[1]), self.player.debug_dt[0], self.player.debug_dt[1]))
+
+            # Player --------------------------- #
+            index = 0
+            for cooldown in self.player.cooldown:
+                pygame.draw.rect(self.gameDisplay, LIGHTGREY, (50+50*index, 670, 40, int(-40 * self.player.cooldown[cooldown] / self.player.spell_cooldown[cooldown])))
+                self.draw_text(cooldown, self.ui_font, BLUE, (70+50*index, 650), "center", self.debug_mode)
+                index += 1
+
+            pygame.draw.rect(self.gameDisplay, LIGHTGREY, (270, 630, int(100 * self.player.mana / self.player.max_mana), 40))
+            self.draw_text(int(self.player.mana), self.ui_font, self.ui_color, self.player.mana_pos, "center", self.debug_mode)
+            self.draw_text("Mana", self.ui_font, self.ui_color, (280, 635), "nw", self.debug_mode)
+
+            pygame.draw.rect(self.gameDisplay, LIGHTGREY, (420, 630, int(100 * self.player.energy / self.player.max_energy), 40))
+            self.draw_text(int(self.player.energy), self.ui_font, self.ui_color, self.player.energy_pos, "center", self.debug_mode)
+            self.draw_text("Energy", self.ui_font, self.ui_color, (420, 635), "nw", self.debug_mode)
 
             # Debug
             if self.debug_mode:
