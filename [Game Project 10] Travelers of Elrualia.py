@@ -25,7 +25,7 @@ class Game:
         self.dt = self.gameDisplay.clock.tick(FPS) / 1000
         self.load_data()
         self.new()
-        pygame.mixer.music.set_volume(0.075)
+        pygame.mixer.music.set_volume(default_volume)
         self.update_stage()
 
     def update_sprite(self, sprite, move=False, keys=False):
@@ -139,6 +139,9 @@ class Game:
 
         # Miscellaneous
         self.project_title = project_title
+        self.default_volume = default_volume
+        self.game_status = None
+        self.previous_status = None
         self.debug_color = self.game_dict["color"]["debug"]
 
     def new(self):
@@ -210,11 +213,15 @@ class Game:
         # Main Menu ------------------ #
         if self.game_status == "main_menu":
             self.draw_text(self.project_title, self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center", self.debug_mode)
-
-            # Sprite
             for sprite in self.all_sprites:
                 self.gameDisplay.blit(sprite.image, sprite)
+            for button in self.buttons:
+                button.draw_text()
 
+        # Options Menu ------------------ #
+        if self.game_status == "options_menu":
+            for sprite in self.all_sprites:
+                self.gameDisplay.blit(sprite.image, sprite)
             for button in self.buttons:
                 button.draw_text()
 
@@ -254,19 +261,29 @@ class Game:
     # Gameplay ----------------------- #
     def update_stage(self, stage="main_menu"):
         self.stage = self.stage_dict[stage]
-        self.game_status = self.stage["game_status"]
+        self.update_status(self.stage["game_status"])
         self.update_background(self.stage["background"])
         self.update_music(self.stage["music"])
 
-        if self.game_status == "main_menu":
-            Button(self, self.button_dict, "start", self.buttons, "Start", self.button_font, self.button_color)
-            Button(self, self.button_dict, "options", self.buttons, "Options", self.button_font, self.button_color, variable="options_menu", action=self.update_stage)
-            Button(self, self.button_dict, "exit", self.buttons, "Exit", self.button_font, self.button_color, action=self.quit_game)
-        elif self.game_status == "options_menu":
-            pass
-        elif self.game_status == "battle":
-            self.player = Player(self, self.character_dict, "player", self.characters)
-            self.enemy = Enemy(self, self.character_dict, "enemy", self.characters)
+    def update_status(self, status):
+        if status is not None:
+            if self.game_status != status:
+                self.previous_status = self.game_status
+                self.game_status = status
+                for sprite in self.all_sprites:
+                    sprite.kill()
+
+                if self.game_status == "main_menu":
+                    Button(self, self.button_dict, "start", self.buttons, "Start", self.button_font, self.button_color)
+                    Button(self, self.button_dict, "options", self.buttons, "Options", self.button_font, self.button_color, variable="options_menu", action=self.update_stage)
+                    Button(self, self.button_dict, "exit", self.buttons, "Exit", self.button_font, self.button_color, action=self.quit_game)
+                elif self.game_status == "options_menu":
+                    print("ok")
+                    Button(self, self.button_dict, "volume_down", self.buttons, "-", self.button_font, self.button_color)
+                    Button(self, self.button_dict, "volume_up", self.buttons, "+", self.button_font, self.button_color)
+                elif self.game_status == "battle":
+                    self.player = Player(self, self.character_dict, "player", self.characters)
+                    self.enemy = Enemy(self, self.character_dict, "enemy", self.characters)
 
     def update_background(self, background):
         if background is not None:

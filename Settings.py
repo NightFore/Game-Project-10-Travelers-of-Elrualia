@@ -5,6 +5,7 @@
 project_title = "Traveler of Elrualia"
 screen_size = WIDTH, HEIGHT = 1280, 720
 FPS = 60
+default_volume = 0.075
 
 """
     Colors
@@ -46,18 +47,23 @@ BUTTON_DICT = {
     "start": {
         "pos": [640, 360], "width": 180, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
         "inactive": GREEN, "active": RED,
-        "sound_active": None, "sound_action": None
-    },
+        "sound_active": None, "sound_action": None},
     "options": {
         "pos": [640, 450], "width": 180, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
         "inactive": GREEN, "active": RED,
-        "sound_active": None, "sound_action": None
-    },
+        "sound_active": None, "sound_action": None},
     "exit": {
         "pos": [640, 540], "width": 180, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
         "inactive": GREEN, "active": RED,
-        "sound_active": None, "sound_action": None
-    }
+        "sound_active": None, "sound_action": None},
+    "volume_down": {
+        "pos": [260, 300], "width": 60, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
+        "inactive": GREEN, "active": RED,
+        "sound_active": None, "sound_action": None},
+    "volume_up": {
+        "pos": [380, 300], "width": 60, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
+        "inactive": GREEN, "active": RED,
+        "sound_active": None, "sound_action": None},
 }
 
 STAGE_DICT = {
