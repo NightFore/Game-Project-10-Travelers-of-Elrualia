@@ -155,6 +155,7 @@ class Game:
         self.buttons = pygame.sprite.Group()
 
         self.player = Player(self, self.character_dict, "player", self.player_sprites)
+        self.difficulty = "Normal"
 
         self.paused = False
 
@@ -231,6 +232,7 @@ class Game:
         if self.game_status == "options_menu":
             self.draw_text("Options Menu", self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center")
             self.draw_text("Volume: %i" % self.volume, self.main_menu_font, self.main_menu_color, (150, 300), "w")
+            self.draw_text("Difficulty: %s" % self.difficulty, self.main_menu_font, self.main_menu_color, (150, 400), "w")
             for button in self.buttons:
                 button.draw()
 
