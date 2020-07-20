@@ -96,10 +96,10 @@ class Game:
         self.voice_folder = path.join(self.data_folder, "voice")
         self.music_folder = path.join(self.data_folder, "music")
         self.map_folder = path.join(self.data_folder, "map")
+        self.font_folder = path.join(self.data_folder, "fonts")
 
         # Dict
         self.game_dict = GAME_DICT
-        self.button_dict = BUTTON_DICT
         self.character_dict = CHARACTER_DICT
         self.spell_dict = SPELL_DICT
         self.stage_dict = STAGE_DICT
@@ -112,7 +112,6 @@ class Game:
         # Font
         self.font = pygame.font.Font(None, 100)
         self.main_menu_font = pygame.font.Font(self.game_dict["main_menu_font"], self.game_dict["main_menu_size"])
-        self.button_font = pygame.font.Font(self.game_dict["button_font"], self.game_dict["button_size"])
         self.ui_font = pygame.font.Font(self.game_dict["ui_font"], self.game_dict["ui_size"])
         self.status_font = pygame.font.Font(self.game_dict["status_font"], self.game_dict["status_size"])
 
@@ -165,6 +164,45 @@ class Game:
         self.debug_stage_index = 0
         for stage in self.stage_dict:
             self.debug_stage.append(stage)
+
+        # Colors --------------------- #
+        self.button_inactive = 140, 205, 245
+        self.button_active = 15, 160, 240
+
+        # Font ---------------------- #
+        self.button_font = pygame.font.Font(path.join(self.font_folder, self.game_dict["button_font"]), self.game_dict["button_size"])
+
+        # Dictionaries --------------- #
+        self.button_dict = {
+            "new_game": {
+                "pos": [640, 300], "width": 280, "height": 50, "border_size": 6, "border_color": BLACK, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "load_game": {
+                "pos": [640, 375], "width": 280, "height": 50, "border_size": 6, "border_color": BLACK, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "options": {
+                "pos": [640, 450], "width": 280, "height": 50, "border_size": 6, "border_color": BLACK, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "exit": {
+                "pos": [640, 525], "width": 280, "height": 50, "border_size": 6, "border_color": BLACK, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "return": {
+                "pos": [1190, 690], "width": 280, "height": 50, "border_size": 6, "border_color": BLACK, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "volume_down": {
+                "pos": [1010, 300], "width": 60, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "volume_up": {
+                "pos": [1130, 300], "width": 60, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+        }
 
     # Game Loop ---------------------- #
     def run(self):
@@ -224,7 +262,6 @@ class Game:
 
         # Main Menu ------------------ #
         if self.game_status == "main_menu":
-            self.draw_text(self.project_title, self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center")
             for button in self.buttons:
                 button.draw()
 
@@ -304,13 +341,14 @@ class Game:
                     button.kill()
 
                 if self.game_status == "main_menu":
-                    Button(self, self.button_dict, "start", self.buttons, "Start", self.button_font, self.button_color, action=self.update_stage, variable="battle_1")
-                    Button(self, self.button_dict, "options", self.buttons, "Options", self.button_font, self.button_color, action=self.update_stage, variable="options_menu")
-                    Button(self, self.button_dict, "exit", self.buttons, "Exit", self.button_font, self.button_color, action=self.quit_game)
+                    Button(self, self.button_dict, "new_game", self.buttons, "New Game", action=self.update_stage, variable="battle_1")
+                    Button(self, self.button_dict, "load_game", self.buttons, "Load Game")
+                    Button(self, self.button_dict, "options", self.buttons, "Options", action=self.update_stage, variable="options_menu")
+                    Button(self, self.button_dict, "exit", self.buttons, "Exit", action=self.quit_game)
                 elif self.game_status == "options_menu":
-                    Button(self, self.button_dict, "volume_down", self.buttons, "-", self.button_font, self.button_color, action=self.update_volume, variable=-1)
-                    Button(self, self.button_dict, "volume_up", self.buttons, "+", self.button_font, self.button_color, action=self.update_volume, variable=+1)
-                    Button(self, self.button_dict, "return", self.buttons, "Return", self.button_font, self.button_color, action=self.update_stage, variable=self.previous_status)
+                    Button(self, self.button_dict, "volume_down", self.buttons, "-", action=self.update_volume, variable=-1)
+                    Button(self, self.button_dict, "volume_up", self.buttons, "+", action=self.update_volume, variable=+1)
+                    Button(self, self.button_dict, "return", self.buttons, "Return", action=self.update_stage, variable=self.previous_status)
                 elif self.game_status == "battle":
                     for enemy in self.enemy_sprites:
                         enemy.kill()

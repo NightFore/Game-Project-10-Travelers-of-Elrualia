@@ -162,15 +162,13 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, game, dict, object=None, group=None, text=None, font=None, color=None, action=None, variable=None):
+    def __init__(self, game, dict, object=None, group=None, text=None, action=None, variable=None):
         # Initialization ------------- #
         self.game = game
         self.groups = group
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.object = object
         self.text = text
-        self.font = font
-        self.color = color
         self.variable = variable
         self.action = action
 
@@ -178,6 +176,10 @@ class Button(pygame.sprite.Sprite):
         self.dict = dict
         self.object_dict = self.dict[object]
         self.game_dict = self.game.game_dict
+
+        # Text ----------------------- #
+        self.font = self.object_dict["font"]
+        self.color = self.object_dict["color"]
 
         # Button --------------------- #
         if isinstance(self.object_dict["inactive"], tuple):
