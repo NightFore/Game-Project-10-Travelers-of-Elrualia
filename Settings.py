@@ -35,7 +35,7 @@ ORANGE = 255, 120, 30
 GAME_DICT = {"background_color": LIGHTBLUE, "background_image": "rizaldarmawansyah_Mountain.png", "interface_image": "background_battle.png",
              "platform_size": [950, 270],
              "main_menu_font": None, "main_menu_size": 100, "main_menu_color": WHITE,
-             "button_font": "impact.ttf", "button_size": 40, "button_color": WHITE,
+             "button_font": "LiberationSerif-Regular.ttf", "button_size": 40, "button_color": WHITE,
              "ui_font": None, "ui_size": 40, "ui_color": WHITE,
              "status_font": None, "status_size": 25, "status_color": WHITE,
              "mana_pos": [250, 650], "energy_pos": [400, 650],
@@ -46,31 +46,7 @@ GAME_DICT = {"background_color": LIGHTBLUE, "background_image": "rizaldarmawansy
 
 
 
-STAGE_DICT = {
-    "main_menu": {
-        "game_status": "main_menu",
-        "background": "background_main_menu.png",
-        "music": "PerituneMaterial_Whisper_loop.ogg"},
-    "options_menu": {
-        "game_status": "options_menu",
-        "background": None,
-        "music": "PerituneMaterial_Whisper_loop.ogg"},
-    "dialogue_1": {
-        "game_status": "battle",
-        "background": "craftpix_Battleground3_bright.png",
-        "music": "PerituneMaterial_Prairie_loop.ogg",
-        "enemy": ["enemy"]},
-    "battle_1": {
-        "game_status": "battle",
-        "background": "craftpix_Battleground3_bright.png",
-        "music": "PerituneMaterial_Prairie4_loop.ogg",
-        "enemy": ["enemy", "enemy"]},
-    "boss_1": {
-        "game_status": "battle",
-        "background": "craftpix_Battleground3_pale.png",
-        "music": "PerituneMaterial_Rapid4_loop.ogg",
-        "enemy": ["enemy", "enemy"]}
-}
+
 
 
 CHARACTER_DICT = {"layer": 2,

@@ -102,7 +102,6 @@ class Game:
         self.game_dict = GAME_DICT
         self.character_dict = CHARACTER_DICT
         self.spell_dict = SPELL_DICT
-        self.stage_dict = STAGE_DICT
 
         # Graphics
         self.background_image = None
@@ -158,13 +157,6 @@ class Game:
 
         self.paused = False
 
-        # Debug ---------------------- #
-        self.debug_mode = True
-        self.debug_stage = []
-        self.debug_stage_index = 0
-        for stage in self.stage_dict:
-            self.debug_stage.append(stage)
-
         # Colors --------------------- #
         self.button_inactive = 140, 205, 245
         self.button_active = 15, 160, 240
@@ -173,36 +165,81 @@ class Game:
         self.button_font = pygame.font.Font(path.join(self.font_folder, self.game_dict["button_font"]), self.game_dict["button_size"])
 
         # Dictionaries --------------- #
+        self.stage_dict = {
+            "main_menu": {
+                "game_status": "main_menu",
+                "background": "background_main_menu.png",
+                "music": "PerituneMaterial_Whisper_loop.ogg"},
+            "options_menu": {
+                "game_status": "options_menu",
+                "background": "background_options.png",
+                "music": "PerituneMaterial_Whisper_loop.ogg"},
+            "dialogue_1": {
+                "game_status": "battle",
+                "background": "craftpix_Battleground3_bright.png",
+                "music": "PerituneMaterial_Prairie_loop.ogg",
+                "enemy": ["enemy"]},
+            "battle_1": {
+                "game_status": "battle",
+                "background": "craftpix_Battleground3_bright.png",
+                "music": "PerituneMaterial_Prairie4_loop.ogg",
+                "enemy": ["enemy", "enemy"]},
+            "boss_1": {
+                "game_status": "battle",
+                "background": "craftpix_Battleground3_pale.png",
+                "music": "PerituneMaterial_Rapid4_loop.ogg",
+                "enemy": ["enemy", "enemy"]}
+        }
+
         self.button_dict = {
             "new_game": {
-                "pos": [640, 300], "width": 280, "height": 50, "border_size": 6, "border_color": BLACK, "center": True,
+                "pos": [640, 300], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "load_game": {
-                "pos": [640, 375], "width": 280, "height": 50, "border_size": 6, "border_color": BLACK, "center": True,
+                "pos": [640, 375], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "options": {
-                "pos": [640, 450], "width": 280, "height": 50, "border_size": 6, "border_color": BLACK, "center": True,
+                "pos": [640, 450], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "exit": {
-                "pos": [640, 525], "width": 280, "height": 50, "border_size": 6, "border_color": BLACK, "center": True,
+                "pos": [640, 525], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "return": {
-                "pos": [1190, 690], "width": 280, "height": 50, "border_size": 6, "border_color": BLACK, "center": True,
+                "pos": [1190, 690], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
-            "volume_down": {
-                "pos": [1010, 300], "width": 60, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
+            "options_volume_down": {
+                "pos": [487, 255], "width": 75, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
-            "volume_up": {
-                "pos": [1130, 300], "width": 60, "height": 60, "border_size": 6, "border_color": BLACK, "center": True,
+            "options_volume_up": {
+                "pos": [692, 255], "width": 75, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "options_fullscreen": {
+                "pos": [590, 325], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "options_reset": {
+                "pos": [180, 660], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "options_confirm": {
+                "pos": [590, 660], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
         }
+
+        # Debug ---------------------- #
+        self.debug_mode = True
+        self.debug_stage = []
+        self.debug_stage_index = 0
+        for stage in self.stage_dict:
+            self.debug_stage.append(stage)
 
     # Game Loop ---------------------- #
     def run(self):
@@ -267,9 +304,9 @@ class Game:
 
         # Options Menu ------------------ #
         if self.game_status == "options_menu":
-            self.draw_text("Options Menu", self.main_menu_font, self.main_menu_color, (WIDTH/2, HEIGHT/5), "center")
-            self.draw_text("Volume: %i" % self.volume, self.main_menu_font, self.main_menu_color, (150, 300), "w")
-            self.draw_text("Difficulty: %s" % self.difficulty, self.main_menu_font, self.main_menu_color, (150, 400), "w")
+            self.draw_text("Volume", self.button_font, self.button_color, (180, 255), "center")
+            self.draw_text(str(self.volume) + str("%"), self.button_font, self.button_color, (590, 255), "center")
+            self.draw_text("Fullscreen", self.button_font, self.button_color, (180, 325), "center")
             for button in self.buttons:
                 button.draw()
 
@@ -346,9 +383,11 @@ class Game:
                     Button(self, self.button_dict, "options", self.buttons, "Options", action=self.update_stage, variable="options_menu")
                     Button(self, self.button_dict, "exit", self.buttons, "Exit", action=self.quit_game)
                 elif self.game_status == "options_menu":
-                    Button(self, self.button_dict, "volume_down", self.buttons, "-", action=self.update_volume, variable=-1)
-                    Button(self, self.button_dict, "volume_up", self.buttons, "+", action=self.update_volume, variable=+1)
-                    Button(self, self.button_dict, "return", self.buttons, "Return", action=self.update_stage, variable=self.previous_status)
+                    Button(self, self.button_dict, "options_volume_down", self.buttons, "-5", action=self.update_volume, variable=-5)
+                    Button(self, self.button_dict, "options_volume_up", self.buttons, "+5", action=self.update_volume, variable=+5)
+                    Button(self, self.button_dict, "options_fullscreen", self.buttons, "Off/On")
+                    Button(self, self.button_dict, "options_reset", self.buttons, "Reset to Default")
+                    Button(self, self.button_dict, "options_confirm", self.buttons, "Confirm", action=self.update_stage, variable=self.previous_status)
                 elif self.game_status == "battle":
                     for enemy in self.enemy_sprites:
                         enemy.kill()
@@ -370,8 +409,8 @@ class Game:
                 pygame.mixer.music.play(-1)
 
     def update_volume(self, dv=0):
-        if 0 <= self.volume + 5*dv < 100:
-            self.volume = self.volume + 5*dv
+        if 0 <= self.volume + dv <= 100:
+            self.volume = self.volume + dv
             pygame.mixer.music.set_volume(self.volume/100)
 
 
