@@ -87,6 +87,31 @@ class Game:
             image_rect.center = (x, y)
         self.gameDisplay.blit(image, image_rect)
 
+    def draw_shape(self, shape, rect, color, border_color, border=0, align="center"):
+        surface = pygame.Surface((rect[2], rect[3]))
+        surface.fill(border_color)
+        shape(surface, color, (border, border, rect[2]-border*2, rect[3]-border*2))
+        surface_rect = surface.get_rect()
+        if align == "nw":
+            surface_rect.topleft = (rect[0], rect[1])
+        if align == "ne":
+            surface_rect.topright = (rect[0], rect[1])
+        if align == "sw":
+            surface_rect.bottomleft = (rect[0], rect[1])
+        if align == "se":
+            surface_rect.bottomright = (rect[0], rect[1])
+        if align == "n":
+            surface_rect.midtop = (rect[0], rect[1])
+        if align == "s":
+            surface_rect.midbottom = (rect[0], rect[1])
+        if align == "e":
+            surface_rect.midright = (rect[0], rect[1])
+        if align == "w":
+            surface_rect.midleft = (rect[0], rect[1])
+        if align == "center":
+            surface_rect.center = (rect[0], rect[1])
+        self.gameDisplay.blit(surface, surface_rect)
+
     def load_data(self):
         # Directories
         self.game_folder = path.dirname(__file__)
@@ -117,6 +142,8 @@ class Game:
         # Color
         self.main_menu_color = self.game_dict["main_menu_color"]
         self.button_color = self.game_dict["button_color"]
+        self.button_border_color = self.game_dict["button_border_color"]
+        self.button_border_size = self.game_dict["button_border_size"]
         self.ui_color = self.game_dict["ui_color"]
         self.status_color = self.game_dict["status_color"]
 
@@ -192,43 +219,43 @@ class Game:
 
         self.button_dict = {
             "new_game": {
-                "pos": [640, 300], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "pos": [640, 300], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "load_game": {
-                "pos": [640, 375], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "pos": [640, 375], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "options": {
-                "pos": [640, 450], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "pos": [640, 450], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "exit": {
-                "pos": [640, 525], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "pos": [640, 525], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "return": {
-                "pos": [1190, 690], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "pos": [1190, 690], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "options_volume_down": {
-                "pos": [487, 255], "width": 75, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "pos": [487, 255], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "options_volume_up": {
-                "pos": [692, 255], "width": 75, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "pos": [692, 255], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "options_fullscreen": {
-                "pos": [590, 325], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "pos": [590, 325], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "options_reset": {
-                "pos": [180, 660], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "pos": [180, 660], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
             "options_confirm": {
-                "pos": [590, 660], "width": 280, "height": 50, "border_size": 5, "border_color": BLACK, "center": True,
+                "pos": [590, 660], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
         }
@@ -299,11 +326,18 @@ class Game:
 
         # Interface ------------------ #
         if self.game_status == "options_menu":
+            # Volume --------------------------- #
+            self.draw_shape(pygame.draw.rect, [180, 255, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
             self.draw_text("Volume", self.button_font, self.button_color, (180, 255), "center")
+            self.draw_shape(pygame.draw.rect, [590, 255, 130, 50], self.button_inactive, self.button_border_color, self.button_border_size)
             self.draw_text(str(self.volume) + str("%"), self.button_font, self.button_color, (590, 255), "center")
+
+            # Fullscreen ----------------------- #
+            self.draw_shape(pygame.draw.rect, [180, 325, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
             self.draw_text("Fullscreen", self.button_font, self.button_color, (180, 325), "center")
 
-        if self.game_status == "battle":
+
+        elif self.game_status == "battle":
             self.gameDisplay.blit(self.interface_image, (0, 0))
             for sprite in self.characters:
                 pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]))
