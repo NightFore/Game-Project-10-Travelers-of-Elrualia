@@ -35,6 +35,7 @@ ORANGE = 255, 120, 30
 GAME_DICT = {"background_color": LIGHTBLUE, "background_image": "rizaldarmawansyah_Mountain.png", "interface_image": "background_battle.png",
              "platform_size": [950, 270],
              "main_menu_font": None, "main_menu_size": 100, "main_menu_color": WHITE,
+             "interface_color": (95, 140, 200), "interface_border_color": BLACK, "interface_border_size": 5,
              "button_font": "LiberationSerif-Regular.ttf", "button_size": 40, "button_color": WHITE, "button_border_color": BLACK, "button_border_size": 5,
              "ui_font": None, "ui_size": 40, "ui_color": WHITE,
              "status_font": None, "status_size": 25, "status_color": WHITE,

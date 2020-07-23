@@ -147,6 +147,10 @@ class Game:
         self.ui_color = self.game_dict["ui_color"]
         self.status_color = self.game_dict["status_color"]
 
+        self.interface_color = self.game_dict["interface_color"]
+        self.interface_border_color = self.game_dict["interface_border_color"]
+        self.interface_border_size = self.game_dict["interface_border_size"]
+
         # Pause Screen
         self.dim_screen = pygame.Surface(self.gameDisplay.get_size()).convert_alpha()
         self.dim_screen.fill((100, 100, 100, 120))
@@ -199,6 +203,10 @@ class Game:
             "options_menu": {
                 "game_status": "options_menu",
                 "background": "background_options.png",
+                "music": "PerituneMaterial_Whisper_loop.ogg"},
+            "character_customization": {
+                "game_status": "character_customization",
+                "background": "background_chracter_customization.png",
                 "music": "PerituneMaterial_Whisper_loop.ogg"},
             "dialogue_1": {
                 "game_status": "battle",
@@ -256,6 +264,48 @@ class Game:
                 "sound_active": None, "sound_action": None},
             "options_confirm": {
                 "pos": [590, 660], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+
+            # Character Customization ---------- #
+            "character_difficulty_left": {
+                "pos": [82, 655], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "character_difficulty_right": {
+                "pos": [427, 655], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "character_health_down": {
+                "pos": [992, 385], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "character_health_up": {
+                "pos": [1197, 385], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "character_mana_down": {
+                "pos": [992, 450], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "character_mana_up": {
+                "pos": [1197, 450], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "character_energy_down": {
+                "pos": [992, 515], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "character_energy_up": {
+                "pos": [1197, 515], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "character_reset": {
+                "pos": [685, 660], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
+                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+                "sound_active": None, "sound_action": None},
+            "character_confirm": {
+                "pos": [1095, 660], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
                 "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
                 "sound_active": None, "sound_action": None},
         }
@@ -336,6 +386,39 @@ class Game:
             self.draw_shape(pygame.draw.rect, [180, 325, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
             self.draw_text("Fullscreen", self.button_font, self.button_color, (180, 325), "center")
 
+        elif self.game_status == "character_customization":
+            self.draw_shape(pygame.draw.rect, [255, 455, 480, 500], self.interface_color, self.interface_border_color, self.interface_border_size)
+            self.draw_shape(pygame.draw.rect, [890, 455, 750, 500], self.interface_color, self.interface_border_color, self.interface_border_size)
+
+            self.draw_shape(pygame.draw.rect, [255, 255, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Player", self.button_font, self.button_color, (255, 255), "center")
+            self.draw_shape(pygame.draw.rect, [255, 655, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Difficulty", self.button_font, self.button_color, (255, 655), "center")
+
+            self.draw_shape(pygame.draw.rect, [685, 255, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Level", self.button_font, self.button_color, (685, 255), "center")
+            self.draw_shape(pygame.draw.rect, [1095, 255, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Level", self.button_font, self.button_color, (1095, 255), "center")
+            self.draw_shape(pygame.draw.rect, [685, 320, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Experience", self.button_font, self.button_color, (685, 320), "center")
+            self.draw_shape(pygame.draw.rect, [1095, 320, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Experience", self.button_font, self.button_color, (1095, 320), "center")
+            self.draw_shape(pygame.draw.rect, [685, 385, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Heatlh", self.button_font, self.button_color, (685, 385), "center")
+            self.draw_shape(pygame.draw.rect, [1095, 385, 130, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Heatlh", self.button_font, self.button_color, (1095, 385), "center")
+            self.draw_shape(pygame.draw.rect, [685, 450, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Mana", self.button_font, self.button_color, (685, 450), "center")
+            self.draw_shape(pygame.draw.rect, [1095, 450, 130, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Mana", self.button_font, self.button_color, (1095, 450), "center")
+            self.draw_shape(pygame.draw.rect, [685, 515, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Energy", self.button_font, self.button_color, (685, 515), "center")
+            self.draw_shape(pygame.draw.rect, [1095, 515, 130, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Energy", self.button_font, self.button_color, (1095, 515), "center")
+            self.draw_shape(pygame.draw.rect, [685, 580, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Status Points", self.button_font, self.button_color, (685, 580), "center")
+            self.draw_shape(pygame.draw.rect, [1095, 580, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
+            self.draw_text("Status Points", self.button_font, self.button_color, (1095, 580), "center")
 
         elif self.game_status == "battle":
             self.gameDisplay.blit(self.interface_image, (0, 0))
@@ -344,11 +427,9 @@ class Game:
             pygame.draw.rect(self.gameDisplay, self.game_dict["color"]["cursor"], (int(self.player.debug_pos[0] + (self.player.grid_pos[0]+4) * self.player.grid_dt[0]), int(self.player.debug_pos[1] + self.player.grid_pos[1] * self.player.grid_dt[1]), self.player.debug_dt[0], self.player.debug_dt[1]))
 
             # Player --------------------------- #
-            index = 0
-            for cooldown in self.player.cooldown:
+            for index, cooldown in enumerate(self.player.cooldown):
                 pygame.draw.rect(self.gameDisplay, LIGHTGREY, (50+50*index, 670, 40, int(-40 * self.player.cooldown[cooldown] / self.player.spell_cooldown[cooldown])))
                 self.draw_text(cooldown, self.ui_font, BLUE, (70+50*index, 650), "center")
-                index += 1
 
             pygame.draw.rect(self.gameDisplay, LIGHTGREY, (270, 630, int(100 * self.player.mana / self.player.max_mana), 40))
             self.draw_text(int(self.player.mana), self.ui_font, self.ui_color, self.player.mana_pos, "center")
@@ -403,7 +484,7 @@ class Game:
                     button.kill()
 
                 if self.game_status == "main_menu":
-                    Button(self, self.button_dict, "new_game", self.buttons, "New Game", action=self.update_stage, variable="battle_1")
+                    Button(self, self.button_dict, "new_game", self.buttons, "New Game", action=self.update_stage, variable="character_customization")
                     Button(self, self.button_dict, "load_game", self.buttons, "Load Game")
                     Button(self, self.button_dict, "options", self.buttons, "Options", action=self.update_stage, variable="options_menu")
                     Button(self, self.button_dict, "exit", self.buttons, "Exit", action=self.quit_game)
@@ -414,7 +495,16 @@ class Game:
                     Button(self, self.button_dict, "options_reset", self.buttons, "Reset to Default")
                     Button(self, self.button_dict, "options_confirm", self.buttons, "Confirm", action=self.update_stage, variable=self.previous_status)
                 elif self.game_status == "character_customization":
-                    pass
+                    Button(self, self.button_dict, "character_difficulty_left", self.buttons, "◄", action=self.update_volume, variable=-1)
+                    Button(self, self.button_dict, "character_difficulty_right", self.buttons, "►", action=self.update_volume, variable=+1)
+                    Button(self, self.button_dict, "character_health_down", self.buttons, "-5", action=self.update_volume, variable=-5)
+                    Button(self, self.button_dict, "character_health_up", self.buttons, "+5", action=self.update_volume, variable=+5)
+                    Button(self, self.button_dict, "character_mana_down", self.buttons, "-1", action=self.update_volume, variable=-1)
+                    Button(self, self.button_dict, "character_mana_up", self.buttons, "+1", action=self.update_volume, variable=+1)
+                    Button(self, self.button_dict, "character_energy_down", self.buttons, "-50", action=self.update_volume, variable=-50)
+                    Button(self, self.button_dict, "character_energy_up", self.buttons, "+50", action=self.update_volume, variable=+50)
+                    Button(self, self.button_dict, "character_reset", self.buttons, "Reset to Default")
+                    Button(self, self.button_dict, "character_confirm", self.buttons, "Confirm", action=self.update_stage, variable="battle_1")
                 elif self.game_status == "battle":
                     for enemy in self.characters:
                         if enemy.object != "player":
