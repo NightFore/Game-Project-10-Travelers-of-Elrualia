@@ -53,6 +53,10 @@ class Spell(pygame.sprite.Sprite):
                         Impact(self.game, self.dict, self.object + "_impact", self.group, self)
                     self.hit = True
 
+    def draw(self):
+        if self.game.game_status == "battle":
+            self.game.gameDisplay.blit(self.image, self)
+
     def update(self):
         self.game.update_sprite(self, move=self.move)
         self.collide_sprite()
@@ -73,6 +77,10 @@ class Impact(pygame.sprite.Sprite):
 
         # Gameplay
         self.spawn_time = pygame.time.get_ticks()
+
+    def draw(self):
+        if self.game.game_status == "battle":
+            self.game.gameDisplay.blit(self.image, self)
 
     def update(self):
         self.game.update_sprite(self)
@@ -125,9 +133,15 @@ class Player(pygame.sprite.Sprite):
         for index in self.cooldown:
             self.cooldown[index] = max(self.cooldown[index] - self.dt, 0)
 
+    def draw(self):
+        if self.game.game_status == "battle":
+            self.game.gameDisplay.blit(self.image, self)
+            self.game.draw_text(self.health, self.game.status_font, self.game.status_color, self.pos + self.hp_offset, "center")
+
     def update(self):
-        self.game.update_sprite(self, move=True, keys=True)
-        self.update_status()
+        if self.game.game_status == "battle":
+            self.game.update_sprite(self, move=True, keys=True)
+            self.update_status()
 
 
 
@@ -157,8 +171,14 @@ class Enemy(pygame.sprite.Sprite):
             else:
                 del self.range[0]
 
+    def draw(self):
+        if self.game.game_status == "battle":
+            self.game.gameDisplay.blit(self.image, self)
+            self.game.draw_text(self.health, self.game.status_font, self.game.status_color, self.pos + self.hp_offset, "center")
+
     def update(self):
-        self.game.update_sprite(self, move=True)
+        if self.game.game_status == "battle":
+            self.game.update_sprite(self, move=True)
 
 
 class Button(pygame.sprite.Sprite):
@@ -222,23 +242,21 @@ class Button(pygame.sprite.Sprite):
         self.sound_action = self.object_dict["sound_action"]
 
     def update(self):
-        for event in self.game.event:
-            mouse = pygame.mouse.get_pos()
-            if self.rect.collidepoint(mouse):
-                self.image = self.active
-                self.sound = True
-                if self.sound_active is not None and not self.sound:
-                    pygame.mixer.Sound.play(self.sound_active)
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.action is not None:
-                    if self.sound_action is not None:
-                        pygame.mixer.Sound.play(self.sound_action)
-                    if self.variable is not None:
-                        self.action(self.variable)
-                    else:
-                        self.action()
-            else:
-                self.image = self.inactive
-                self.sound = False
+        if self.rect.collidepoint(self.game.mouse):
+            self.image = self.active
+            self.sound = True
+            if self.sound_active is not None and not self.sound:
+                pygame.mixer.Sound.play(self.sound_active)
+            if self.game.click[1] and self.action is not None:
+                if self.sound_action is not None:
+                    pygame.mixer.Sound.play(self.sound_action)
+                if self.variable is not None:
+                    self.action(self.variable)
+                else:
+                    self.action()
+        else:
+            self.image = self.inactive
+            self.sound = False
 
     def draw(self):
         self.game.gameDisplay.blit(self.image, self)

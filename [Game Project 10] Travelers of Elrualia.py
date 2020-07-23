@@ -118,6 +118,7 @@ class Game:
         self.main_menu_color = self.game_dict["main_menu_color"]
         self.button_color = self.game_dict["button_color"]
         self.ui_color = self.game_dict["ui_color"]
+        self.status_color = self.game_dict["status_color"]
 
         # Pause Screen
         self.dim_screen = pygame.Surface(self.gameDisplay.get_size()).convert_alpha()
@@ -146,13 +147,11 @@ class Game:
     def new(self):
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.characters = pygame.sprite.Group()
-        self.player_sprites = pygame.sprite.Group()
-        self.enemy_sprites = pygame.sprite.Group()
         self.spells = pygame.sprite.Group()
         self.impact = pygame.sprite.Group()
         self.buttons = pygame.sprite.Group()
 
-        self.player = Player(self, self.character_dict, "player", self.player_sprites)
+        self.player = Player(self, self.character_dict, "player", self.characters)
         self.difficulty = "Normal"
 
         self.paused = False
@@ -258,9 +257,14 @@ class Game:
 
     def events(self):
         self.event = pygame.event.get()
+        self.click = [False, False, False]
         for event in self.event:
+            self.mouse = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:
                 self.quit_game()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.click[event.button] = True
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -284,12 +288,8 @@ class Game:
                         self.player.buffer_move(dy=+1)
 
     def update(self):
-        if self.game_status == "main_menu":
-            self.buttons.update()
-        if self.game_status == "options_menu":
-            self.buttons.update()
-        if self.game_status == "battle":
-            self.all_sprites.update()
+        self.buttons.update()
+        self.all_sprites.update()
 
     def draw(self):
         # Background ----------------- #
@@ -297,20 +297,12 @@ class Game:
         if self.background_image is not None:
             self.gameDisplay.blit(self.background_image, (0, 0))
 
-        # Main Menu ------------------ #
-        if self.game_status == "main_menu":
-            for button in self.buttons:
-                button.draw()
-
-        # Options Menu ------------------ #
+        # Interface ------------------ #
         if self.game_status == "options_menu":
             self.draw_text("Volume", self.button_font, self.button_color, (180, 255), "center")
             self.draw_text(str(self.volume) + str("%"), self.button_font, self.button_color, (590, 255), "center")
             self.draw_text("Fullscreen", self.button_font, self.button_color, (180, 325), "center")
-            for button in self.buttons:
-                button.draw()
 
-        # Battle --------------------- #
         if self.game_status == "battle":
             self.gameDisplay.blit(self.interface_image, (0, 0))
             for sprite in self.characters:
@@ -346,13 +338,12 @@ class Game:
                 pygame.draw.rect(self.gameDisplay, CYAN, (150, 670, 40, -40), 1)
                 pygame.draw.rect(self.gameDisplay, CYAN, (150, 670, 40, -40 * self.player.cooldown["E"] / self.spell_dict["projectile"]["cooldown"]), 1)
 
-            # Sprite
-            for sprite in self.all_sprites:
-                self.gameDisplay.blit(sprite.image, sprite)
 
-            # Status
-            for sprite in self.characters:
-                self.draw_text(sprite.health, self.status_font, sprite.status_color, sprite.pos + sprite.hp_offset, "center")
+        # Sprites -------------------- #
+        for button in self.buttons:
+            button.draw()
+        for sprite in self.all_sprites:
+            sprite.draw()
 
         # Pause ---------------------- #
         if self.paused:
@@ -388,11 +379,14 @@ class Game:
                     Button(self, self.button_dict, "options_fullscreen", self.buttons, "Off/On")
                     Button(self, self.button_dict, "options_reset", self.buttons, "Reset to Default")
                     Button(self, self.button_dict, "options_confirm", self.buttons, "Confirm", action=self.update_stage, variable=self.previous_status)
+                elif self.game_status == "character_customization":
+                    pass
                 elif self.game_status == "battle":
-                    for enemy in self.enemy_sprites:
-                        enemy.kill()
+                    for enemy in self.characters:
+                        if enemy.object != "player":
+                            enemy.kill()
                     for enemy in self.stage["enemy"]:
-                        self.enemy = Enemy(self, self.character_dict, enemy, self.enemy_sprites)
+                        self.enemy = Enemy(self, self.character_dict, enemy, self.characters)
 
     def update_background(self, background):
         if background is not None:
