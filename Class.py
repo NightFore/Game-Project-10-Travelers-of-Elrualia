@@ -107,15 +107,13 @@ class Player(pygame.sprite.Sprite):
 
     def update_move(self):
         if len(self.range) > 0:
-            if 0 <= self.grid_pos[0] + self.range[0][0] < self.grid_size[0] and 0 <= self.grid_pos[1] + self.range[0][1] < self.grid_size[1]:
-                update_move(self)
-            else:
-                del self.range[0]
+            update_move(self)
 
     def buffer_move(self, dx=0, dy=0):
         if len(self.range) < 2 and self.energy - 1 >= 0:
-            self.energy = max(self.energy - self.move_cost, 0)
-            self.range.append([dx, dy])
+            if 0 <= self.grid_pos[0] + dx < self.grid_size[0] and 0 <= self.grid_pos[1] + dy < self.grid_size[1]:
+                self.energy = max(self.energy - self.move_cost, 0)
+                self.range.append([dx, dy])
 
     def get_keys(self):
         keys = pygame.key.get_pressed()

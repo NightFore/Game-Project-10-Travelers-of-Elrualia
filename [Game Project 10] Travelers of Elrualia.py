@@ -21,11 +21,11 @@ class Game:
         pygame.mixer.init()
         pygame.init()
         pygame.key.set_repeat(50, 150)
+        pygame.mixer.music.set_volume(default_volume/100)
         self.gameDisplay = ScaledGame(project_title, screen_size, FPS)
         self.dt = self.gameDisplay.clock.tick(FPS) / 1000
         self.load_data()
         self.new()
-        pygame.mixer.music.set_volume(default_volume/100)
         self.update_stage()
 
     def update_sprite(self, sprite, move=False, keys=False):
@@ -87,7 +87,7 @@ class Game:
             image_rect.center = (x, y)
         self.gameDisplay.blit(image, image_rect)
 
-    def draw_shape(self, dict, object, text=None):
+    def draw_shape(self, dict, object, text=None, dx=0, dy=0, dw=0, dh=0):
         # Settings ------------------- #
         object_dict = dict[object]
         settings_dict = dict[object_dict["type"]]
@@ -101,8 +101,10 @@ class Game:
         font_color = settings_dict["font_color"]
 
         # Surface -------------------- #
+        rect = [int(rect[0]+dx), int(rect[1]+dy), int(rect[2]+dw), int(rect[3]+dh)]
         surface = pygame.Surface((rect[2], rect[3]))
-        surface.fill(border_color)
+        if border_color is not None:
+            surface.fill(border_color)
         shape(surface, color, (border_size, border_size, rect[2] - border_size*2, rect[3] - border_size*2))
         surface_rect = surface.get_rect()
         if align == "nw":
@@ -124,7 +126,7 @@ class Game:
         if align == "center":
             surface_rect.center = (rect[0], rect[1])
         self.gameDisplay.blit(surface, surface_rect)
-        if text is not None:
+        if text is not None and font is not None:
             self.draw_text(text, font, font_color, (rect[0], rect[1]), align)
 
     def load_data(self):
@@ -288,7 +290,15 @@ class Game:
             "type_2": {
                 "shape": pygame.draw.rect, "align": "center",
                 "color": SKYBLUE, "border_color": BLACK, "border_size": 5,
-                "font": self.font_liberation, "font_color": WHITE},
+                "font": None, "font_color": None},
+            "type_3": {
+                "shape": pygame.draw.rect, "align": "center",
+                "color": SKYBLUE, "border_color": None, "border_size": 0,
+                "font": None, "font_color": None},
+            "type_4": {
+                "shape": pygame.draw.rect, "align": "nw",
+                "color": LIGHTGREY, "border_color": None, "border_size": 0,
+                "font": self.ui_font, "font_color": self.ui_color},
 
             # Options -------------------------- #
             "options_volume_1": {
@@ -331,6 +341,16 @@ class Game:
                 "rect": [685, 580, 280, 50], "type": "type_1"},
             "character_status_points_2": {
                 "rect": [1095, 580, 280, 50], "type": "type_1"},
+
+            # Battle ----------------- #
+            "battle_cursor": {
+                "rect": [220, 360, 104, 54], "type": "type_3"},
+            "battle_spell": {
+                "rect": [50, 670, 40, 0], "type": "type_4"},
+            "battle_mana": {
+                "rect": [270, 630, 0, 40], "type": "type_4"},
+            "battle_energy": {
+                "rect": [420, 630, 0, 40], "type": "type_4"},
         }
 
 
@@ -398,6 +418,9 @@ class Game:
         self.gameDisplay.fill(self.background_color)
         if self.background_image is not None:
             self.gameDisplay.blit(self.background_image, (0, 0))
+        if self.interface_image is not None and self.game_status == "battle":
+            self.gameDisplay.blit(self.interface_image, (0, 0))
+
 
         # Interface ------------------ #
         if self.game_status == "options_menu":
@@ -425,21 +448,21 @@ class Game:
             self.draw_shape(self.shape_dict, "character_status_points_2", "Status Points")
 
         elif self.game_status == "battle":
-            self.gameDisplay.blit(self.interface_image, (0, 0))
             for sprite in self.characters:
                 pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]))
-            pygame.draw.rect(self.gameDisplay, self.game_dict["color"]["cursor"], (int(self.player.debug_pos[0] + (self.player.grid_pos[0]+4) * self.player.grid_dt[0]), int(self.player.debug_pos[1] + self.player.grid_pos[1] * self.player.grid_dt[1]), self.player.debug_dt[0], self.player.debug_dt[1]))
+            self.draw_shape(self.shape_dict, "battle_cursor", dx=(4+self.player.grid_pos[0]) * self.player.grid_dt[0], dy=self.player.grid_pos[1] * self.player.grid_dt[1])
 
             # Player --------------------------- #
             for index, cooldown in enumerate(self.player.cooldown):
-                pygame.draw.rect(self.gameDisplay, LIGHTGREY, (50+50*index, 670, 40, int(-40 * self.player.cooldown[cooldown] / self.player.spell_cooldown[cooldown])))
+                d_pos = 40*self.player.cooldown[cooldown]/self.player.spell_cooldown[cooldown]
+                self.draw_shape(self.shape_dict, "battle_spell", dx=50*index, dy=-d_pos, dh=d_pos)
                 self.draw_text(cooldown, self.ui_font, BLUE, (70+50*index, 650), "center")
 
-            pygame.draw.rect(self.gameDisplay, LIGHTGREY, (270, 630, int(100 * self.player.mana / self.player.max_mana), 40))
+            self.draw_shape(self.shape_dict, "battle_mana", dw=int(100 * self.player.mana / self.player.max_mana))
             self.draw_text(int(self.player.mana), self.ui_font, self.ui_color, self.player.mana_pos, "center")
             self.draw_text("Mana", self.ui_font, self.ui_color, (280, 635), "nw")
 
-            pygame.draw.rect(self.gameDisplay, LIGHTGREY, (420, 630, int(100 * self.player.energy / self.player.max_energy), 40))
+            self.draw_shape(self.shape_dict, "battle_energy", dw=int(100 * self.player.energy / self.player.max_energy))
             self.draw_text(int(self.player.energy), self.ui_font, self.ui_color, self.player.energy_pos, "center")
             self.draw_text("Energy", self.ui_font, self.ui_color, (420, 635), "nw")
 

@@ -41,8 +41,8 @@ GAME_DICT = {"background_color": LIGHTBLUE, "background_image": "rizaldarmawansy
              "status_font": None, "status_size": 25, "status_color": WHITE,
              "mana_pos": [250, 650], "energy_pos": [400, 650],
              "grid_size": [4, 4], "grid_dt": [120, 70],
-             "pos": {"player": [220, 360], "enemy": [700, 360],},
-             "color": {"cursor": [120, 160, 240], "debug": CYAN, "health": GREEN, "mana": LIGHTSKYBLUE, "spell": [RED, BLUE, GREEN]},
+             "pos": {"player": [220, 360], "enemy": [700, 360]},
+             "color": {"debug": CYAN, "health": GREEN, "mana": LIGHTSKYBLUE, "spell": [RED, BLUE, GREEN]},
              "font": None}
 
 
