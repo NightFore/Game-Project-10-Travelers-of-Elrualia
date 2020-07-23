@@ -135,15 +135,13 @@ class Game:
 
         # Font
         self.font = pygame.font.Font(None, 100)
+        self.font_liberation = pygame.font.Font(path.join(self.font_folder, "LiberationSerif-Regular.ttf"), 40)
         self.main_menu_font = pygame.font.Font(self.game_dict["main_menu_font"], self.game_dict["main_menu_size"])
         self.ui_font = pygame.font.Font(self.game_dict["ui_font"], self.game_dict["ui_size"])
         self.status_font = pygame.font.Font(self.game_dict["status_font"], self.game_dict["status_size"])
 
         # Color
         self.main_menu_color = self.game_dict["main_menu_color"]
-        self.button_color = self.game_dict["button_color"]
-        self.button_border_color = self.game_dict["button_border_color"]
-        self.button_border_size = self.game_dict["button_border_size"]
         self.ui_color = self.game_dict["ui_color"]
         self.status_color = self.game_dict["status_color"]
 
@@ -187,13 +185,6 @@ class Game:
 
         self.paused = False
 
-        # Colors --------------------- #
-        self.button_inactive = 140, 205, 245
-        self.button_active = 15, 160, 240
-
-        # Font ---------------------- #
-        self.button_font = pygame.font.Font(path.join(self.font_folder, self.game_dict["button_font"]), self.game_dict["button_size"])
-
         # Dictionaries --------------- #
         self.stage_dict = {
             "main_menu": {
@@ -226,88 +217,55 @@ class Game:
         }
 
         self.button_dict = {
-            "new_game": {
-                "pos": [640, 300], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
+            "type_1": {
+                "center": True,
+                "font": self.font_liberation, "font_color": WHITE,
+                "inactive_color": LIGHTSKYBLUE, "active_color": DARKSKYBLUE, "border_color": BLACK, "border_size": 5,
                 "sound_active": None, "sound_action": None},
-            "load_game": {
-                "pos": [640, 375], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
-            "options": {
-                "pos": [640, 450], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
-            "exit": {
-                "pos": [640, 525], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
-            "return": {
-                "pos": [1190, 690], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+
+            # Main Menu -------------- #
+            "main_menu_new_game": {
+                "rect": [640, 300, 280, 50], "type": "type_1", "text": "New Game"},
+            "main_menu_load_game": {
+                "rect": [640, 375, 280, 50], "type": "type_1", "text": "Load Game"},
+            "main_menu_options": {
+                "rect": [640, 450, 280, 50], "type": "type_1", "text": "Options"},
+            "main_menu_exit": {
+                "rect": [640, 525, 280, 50], "type": "type_1", "text": "Exit"},
+
+            # Options ---------------- #
             "options_volume_down": {
-                "pos": [487, 255], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [487, 255, 75, 50], "type": "type_1", "text": "-5"},
             "options_volume_up": {
-                "pos": [692, 255], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [692, 255, 75, 50], "type": "type_1", "text": "+5"},
             "options_fullscreen": {
-                "pos": [590, 325], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [590, 325, 280, 50], "type": "type_1", "text": "Off/On"},
             "options_reset": {
-                "pos": [180, 660], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [180, 660, 280, 50], "type": "type_1", "text": "Reset to Default"},
             "options_confirm": {
-                "pos": [590, 660], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [590, 660, 280, 50], "type": "type_1", "text": "Confirm"},
 
             # Character Customization ---------- #
             "character_difficulty_left": {
-                "pos": [82, 655], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [82, 655, 75, 50], "type": "type_1", "text": "◄"},
             "character_difficulty_right": {
-                "pos": [427, 655], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [427, 655, 75, 50], "type": "type_1", "text": "►"},
             "character_health_down": {
-                "pos": [992, 385], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [992, 385, 75, 50], "type": "type_1", "text": "-5"},
             "character_health_up": {
-                "pos": [1197, 385], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [1197, 385, 75, 50], "type": "type_1", "text": "+5"},
             "character_mana_down": {
-                "pos": [992, 450], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [992, 450, 75, 50], "type": "type_1", "text": "-1"},
             "character_mana_up": {
-                "pos": [1197, 450], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [1197, 450, 75, 50], "type": "type_1", "text": "+1"},
             "character_energy_down": {
-                "pos": [992, 515], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [992, 515, 75, 50], "type": "type_1", "text": "-50"},
             "character_energy_up": {
-                "pos": [1197, 515], "width": 75, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [1197, 515, 75, 50], "type": "type_1", "text": "+50"},
             "character_reset": {
-                "pos": [685, 660], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [685, 660, 280, 50], "type": "type_1", "text": "Reset to Default"},
             "character_confirm": {
-                "pos": [1095, 660], "width": 280, "height": 50, "border_size": self.button_border_size, "border_color": self.button_border_color, "center": True,
-                "inactive": self.button_inactive, "active": self.button_active, "font": self.button_font, "color": self.button_color,
-                "sound_active": None, "sound_action": None},
+                "rect": [1095, 660, 280, 50], "type": "type_1", "text": "Confirm"},
         }
 
         # Debug ---------------------- #
@@ -484,27 +442,27 @@ class Game:
                     button.kill()
 
                 if self.game_status == "main_menu":
-                    Button(self, self.button_dict, "new_game", self.buttons, "New Game", action=self.update_stage, variable="character_customization")
-                    Button(self, self.button_dict, "load_game", self.buttons, "Load Game")
-                    Button(self, self.button_dict, "options", self.buttons, "Options", action=self.update_stage, variable="options_menu")
-                    Button(self, self.button_dict, "exit", self.buttons, "Exit", action=self.quit_game)
+                    Button(self, self.button_dict, "main_menu_new_game", self.buttons, action=self.update_stage, variable="character_customization")
+                    Button(self, self.button_dict, "main_menu_load_game", self.buttons)
+                    Button(self, self.button_dict, "main_menu_options", self.buttons, action=self.update_stage, variable="options_menu")
+                    Button(self, self.button_dict, "main_menu_exit", self.buttons, action=self.quit_game)
                 elif self.game_status == "options_menu":
-                    Button(self, self.button_dict, "options_volume_down", self.buttons, "-5", action=self.update_volume, variable=-5)
-                    Button(self, self.button_dict, "options_volume_up", self.buttons, "+5", action=self.update_volume, variable=+5)
-                    Button(self, self.button_dict, "options_fullscreen", self.buttons, "Off/On")
-                    Button(self, self.button_dict, "options_reset", self.buttons, "Reset to Default")
-                    Button(self, self.button_dict, "options_confirm", self.buttons, "Confirm", action=self.update_stage, variable=self.previous_status)
+                    Button(self, self.button_dict, "options_volume_down", self.buttons, action=self.update_volume, variable=-5)
+                    Button(self, self.button_dict, "options_volume_up", self.buttons, action=self.update_volume, variable=+5)
+                    Button(self, self.button_dict, "options_fullscreen", self.buttons)
+                    Button(self, self.button_dict, "options_reset", self.buttons)
+                    Button(self, self.button_dict, "options_confirm", self.buttons, action=self.update_stage, variable=self.previous_status)
                 elif self.game_status == "character_customization":
-                    Button(self, self.button_dict, "character_difficulty_left", self.buttons, "◄", action=self.update_volume, variable=-1)
-                    Button(self, self.button_dict, "character_difficulty_right", self.buttons, "►", action=self.update_volume, variable=+1)
-                    Button(self, self.button_dict, "character_health_down", self.buttons, "-5", action=self.update_volume, variable=-5)
-                    Button(self, self.button_dict, "character_health_up", self.buttons, "+5", action=self.update_volume, variable=+5)
-                    Button(self, self.button_dict, "character_mana_down", self.buttons, "-1", action=self.update_volume, variable=-1)
-                    Button(self, self.button_dict, "character_mana_up", self.buttons, "+1", action=self.update_volume, variable=+1)
-                    Button(self, self.button_dict, "character_energy_down", self.buttons, "-50", action=self.update_volume, variable=-50)
-                    Button(self, self.button_dict, "character_energy_up", self.buttons, "+50", action=self.update_volume, variable=+50)
-                    Button(self, self.button_dict, "character_reset", self.buttons, "Reset to Default")
-                    Button(self, self.button_dict, "character_confirm", self.buttons, "Confirm", action=self.update_stage, variable="battle_1")
+                    Button(self, self.button_dict, "character_difficulty_left", self.buttons, action=self.update_volume, variable=-1)
+                    Button(self, self.button_dict, "character_difficulty_right", self.buttons, action=self.update_volume, variable=+1)
+                    Button(self, self.button_dict, "character_health_down", self.buttons, action=self.update_volume, variable=-5)
+                    Button(self, self.button_dict, "character_health_up", self.buttons, action=self.update_volume, variable=+5)
+                    Button(self, self.button_dict, "character_mana_down", self.buttons, action=self.update_volume, variable=-1)
+                    Button(self, self.button_dict, "character_mana_up", self.buttons, action=self.update_volume, variable=+1)
+                    Button(self, self.button_dict, "character_energy_down", self.buttons, action=self.update_volume, variable=-50)
+                    Button(self, self.button_dict, "character_energy_up", self.buttons, action=self.update_volume, variable=+50)
+                    Button(self, self.button_dict, "character_reset", self.buttons)
+                    Button(self, self.button_dict, "character_confirm", self.buttons, action=self.update_stage, variable="battle_1")
                 elif self.game_status == "battle":
                     for enemy in self.characters:
                         if enemy.object != "player":
