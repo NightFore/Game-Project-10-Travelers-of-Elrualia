@@ -87,10 +87,23 @@ class Game:
             image_rect.center = (x, y)
         self.gameDisplay.blit(image, image_rect)
 
-    def draw_shape(self, shape, rect, color, border_color, border=0, align="center"):
+    def draw_shape(self, dict, object, text=None):
+        # Settings ------------------- #
+        object_dict = dict[object]
+        settings_dict = dict[object_dict["type"]]
+        rect = object_dict["rect"]
+        shape = settings_dict["shape"]
+        align = settings_dict["align"]
+        color = settings_dict["color"]
+        border_color = settings_dict["border_color"]
+        border_size = settings_dict["border_size"]
+        font = settings_dict["font"]
+        font_color = settings_dict["font_color"]
+
+        # Surface -------------------- #
         surface = pygame.Surface((rect[2], rect[3]))
         surface.fill(border_color)
-        shape(surface, color, (border, border, rect[2]-border*2, rect[3]-border*2))
+        shape(surface, color, (border_size, border_size, rect[2] - border_size*2, rect[3] - border_size*2))
         surface_rect = surface.get_rect()
         if align == "nw":
             surface_rect.topleft = (rect[0], rect[1])
@@ -111,6 +124,8 @@ class Game:
         if align == "center":
             surface_rect.center = (rect[0], rect[1])
         self.gameDisplay.blit(surface, surface_rect)
+        if text is not None:
+            self.draw_text(text, font, font_color, (rect[0], rect[1]), align)
 
     def load_data(self):
         # Directories
@@ -145,9 +160,6 @@ class Game:
         self.ui_color = self.game_dict["ui_color"]
         self.status_color = self.game_dict["status_color"]
 
-        self.interface_color = self.game_dict["interface_color"]
-        self.interface_border_color = self.game_dict["interface_border_color"]
-        self.interface_border_size = self.game_dict["interface_border_size"]
 
         # Pause Screen
         self.dim_screen = pygame.Surface(self.gameDisplay.get_size()).convert_alpha()
@@ -268,6 +280,61 @@ class Game:
                 "rect": [1095, 660, 280, 50], "type": "type_1", "text": "Confirm"},
         }
 
+        self.shape_dict = {
+            "type_1": {
+                "shape": pygame.draw.rect, "align": "center",
+                "color": LIGHTSKYBLUE, "border_color": BLACK, "border_size": 5,
+                "font": self.font_liberation, "font_color": WHITE},
+            "type_2": {
+                "shape": pygame.draw.rect, "align": "center",
+                "color": SKYBLUE, "border_color": BLACK, "border_size": 5,
+                "font": self.font_liberation, "font_color": WHITE},
+
+            # Options -------------------------- #
+            "options_volume_1": {
+                "rect": [180, 255, 280, 50], "type": "type_1"},
+            "options_volume_2": {
+                "rect": [590, 255, 130, 50], "type": "type_1"},
+            "options_fullscreen": {
+                "rect": [180, 325, 280, 50], "type": "type_1"},
+
+            # Character Customization ---------- #
+            "character_interface_1": {
+                "rect": [255, 455, 480, 500], "type": "type_2"},
+            "character_interface_2": {
+                "rect": [890, 455, 750, 500], "type": "type_2"},
+            "character_player": {
+                "rect": [255, 255, 280, 50], "type": "type_1"},
+            "character_difficulty": {
+                "rect": [255, 655, 280, 50], "type": "type_1"},
+            "character_level_1": {
+                "rect": [685, 255, 280, 50], "type": "type_1"},
+            "character_level_2": {
+                "rect": [1095, 255, 280, 50], "type": "type_1"},
+            "character_experience_1": {
+                "rect": [685, 320, 280, 50], "type": "type_1"},
+            "character_experience_2": {
+                "rect": [1095, 320, 280, 50], "type": "type_1"},
+            "character_health_1": {
+                "rect": [685, 385, 280, 50], "type": "type_1"},
+            "character_health_2": {
+                "rect": [1095, 385, 280, 50], "type": "type_1"},
+            "character_mana_1": {
+                "rect": [685, 450, 280, 50], "type": "type_1"},
+            "character_mana_2": {
+                "rect": [1095, 450, 280, 50], "type": "type_1"},
+            "character_energy_1": {
+                "rect": [685, 515, 280, 50], "type": "type_1"},
+            "character_energy_2": {
+                "rect": [1095, 515, 280, 50], "type": "type_1"},
+            "character_status_points_1": {
+                "rect": [685, 580, 280, 50], "type": "type_1"},
+            "character_status_points_2": {
+                "rect": [1095, 580, 280, 50], "type": "type_1"},
+        }
+
+
+
         # Debug ---------------------- #
         self.debug_mode = True
         self.debug_stage = []
@@ -335,48 +402,27 @@ class Game:
         # Interface ------------------ #
         if self.game_status == "options_menu":
             # Volume --------------------------- #
-            self.draw_shape(pygame.draw.rect, [180, 255, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Volume", self.button_font, self.button_color, (180, 255), "center")
-            self.draw_shape(pygame.draw.rect, [590, 255, 130, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text(str(self.volume) + str("%"), self.button_font, self.button_color, (590, 255), "center")
-
-            # Fullscreen ----------------------- #
-            self.draw_shape(pygame.draw.rect, [180, 325, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Fullscreen", self.button_font, self.button_color, (180, 325), "center")
+            self.draw_shape(self.shape_dict, "options_volume_1", "Volume")
+            self.draw_shape(self.shape_dict, "options_volume_2", str(self.volume) + str("%"))
+            self.draw_shape(self.shape_dict, "options_fullscreen", "Fullscreen")
 
         elif self.game_status == "character_customization":
-            self.draw_shape(pygame.draw.rect, [255, 455, 480, 500], self.interface_color, self.interface_border_color, self.interface_border_size)
-            self.draw_shape(pygame.draw.rect, [890, 455, 750, 500], self.interface_color, self.interface_border_color, self.interface_border_size)
-
-            self.draw_shape(pygame.draw.rect, [255, 255, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Player", self.button_font, self.button_color, (255, 255), "center")
-            self.draw_shape(pygame.draw.rect, [255, 655, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Difficulty", self.button_font, self.button_color, (255, 655), "center")
-
-            self.draw_shape(pygame.draw.rect, [685, 255, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Level", self.button_font, self.button_color, (685, 255), "center")
-            self.draw_shape(pygame.draw.rect, [1095, 255, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Level", self.button_font, self.button_color, (1095, 255), "center")
-            self.draw_shape(pygame.draw.rect, [685, 320, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Experience", self.button_font, self.button_color, (685, 320), "center")
-            self.draw_shape(pygame.draw.rect, [1095, 320, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Experience", self.button_font, self.button_color, (1095, 320), "center")
-            self.draw_shape(pygame.draw.rect, [685, 385, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Heatlh", self.button_font, self.button_color, (685, 385), "center")
-            self.draw_shape(pygame.draw.rect, [1095, 385, 130, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Heatlh", self.button_font, self.button_color, (1095, 385), "center")
-            self.draw_shape(pygame.draw.rect, [685, 450, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Mana", self.button_font, self.button_color, (685, 450), "center")
-            self.draw_shape(pygame.draw.rect, [1095, 450, 130, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Mana", self.button_font, self.button_color, (1095, 450), "center")
-            self.draw_shape(pygame.draw.rect, [685, 515, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Energy", self.button_font, self.button_color, (685, 515), "center")
-            self.draw_shape(pygame.draw.rect, [1095, 515, 130, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Energy", self.button_font, self.button_color, (1095, 515), "center")
-            self.draw_shape(pygame.draw.rect, [685, 580, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Status Points", self.button_font, self.button_color, (685, 580), "center")
-            self.draw_shape(pygame.draw.rect, [1095, 580, 280, 50], self.button_inactive, self.button_border_color, self.button_border_size)
-            self.draw_text("Status Points", self.button_font, self.button_color, (1095, 580), "center")
+            self.draw_shape(self.shape_dict, "character_interface_1")
+            self.draw_shape(self.shape_dict, "character_interface_2")
+            self.draw_shape(self.shape_dict, "character_player", "Player")
+            self.draw_shape(self.shape_dict, "character_difficulty", "Difficulty")
+            self.draw_shape(self.shape_dict, "character_level_1", "Level")
+            self.draw_shape(self.shape_dict, "character_level_2", "Level")
+            self.draw_shape(self.shape_dict, "character_experience_1", "Experience")
+            self.draw_shape(self.shape_dict, "character_experience_2", "Experience")
+            self.draw_shape(self.shape_dict, "character_health_1", "Heatlh")
+            self.draw_shape(self.shape_dict, "character_health_2", "Heatlh")
+            self.draw_shape(self.shape_dict, "character_mana_1", "Mana")
+            self.draw_shape(self.shape_dict, "character_mana_2", "Mana")
+            self.draw_shape(self.shape_dict, "character_energy_1", "Energy")
+            self.draw_shape(self.shape_dict, "character_energy_2", "Energy")
+            self.draw_shape(self.shape_dict, "character_status_points_1", "Status Points")
+            self.draw_shape(self.shape_dict, "character_status_points_2", "Status Points")
 
         elif self.game_status == "battle":
             self.gameDisplay.blit(self.interface_image, (0, 0))
