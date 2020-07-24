@@ -124,15 +124,15 @@ def init_character(sprite):
     # Status
     sprite.name = sprite.object_dict["name"]
     sprite.level = sprite.object_dict["level"]
-    sprite.max_health = sprite.object_dict["max_health"]
+    sprite.health_max = sprite.object_dict["health_max"]
     sprite.health_regen = sprite.object_dict["health_regen"]
-    sprite.health = sprite.max_health
-    sprite.max_mana = sprite.object_dict["max_mana"]
+    sprite.health = sprite.health_max
+    sprite.mana_max = sprite.object_dict["mana_max"]
     sprite.mana_regen = sprite.object_dict["mana_regen"]
-    sprite.mana = sprite.max_mana
-    sprite.max_energy = sprite.object_dict["max_energy"]
+    sprite.mana = sprite.mana_max
+    sprite.energy_max = sprite.object_dict["energy_max"]
     sprite.energy_regen = sprite.object_dict["energy_regen"]
-    sprite.energy = sprite.max_energy
+    sprite.energy = sprite.energy_max
     sprite.move_cost = sprite.object_dict["move_cost"]
 
 def init_interface(sprite):

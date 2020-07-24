@@ -102,8 +102,35 @@ class Player(pygame.sprite.Sprite):
         self.last_attack = pygame.time.get_ticks()
         self.attack_rate = self.object_dict["attack_rate"]
 
-        self.mana_pos = self.game_dict["mana_pos"]
-        self.energy_pos = self.game_dict["energy_pos"]
+        # Status --------------------- #
+        self.experience = 0
+        self.experience_max = 100
+        self.status_points = 5
+        self.status_points_max = 5
+
+    def custom(self, value):
+        type, ds = value[0], value[1]
+        if 0 <= self.status_points - ds <= self.status_points_max:
+            if type == "health":
+                self.health += 5 * ds
+            elif type == "mana":
+                self.mana += 1 * ds
+            elif type == "energy":
+                self.energy += 50 * ds
+            self.status_points -= ds
+
+    def custom_reset(self):
+        self.health = self.health_max
+        self.mana = self.mana_max
+        self.energy = self.energy_max
+        self.status_points = self.status_points_max
+
+    def custom_confirm(self):
+        self.health_max = self.health
+        self.mana_max = self.mana
+        self.energy_max = self.energy
+        self.status_points_max = self.status_points
+        self.game.update_stage("battle_1")
 
     def update_move(self):
         if len(self.range) > 0:
@@ -125,8 +152,8 @@ class Player(pygame.sprite.Sprite):
             init_spell(Spell, "E", self.game, self.game.spell_dict, "projectile", self.game.spells, self)
 
     def update_status(self):
-        self.mana = min(self.max_mana, self.mana + self.mana_regen * self.dt)
-        self.energy = min(self.max_energy, self.energy + self.energy_regen * self.dt)
+        self.mana = min(self.mana_max, self.mana + self.mana_regen * self.dt)
+        self.energy = min(self.energy_max, self.energy + self.energy_regen * self.dt)
 
         for index in self.cooldown:
             self.cooldown[index] = max(self.cooldown[index] - self.dt, 0)
@@ -183,7 +210,7 @@ class Button(pygame.sprite.Sprite):
     def __init__(self, game, dict, object=None, group=None, action=None, variable=None):
         # Initialization ------------- #
         self.game = game
-        self.groups = group
+        self.groups = self.game.all_sprites, group
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.object = object
         self.variable = variable

@@ -303,11 +303,11 @@ class Game:
             "character_level_1": {
                 "rect": [685, 255, 280, 50], "type": "type_1"},
             "character_level_2": {
-                "rect": [1095, 255, 280, 50], "type": "type_1"},
+                "rect": [1095, 255, 130, 50], "type": "type_1"},
             "character_experience_1": {
                 "rect": [685, 320, 280, 50], "type": "type_1"},
             "character_experience_2": {
-                "rect": [1095, 320, 280, 50], "type": "type_1"},
+                "rect": [1095, 320, 130, 50], "type": "type_1"},
             "character_health_1": {
                 "rect": [685, 385, 280, 50], "type": "type_1"},
             "character_health_2": {
@@ -323,7 +323,7 @@ class Game:
             "character_status_points_1": {
                 "rect": [685, 580, 280, 50], "type": "type_1"},
             "character_status_points_2": {
-                "rect": [1095, 580, 280, 50], "type": "type_1"},
+                "rect": [1095, 580, 130, 50], "type": "type_1"},
 
             # Battle ----------------- #
             "battle_cursor": {
@@ -403,7 +403,6 @@ class Game:
                         self.player.buffer_move(dy=+1)
 
     def update(self):
-        self.buttons.update()
         self.all_sprites.update()
 
     def draw(self):
@@ -426,19 +425,19 @@ class Game:
             self.draw_shape(self.shape_dict, "character_interface_1")
             self.draw_shape(self.shape_dict, "character_interface_2")
             self.draw_shape(self.shape_dict, "character_player", "Player")
-            self.draw_shape(self.shape_dict, "character_difficulty", "Difficulty")
+            self.draw_shape(self.shape_dict, "character_difficulty", self.difficulty)
             self.draw_shape(self.shape_dict, "character_level_1", "Level")
-            self.draw_shape(self.shape_dict, "character_level_2", "Level")
+            self.draw_shape(self.shape_dict, "character_level_2", self.player.level)
             self.draw_shape(self.shape_dict, "character_experience_1", "Experience")
-            self.draw_shape(self.shape_dict, "character_experience_2", "Experience")
-            self.draw_shape(self.shape_dict, "character_health_1", "Heatlh")
-            self.draw_shape(self.shape_dict, "character_health_2", "Heatlh")
+            self.draw_shape(self.shape_dict, "character_experience_2", self.player.experience)
+            self.draw_shape(self.shape_dict, "character_health_1", "Health")
+            self.draw_shape(self.shape_dict, "character_health_2", self.player.health)
             self.draw_shape(self.shape_dict, "character_mana_1", "Mana")
-            self.draw_shape(self.shape_dict, "character_mana_2", "Mana")
+            self.draw_shape(self.shape_dict, "character_mana_2", self.player.mana)
             self.draw_shape(self.shape_dict, "character_energy_1", "Energy")
-            self.draw_shape(self.shape_dict, "character_energy_2", "Energy")
+            self.draw_shape(self.shape_dict, "character_energy_2", self.player.energy)
             self.draw_shape(self.shape_dict, "character_status_points_1", "Status Points")
-            self.draw_shape(self.shape_dict, "character_status_points_2", "Status Points")
+            self.draw_shape(self.shape_dict, "character_status_points_2", "%i/%i" % (self.player.status_points, self.player.status_points_max))
 
         elif self.game_status == "battle":
             # Player --------------------------- #
@@ -450,13 +449,13 @@ class Game:
                 self.draw_text(spell, self.font_liberation, WHITE, (75+55*index, 660), align="center")
 
             # Interface ------------------------ #
-            self.draw_shape(self.shape_dict, "battle_mana_1", "%i/%i" % (self.player.mana, self.player.max_mana))
+            self.draw_shape(self.shape_dict, "battle_mana_1", "%i/%i" % (self.player.mana, self.player.mana_max))
             self.draw_shape(self.shape_dict, "battle_mana_2")
-            self.draw_shape(self.shape_dict, "battle_mana_3", dw=int(276 * self.player.mana / self.player.max_mana))
+            self.draw_shape(self.shape_dict, "battle_mana_3", dw=int(276 * self.player.mana / self.player.mana_max))
             self.draw_text("Mana", self.font_liberation, WHITE, (480, 659), align="center")
             self.draw_shape(self.shape_dict, "battle_energy_1", int(self.player.energy))
             self.draw_shape(self.shape_dict, "battle_energy_2")
-            self.draw_shape(self.shape_dict, "battle_energy_3", dw=int(276 * self.player.energy / self.player.max_energy))
+            self.draw_shape(self.shape_dict, "battle_energy_3", dw=int(276 * self.player.energy / self.player.energy_max))
             self.draw_text("Energy", self.font_liberation, WHITE, (890, 659), align="center")
             for sprite in self.characters:
                 pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]))
@@ -471,8 +470,6 @@ class Game:
 
 
         # Sprites -------------------- #
-        for button in self.buttons:
-            button.draw()
         for sprite in self.all_sprites:
             sprite.draw()
 
@@ -513,14 +510,14 @@ class Game:
                 elif self.game_status == "character_customization":
                     Button(self, self.button_dict, "character_difficulty_left", self.buttons, action=self.update_volume, variable=-1)
                     Button(self, self.button_dict, "character_difficulty_right", self.buttons, action=self.update_volume, variable=+1)
-                    Button(self, self.button_dict, "character_health_down", self.buttons, action=self.update_volume, variable=-5)
-                    Button(self, self.button_dict, "character_health_up", self.buttons, action=self.update_volume, variable=+5)
-                    Button(self, self.button_dict, "character_mana_down", self.buttons, action=self.update_volume, variable=-1)
-                    Button(self, self.button_dict, "character_mana_up", self.buttons, action=self.update_volume, variable=+1)
-                    Button(self, self.button_dict, "character_energy_down", self.buttons, action=self.update_volume, variable=-50)
-                    Button(self, self.button_dict, "character_energy_up", self.buttons, action=self.update_volume, variable=+50)
-                    Button(self, self.button_dict, "character_reset", self.buttons)
-                    Button(self, self.button_dict, "character_confirm", self.buttons, action=self.update_stage, variable="battle_1")
+                    Button(self, self.button_dict, "character_health_down", self.buttons, action=self.player.custom, variable=("health", -1))
+                    Button(self, self.button_dict, "character_health_up", self.buttons, action=self.player.custom, variable=("health", +1))
+                    Button(self, self.button_dict, "character_mana_down", self.buttons, action=self.player.custom, variable=("mana", -1))
+                    Button(self, self.button_dict, "character_mana_up", self.buttons, action=self.player.custom, variable=("mana", +1))
+                    Button(self, self.button_dict, "character_energy_down", self.buttons, action=self.player.custom, variable=("energy", -1))
+                    Button(self, self.button_dict, "character_energy_up", self.buttons, action=self.player.custom, variable=("energy", +1))
+                    Button(self, self.button_dict, "character_reset", self.buttons, action=self.player.custom_reset)
+                    Button(self, self.button_dict, "character_confirm", self.buttons, action=self.player.custom_confirm)
                 elif self.game_status == "battle":
                     for enemy in self.characters:
                         if enemy.object != "player":
