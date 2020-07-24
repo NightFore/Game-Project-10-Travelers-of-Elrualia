@@ -266,6 +266,18 @@ class Game:
                 "shape": pygame.draw.rect, "align": "nw",
                 "color": LIGHTGREY, "border_color": None, "border_size": 0,
                 "font": self.ui_font, "font_color": self.ui_color},
+            "type_5": {
+                "shape": pygame.draw.rect, "align": "center",
+                "color": DARKGREY, "border_color": LIGHTSKYGREY, "border_size": 2,
+                "font": self.font_liberation, "font_color": WHITE},
+            "type_6": {
+                "shape": pygame.draw.rect, "align": "nw",
+                "color": LIGHTCYAN, "border_color": None, "border_size": 0,
+                "font": None, "font_color": None},
+            "type_7": {
+                "shape": pygame.draw.rect, "align": "nw",
+                "color": LIGHTGREEN, "border_color": None, "border_size": 0,
+                "font": None, "font_color": None},
 
             # Options -------------------------- #
             "options_volume_1": {
@@ -314,10 +326,18 @@ class Game:
                 "rect": [220, 360, 104, 54], "type": "type_3"},
             "battle_spell": {
                 "rect": [50, 670, 40, 0], "type": "type_4"},
-            "battle_mana": {
-                "rect": [270, 630, 0, 40], "type": "type_4"},
-            "battle_energy": {
-                "rect": [420, 630, 0, 40], "type": "type_4"},
+            "battle_mana_1": {
+                "rect": [290, 660, 90, 40], "type": "type_5"},
+            "battle_mana_2": {
+                "rect": [475, 660, 280, 40], "type": "type_5"},
+            "battle_mana_3": {
+                "rect": [337, 642, 0, 36], "type": "type_6"},
+            "battle_energy_1": {
+                "rect": [700, 660, 90, 40], "type": "type_5"},
+            "battle_energy_2": {
+                "rect": [885, 660, 280, 40], "type": "type_5"},
+            "battle_energy_3": {
+                "rect": [747, 642, 0, 36], "type": "type_7"},
         }
 
 
@@ -346,7 +366,7 @@ class Game:
 
     def events(self):
         self.event = pygame.event.get()
-        self.click = [False, False, False]
+        self.click = [None, False, False, False, False, False]
         for event in self.event:
             self.mouse = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:
@@ -425,13 +445,14 @@ class Game:
                 self.draw_shape(self.shape_dict, "battle_spell", dx=50*index, dy=-d_pos, dh=d_pos)
                 self.draw_text(cooldown, self.ui_font, BLUE, (70+50*index, 650), "center")
 
-            self.draw_shape(self.shape_dict, "battle_mana", dw=int(100 * self.player.mana / self.player.max_mana))
-            self.draw_text(int(self.player.mana), self.ui_font, self.ui_color, self.player.mana_pos, "center")
-            self.draw_text("Mana", self.ui_font, self.ui_color, (280, 635), "nw")
-
-            self.draw_shape(self.shape_dict, "battle_energy", dw=int(100 * self.player.energy / self.player.max_energy))
-            self.draw_text(int(self.player.energy), self.ui_font, self.ui_color, self.player.energy_pos, "center")
-            self.draw_text("Energy", self.ui_font, self.ui_color, (420, 635), "nw")
+            self.draw_shape(self.shape_dict, "battle_mana_1", "%i/%i" % (self.player.mana, self.player.max_mana))
+            self.draw_shape(self.shape_dict, "battle_mana_2")
+            self.draw_shape(self.shape_dict, "battle_mana_3", dw=int(276 * self.player.mana / self.player.max_mana))
+            self.draw_text("Mana", self.font_liberation, WHITE, (475, 659), align="center")
+            self.draw_shape(self.shape_dict, "battle_energy_1", int(self.player.energy))
+            self.draw_shape(self.shape_dict, "battle_energy_2")
+            self.draw_shape(self.shape_dict, "battle_energy_3", dw=int(276 * self.player.energy / self.player.max_energy))
+            self.draw_text("Energy", self.font_liberation, WHITE, (885, 659), align="center")
 
             # Debug
             if self.debug_mode:
