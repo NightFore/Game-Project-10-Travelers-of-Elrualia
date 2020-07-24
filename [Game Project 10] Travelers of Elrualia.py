@@ -37,54 +37,39 @@ class Game:
         update_center(sprite)
         update_bobbing(sprite)
 
+    def align_rect(self, surface, x, y, align):
+        rect = surface.get_rect()
+        if align == "nw":
+            rect.topleft = (x, y)
+        if align == "ne":
+            rect.topright = (x, y)
+        if align == "sw":
+            rect.bottomleft = (x, y)
+        if align == "se":
+            rect.bottomright = (x, y)
+        if align == "n":
+            rect.midtop = (x, y)
+        if align == "s":
+            rect.midbottom = (x, y)
+        if align == "e":
+            rect.midright = (x, y)
+        if align == "w":
+            rect.midleft = (x, y)
+        if align == "center":
+            rect.center = (x, y)
+        return rect
+
     def draw_text(self, text, font, color, pos, align="nw"):
         if not isinstance(text, str):
             text = str(text)
-        x, y = int(pos[0]), int(pos[1])
         text_surface = font.render(text, True, color)
-        text_rect = text_surface.get_rect()
-        if align == "nw":
-            text_rect.topleft = (x, y)
-        if align == "ne":
-            text_rect.topright = (x, y)
-        if align == "sw":
-            text_rect.bottomleft = (x, y)
-        if align == "se":
-            text_rect.bottomright = (x, y)
-        if align == "n":
-            text_rect.midtop = (x, y)
-        if align == "s":
-            text_rect.midbottom = (x, y)
-        if align == "e":
-            text_rect.midright = (x, y)
-        if align == "w":
-            text_rect.midleft = (x, y)
-        if align == "center":
-            text_rect.center = (x, y)
+        text_rect = self.align_rect(text_surface, int(pos[0]), int(pos[1]), align)
         if self.debug_mode:
             pygame.draw.rect(self.gameDisplay, CYAN, text_rect, 1)
         self.gameDisplay.blit(text_surface, text_rect)
 
-    def draw_image(self, image, x, y, align="center"):
-        image_rect = image.get_rect()
-        if align == "nw":
-            image_rect.topleft = (x, y)
-        if align == "ne":
-            image_rect.topright = (x, y)
-        if align == "sw":
-            image_rect.bottomleft = (x, y)
-        if align == "se":
-            image_rect.bottomright = (x, y)
-        if align == "n":
-            image_rect.midtop = (x, y)
-        if align == "s":
-            image_rect.midbottom = (x, y)
-        if align == "e":
-            image_rect.midright = (x, y)
-        if align == "w":
-            image_rect.midleft = (x, y)
-        if align == "center":
-            image_rect.center = (x, y)
+    def draw_image(self, image, x, y, align="nw"):
+        image_rect = self.align_rect(image, x, y, align)
         self.gameDisplay.blit(image, image_rect)
 
     def draw_shape(self, dict, object, text=None, dx=0, dy=0, dw=0, dh=0):
@@ -103,28 +88,12 @@ class Game:
         # Surface -------------------- #
         rect = [int(rect[0]+dx), int(rect[1]+dy), int(rect[2]+dw), int(rect[3]+dh)]
         surface = pygame.Surface((rect[2], rect[3]))
+        surface_rect = self.align_rect(surface, rect[0], rect[1], align)
         if border_color is not None:
             surface.fill(border_color)
         shape(surface, color, (border_size, border_size, rect[2] - border_size*2, rect[3] - border_size*2))
-        surface_rect = surface.get_rect()
-        if align == "nw":
-            surface_rect.topleft = (rect[0], rect[1])
-        if align == "ne":
-            surface_rect.topright = (rect[0], rect[1])
-        if align == "sw":
-            surface_rect.bottomleft = (rect[0], rect[1])
-        if align == "se":
-            surface_rect.bottomright = (rect[0], rect[1])
-        if align == "n":
-            surface_rect.midtop = (rect[0], rect[1])
-        if align == "s":
-            surface_rect.midbottom = (rect[0], rect[1])
-        if align == "e":
-            surface_rect.midright = (rect[0], rect[1])
-        if align == "w":
-            surface_rect.midleft = (rect[0], rect[1])
-        if align == "center":
-            surface_rect.center = (rect[0], rect[1])
+
+        # Draw ----------------------- #
         self.gameDisplay.blit(surface, surface_rect)
         if text is not None and font is not None:
             self.draw_text(text, font, font_color, (rect[0], rect[1]), align)
@@ -153,12 +122,10 @@ class Game:
         # Font
         self.font = pygame.font.Font(None, 100)
         self.font_liberation = pygame.font.Font(path.join(self.font_folder, "LiberationSerif-Regular.ttf"), 40)
-        self.main_menu_font = pygame.font.Font(self.game_dict["main_menu_font"], self.game_dict["main_menu_size"])
         self.ui_font = pygame.font.Font(self.game_dict["ui_font"], self.game_dict["ui_size"])
         self.status_font = pygame.font.Font(self.game_dict["status_font"], self.game_dict["status_size"])
 
         # Color
-        self.main_menu_color = self.game_dict["main_menu_color"]
         self.ui_color = self.game_dict["ui_color"]
         self.status_color = self.game_dict["status_color"]
 
