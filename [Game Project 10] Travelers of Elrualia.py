@@ -278,6 +278,10 @@ class Game:
                 "shape": pygame.draw.rect, "align": "nw",
                 "color": LIGHTGREEN, "border_color": None, "border_size": 0,
                 "font": None, "font_color": None},
+            "type_8": {
+                "shape": pygame.draw.rect, "align": "nw",
+                "color": LIGHTGREY, "border_color": None, "border_size": 0,
+                "font": None, "font_color": None},
 
             # Options -------------------------- #
             "options_volume_1": {
@@ -324,20 +328,22 @@ class Game:
             # Battle ----------------- #
             "battle_cursor": {
                 "rect": [220, 360, 104, 54], "type": "type_3"},
-            "battle_spell": {
-                "rect": [50, 670, 40, 0], "type": "type_4"},
+            "battle_spell_1": {
+                "rect": [75, 660, 40, 40], "type": "type_5"},
+            "battle_spell_2": {
+                "rect": [57, 678, 36, 0], "type": "type_8"},
             "battle_mana_1": {
-                "rect": [290, 660, 90, 40], "type": "type_5"},
+                "rect": [295, 660, 90, 40], "type": "type_5"},
             "battle_mana_2": {
-                "rect": [475, 660, 280, 40], "type": "type_5"},
+                "rect": [480, 660, 280, 40], "type": "type_5"},
             "battle_mana_3": {
-                "rect": [337, 642, 0, 36], "type": "type_6"},
+                "rect": [342, 642, 0, 36], "type": "type_6"},
             "battle_energy_1": {
-                "rect": [700, 660, 90, 40], "type": "type_5"},
+                "rect": [705, 660, 90, 40], "type": "type_5"},
             "battle_energy_2": {
-                "rect": [885, 660, 280, 40], "type": "type_5"},
+                "rect": [890, 660, 280, 40], "type": "type_5"},
             "battle_energy_3": {
-                "rect": [747, 642, 0, 36], "type": "type_7"},
+                "rect": [752, 642, 0, 36], "type": "type_7"},
         }
 
 
@@ -435,38 +441,33 @@ class Game:
             self.draw_shape(self.shape_dict, "character_status_points_2", "Status Points")
 
         elif self.game_status == "battle":
-            for sprite in self.characters:
-                pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]))
-            self.draw_shape(self.shape_dict, "battle_cursor", dx=(4+self.player.grid_pos[0]) * self.player.grid_dt[0], dy=self.player.grid_pos[1] * self.player.grid_dt[1])
-
             # Player --------------------------- #
-            for index, cooldown in enumerate(self.player.cooldown):
-                d_pos = 40*self.player.cooldown[cooldown]/self.player.spell_cooldown[cooldown]
-                self.draw_shape(self.shape_dict, "battle_spell", dx=50*index, dy=-d_pos, dh=d_pos)
-                self.draw_text(cooldown, self.ui_font, BLUE, (70+50*index, 650), "center")
+            self.draw_shape(self.shape_dict, "battle_cursor", dx=(4+self.player.grid_pos[0]) * self.player.grid_dt[0], dy=self.player.grid_pos[1] * self.player.grid_dt[1])
+            for index, spell in enumerate(self.player.cooldown):
+                d_pos = 36*self.player.cooldown[spell]/self.player.spell_cooldown[spell]
+                self.draw_shape(self.shape_dict, "battle_spell_1", dx=55*index)
+                self.draw_shape(self.shape_dict, "battle_spell_2", dx=55*index, dy=-d_pos, dh=d_pos)
+                self.draw_text(spell, self.font_liberation, WHITE, (75+55*index, 660), align="center")
 
+            # Interface ------------------------ #
             self.draw_shape(self.shape_dict, "battle_mana_1", "%i/%i" % (self.player.mana, self.player.max_mana))
             self.draw_shape(self.shape_dict, "battle_mana_2")
             self.draw_shape(self.shape_dict, "battle_mana_3", dw=int(276 * self.player.mana / self.player.max_mana))
-            self.draw_text("Mana", self.font_liberation, WHITE, (475, 659), align="center")
+            self.draw_text("Mana", self.font_liberation, WHITE, (480, 659), align="center")
             self.draw_shape(self.shape_dict, "battle_energy_1", int(self.player.energy))
             self.draw_shape(self.shape_dict, "battle_energy_2")
             self.draw_shape(self.shape_dict, "battle_energy_3", dw=int(276 * self.player.energy / self.player.max_energy))
-            self.draw_text("Energy", self.font_liberation, WHITE, (885, 659), align="center")
+            self.draw_text("Energy", self.font_liberation, WHITE, (890, 659), align="center")
+            for sprite in self.characters:
+                pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]))
 
-            # Debug
+            # Debug ---------------------------- #
             if self.debug_mode:
                 for sprite in self.all_sprites:
                     pygame.draw.rect(self.gameDisplay, self.debug_color, sprite.rect, 1)
                 for sprite in self.characters:
                     pygame.draw.rect(self.gameDisplay, sprite.debug_color, (int(sprite.debug_pos[0] + sprite.grid_pos[0] * sprite.grid_dt[0]), int(sprite.debug_pos[1] + sprite.grid_pos[1] * sprite.grid_dt[1]), sprite.debug_dt[0], sprite.debug_dt[1]), 1)
 
-                pygame.draw.rect(self.gameDisplay, CYAN, (50, 670, 40, -40), 1)
-                pygame.draw.rect(self.gameDisplay, CYAN, (50, 670, 40, -40 * self.player.cooldown["Q"] / self.spell_dict["energy_ball"]["cooldown"]), 1)
-                pygame.draw.rect(self.gameDisplay, CYAN, (100, 670, 40, -40), 1)
-                pygame.draw.rect(self.gameDisplay, CYAN, (100, 670, 40, -40 * self.player.cooldown["W"] / self.spell_dict["thunder"]["cooldown"]), 1)
-                pygame.draw.rect(self.gameDisplay, CYAN, (150, 670, 40, -40), 1)
-                pygame.draw.rect(self.gameDisplay, CYAN, (150, 670, 40, -40 * self.player.cooldown["E"] / self.spell_dict["projectile"]["cooldown"]), 1)
 
 
         # Sprites -------------------- #
